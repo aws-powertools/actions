@@ -1,0 +1,40 @@
+name: Monthly Roadmap
+
+on:
+  workflow_call:
+    secrets:
+      token:
+        required: true
+
+permissions:
+    contents: read
+    pull-requests: read
+    issues: write  # create monthly roadmap report
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633  # v4.1.2
+        with:
+            # NOTE Since it's called from another repository
+            # we must checkout the repository where the github-script is (aws-powertools/actions)
+            # otherwise the caller check out their own repository code (e.g., Python/TS), where the github-scripts aren't available
+            repository: aws-powertools/actions
+
+      - name: Debug
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "Generating monthly roadmap..."
+          echo "Org: ${OWNER}"
+          echo "Repo: ${REPO}"
+          ls -l
+      - name: "Generate monthly roadmap reminder issue"
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ secrets.token }}
+          script: |
+            const script = require('.github/scripts/monthly_roadmap_reminder.js')
+            await script({github, context, core})

@@ -1,12 +1,6 @@
-## My Project
+# Powertools for AWS Lambda GitHub Actions
 
-TODO: Fill this README out!
-
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
-* Write in your license below and create a LICENSE file
+This repository hosts shared automation used by Powertools for AWS projects. It's not (yet) designed for sharing reusable workflows outside this org.
 
 ## Security
 
@@ -14,5 +8,4 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 
 ## License
 
-This library is licensed under the LICENSE NAME HERE License.
-
+This library is licensed under the MIT-0 License. See the LICENSE file.
