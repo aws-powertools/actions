@@ -2,8 +2,8 @@
     "name": "powertools-for-aws-gh-actions-dev",
     "version": "1.0.0",
     "devDependencies": {
-        "@types/github-script": "github:actions/github-script",
-        "@octokit/rest": "^20.1.0"
+        "@octokit/rest": "^20.1.0",
+        "@types/github-script": "github:actions/github-script"
     },
     "dependencies": {
         "package-lock.json": "^1.0.0"
