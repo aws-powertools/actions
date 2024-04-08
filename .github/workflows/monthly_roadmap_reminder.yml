@@ -36,5 +36,5 @@ jobs:
         with:
           github-token: ${{ secrets.token }}
           script: |
-            const script = require('.github/scripts/monthly_roadmap_reminder.js')
+            const script = require('.github/scripts/monthly_roadmap/app.js')
             await script({github, context, core})

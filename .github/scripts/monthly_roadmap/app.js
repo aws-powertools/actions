@@ -296,19 +296,21 @@ ${tables.longRunningPRs}
 ${tables.oldestIssues}
   `;
 
-  core.info("Creating issue with monthly roadmap report")
+  core.info("Creating issue with monthly roadmap report");
 
-  let ret = await github.rest.issues.create({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    title: `Roadmap update reminder - ${MONTH}`,
-    body,
-  });
+  // let ret = await github.rest.issues.create({
+  //   owner: context.repo.owner,
+  //   repo: context.repo.repo,
+  //   title: `Roadmap update reminder - ${MONTH}`,
+  //   body,
+  // });
 
   await core.summary
     .addHeading("Monthly roadmap reminder created")
     .addLink("View monthly report", ret.data.html_url)
-    .write()
+    .write();
+
+  return ret;
 }
 
 // @ts-check
