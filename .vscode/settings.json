@@ -1,4 +1,0 @@
-{
-    "vitest.commandLine": "npm test",
-    "vitest.enable": true
-}
