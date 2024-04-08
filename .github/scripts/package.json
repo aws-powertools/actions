@@ -3,9 +3,14 @@
     "version": "1.0.0",
     "devDependencies": {
         "@octokit/rest": "^20.1.0",
-        "@types/github-script": "github:actions/github-script"
+        "@types/github-script": "github:actions/github-script",
+        "vitest": "^1.4.0"
     },
     "dependencies": {
         "package-lock.json": "^1.0.0"
-    }
+    },
+    "scripts": {
+        "test": "vitest"
+    },
+    "type": "module"
 }
