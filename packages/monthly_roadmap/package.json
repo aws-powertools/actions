@@ -1,0 +1,7 @@
+{
+    "name": "monthly_roadmap",
+    "private": true,
+    "type": "module",
+    "main": "index.js",
+    "devDependencies": {}
+}

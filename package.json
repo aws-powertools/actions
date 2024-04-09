@@ -1,4 +1,7 @@
 {
+  "workspaces": [
+    "packages/monthly_roadmap"
+  ],
   "devDependencies": {
     "vitest": "^1.4.0"
   },
