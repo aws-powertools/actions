@@ -318,12 +318,6 @@ export default async function main({ github, context, core }) {
 	return await createMonthlyRoadmapReport({ github, context, core });
 }
 
-// // @ts-check
-// /** @param {import('@types/github-script').AsyncFunctionArguments} AsyncFunctionArguments */
-// module.exports = async ({ github, context, core }) => {
-//   return await createMonthlyRoadmapReport({ github, context, core });
-// };
-
 // TODO: retry 500 using Octokit hooks
 // TODO: update existing issue (if any) over creating a new one - help w/ dispatch for fixes
 // TODO: update package.json on "type": "module"
