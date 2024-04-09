@@ -3,10 +3,14 @@
     "packages/monthly_roadmap"
   ],
   "devDependencies": {
+    "@biomejs/biome": "1.6.4",
     "vitest": "^1.4.0"
   },
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "biome lint packages --write",
+    "format": "biome format packages --write",
+    "ci": "biome check packages"
   },
   "type": "module"
 }
