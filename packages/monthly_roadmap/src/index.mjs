@@ -1,11 +1,6 @@
 const DEFAULT_EMPTY_RESPONSE = [{}];
 const MONTH = new Date().toLocaleString("default", { month: "long" });
-const BLOCKED_LABELS = [
-	"do-not-merge",
-	"need-issue",
-	"need-rfc",
-	"need-customer-feedback",
-];
+const BLOCKED_LABELS = ["do-not-merge", "need-issue", "need-rfc", "need-customer-feedback"];
 
 /**
  * Calculate the difference in days between the current date and a given datetime.
@@ -171,13 +166,9 @@ async function getTopOldestIssues({ github, context, core }) {
 	core.info("Successfully fetched issues");
 	core.debug(issues);
 
-	core.info(
-		`Filtering out issues that contained blocking labels: ${BLOCKED_LABELS}`,
-	);
+	core.info(`Filtering out issues that contained blocking labels: ${BLOCKED_LABELS}`);
 	const top3 = issues
-		.filter((issue) =>
-			issue.labels.every((label) => !BLOCKED_LABELS.includes(label.name)),
-		)
+		.filter((issue) => issue.labels.every((label) => !BLOCKED_LABELS.includes(label.name)))
 		.slice(0, 3);
 
 	core.debug(top3);
@@ -214,16 +205,11 @@ async function getLongRunningPRs({ github, context, core }) {
 		per_page: 30,
 	});
 
-	core.debug(issues);
+	core.debug(prs);
 
-	core.info(
-		`Filtering out issues that contained blocking labels: ${BLOCKED_LABELS}`,
-	);
-	const top3 = prs
-		.filter((pr) =>
-			pr.labels.every((label) => !BLOCKED_LABELS.includes(label.name)),
-		)
-		.slice(0, 3);
+	core.info(`Filtering out issues that contained blocking labels: ${BLOCKED_LABELS}`);
+
+	const top3 = prs.filter((pr) => pr.labels.every((label) => !BLOCKED_LABELS.includes(label.name))).slice(0, 3);
 
 	core.debug(top3);
 
@@ -246,7 +232,7 @@ async function getLongRunningPRs({ github, context, core }) {
  * @returns {Promise<void>} A promise resolving when the issue is created.
  *
  */
-async function createMonthlyRoadmapReport({ github, context, core }) {
+export async function createMonthlyRoadmapReport({ github, context, core }) {
 	core.info("Fetching GitHub data concurrently");
 
 	const [
@@ -269,7 +255,6 @@ async function createMonthlyRoadmapReport({ github, context, core }) {
 	};
 
 	const body = `
-
 Quick report of top 3 issues/PRs to assist in roadmap updates. Issues or PRs with the following labels are excluded:
 
 * \`do-not-merge\`
@@ -298,12 +283,11 @@ ${tables.oldestIssues}
 
 	core.info("Creating issue with monthly roadmap report");
 
-	// let ret = await github.rest.issues.create({
-	//   owner: context.repo.owner,
-	//   repo: context.repo.repo,
-	//   title: `Roadmap update reminder - ${MONTH}`,
-	//   body,
-	// });
+	const issueTitle = `Roadmap update reminder - ${MONTH}`;
+	const searchParams = `is:issue in:title state:open repo:${context.repo.owner}/${context.repo.repo}`;
+	const searchQuery = `${issueTitle} ${searchParams}`;
+
+	const ret = await createOrUpdateIssue({ github, context, core, searchQuery, body, title: issueTitle });
 
 	await core.summary
 		.addHeading("Monthly roadmap reminder created")
@@ -313,11 +297,102 @@ ${tables.oldestIssues}
 	return ret;
 }
 
+/**
+ * @param {import('@types/github-script').AsyncFunctionArguments}
+ *
+ */
+export async function createOrUpdateIssue({ github, context, core, searchQuery, title = "", body = "", labels = [] }) {
+	if (searchQuery === undefined) {
+		return await createIssue({ github, context, core, title, body, labels });
+	}
+
+	const existingReportingIssue = await findIssue({ github, context, core, searchQuery });
+
+	if (!existingReportingIssue.issueNumber) {
+		return await createIssue({ github, context, core, title, body, labels });
+	}
+
+	return await updateIssue({
+		github,
+		context,
+		core,
+		title,
+		body,
+		labels,
+		issueNumber: existingReportingIssue.issueNumber,
+	});
+}
+
+/**
+ * Searches for an issue based on query parameters.
+ * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
+ *
+ * @param {import('@types/github-script').AsyncFunctionArguments}
+ * @returns {Promise<{details: Object, issueNumber: number}>} - Promise resolving to issue details and its number (0 if not found)
+
+ */
+export async function findIssue({ github, context, core, searchQuery }) {
+	try {
+		core.info(`Searching whether issue exists. Search params: '${searchQuery}'`);
+
+		const {
+			data: { items: issues },
+		} = await github.rest.search.issuesAndPullRequests({ q: searchQuery });
+
+		return {
+			details: issues[0],
+			issueNumber: issues[0]?.number ?? 0,
+		};
+	} catch (error) {
+		core.error(`Unable to create issue in repository '${owner}/${repo}'. Error: ${error}`);
+		core.debug(body);
+	}
+}
+
+/**
+ * Creates a new issue
+ *
+ * @param {import('@types/github-script').AsyncFunctionArguments}
+ *
+ */
+export async function createIssue({ github, context, core, title = "", body = "", labels = [] }) {
+	try {
+		return await github.rest.issues.create({
+			owner: context.repo.owner,
+			repo: context.repo.repo,
+			title,
+			body,
+			labels,
+		});
+	} catch (error) {
+		core.error(`Unable to create issue in repository '${owner}/${repo}'. Error: ${error}`);
+		core.debug(body);
+	}
+}
+
+/**
+ * Updates an existing issue number.
+ *
+ * @param {import('@types/github-script').AsyncFunctionArguments}
+ *
+ */
+export async function updateIssue({ github, context, core, issueNumber, title = "", body = "", labels = [] }) {
+	try {
+		core.info(`Updating existing issue ${issueNumber}`);
+
+		return await github.rest.issues.update({
+			owner: context.repo.owner,
+			repo: context.repo.repo,
+			issue_number: issueNumber,
+			body: body,
+		});
+	} catch (error) {
+		core.error(`Unable to update issue number '${issueNumber}'. Error: ${error}`);
+		throw error;
+	}
+}
+
 /** @param {import('@types/github-script').AsyncFunctionArguments} AsyncFunctionArguments */
 export default async function main({ github, context, core }) {
 	return await createMonthlyRoadmapReport({ github, context, core });
 }
-
-// TODO: retry 500 using Octokit hooks
-// TODO: update existing issue (if any) over creating a new one - help w/ dispatch for fixes
-// TODO: update package.json on "type": "module"
