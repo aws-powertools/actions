@@ -4,6 +4,8 @@
   ],
   "devDependencies": {
     "@biomejs/biome": "1.6.4",
+    "@octokit/rest": "^20.1.0",
+    "@types/github-script": "github:actions/github-script",
     "vitest": "^1.4.0"
   },
   "scripts": {
