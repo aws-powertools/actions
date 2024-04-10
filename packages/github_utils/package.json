@@ -1,0 +1,6 @@
+{
+	"name": "github_utils",
+	"private": true,
+	"type": "module",
+	"devDependencies": {}
+}

@@ -1,7 +1,9 @@
 {
   "workspaces": [
     "packages/monthly_roadmap",
-    "packages/github_utils"
+    "packages/github_utils",
+    "packages/markdown",
+    "packages/date_utils"
   ],
   "devDependencies": {
     "@biomejs/biome": "1.6.4",
