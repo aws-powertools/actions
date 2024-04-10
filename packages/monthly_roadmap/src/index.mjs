@@ -2,7 +2,9 @@ const DEFAULT_EMPTY_RESPONSE = [{}];
 const MONTH = new Date().toLocaleString("default", { month: "long" });
 const BLOCKED_LABELS = ["do-not-merge", "need-issue", "need-rfc", "need-customer-feedback"];
 
-import { createOrUpdateIssue, listIssues } from "../../github_utils/issues.mjs";
+import { createOrUpdateIssue, listIssues } from "../../github_utils/src/issues.mjs";
+import { listPullRequests } from "../../github_utils/src/pull_requests.mjs";
+import { getWorkflowRunUrl, isGitHubAction } from "../../github_utils/src/actions.mjs";
 
 /**
  * Calculate the difference in days between the current date and a given datetime.
@@ -102,7 +104,7 @@ async function getTopFeatureRequests({ github, context, core }) {
 		title: `[${issue.title}](${issue.html_url})`,
 		created_at: formatDate(issue.created_at),
 		reaction_count: issue.reactions.total_count,
-		labels: `${issue.labels.map((label) => `\`${label.name}\``).join(",")}`, // enclose each label with `<label>` for rendering
+		labels: `${issue.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
 	}));
 }
 
@@ -129,13 +131,11 @@ async function getTopMostCommented({ github, context, core }) {
 		direction: "desc",
 	});
 
-	core.debug(issues);
-
 	return issues.map((issue) => ({
 		title: `[${issue.title}](${issue.html_url})`,
 		created_at: formatDate(issue.created_at),
 		comment_count: issue.comments,
-		labels: `${issue.labels.map((label) => `\`${label.name}\``).join(",")}`, // enclose each label with `<label>` for rendering
+		labels: `${issue.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
 	}));
 }
 
@@ -163,14 +163,12 @@ async function getTopOldestIssues({ github, context, core }) {
 		excludeLabels: BLOCKED_LABELS,
 	});
 
-	core.debug(issues);
-
 	return issues.map((issue) => {
 		return {
 			title: `[${issue.title}](${issue.html_url})`,
 			created_at: formatDate(issue.created_at),
 			last_update: `${diffInDays(issue.updated_at)} days`,
-			labels: `${issue.labels.map((label) => `\`${label.name}\``).join(",")}`, // enclose each label with `<label>` for rendering
+			labels: `${issue.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
 		};
 	});
 }
@@ -189,28 +187,24 @@ async function getTopOldestIssues({ github, context, core }) {
  */
 async function getLongRunningPRs({ github, context, core }) {
 	core.info("Fetching PRs sorted by long-running");
-	const { data: prs } = await github.rest.pulls.list({
-		owner: context.repo.owner,
-		repo: context.repo.repo,
-		sort: "long-running",
+
+	const prs = await listPullRequests({
+		github,
+		context,
+		core,
+		limit: 3,
+		sortBy: "long-running",
 		direction: "desc",
-		per_page: 30,
+		excludeLabels: BLOCKED_LABELS,
 	});
 
-	core.debug(prs);
-
-	core.info(`Filtering out issues that contained blocking labels: ${BLOCKED_LABELS}`);
-
-	const top3 = prs.filter((pr) => pr.labels.every((label) => !BLOCKED_LABELS.includes(label.name))).slice(0, 3);
-
-	core.debug(top3);
-
-	return top3.map((issue) => {
+	return prs.map((pr) => {
 		return {
-			title: `[${issue.title}](${issue.html_url})`,
-			created_at: formatDate(issue.created_at),
-			last_update: `${diffInDays(issue.updated_at)} days`,
-			labels: `${issue.labels.map((label) => `\`${label.name}\``).join(",")}`, // enclose each label with `<label>` for rendering
+			title: `[${pr.title}](${pr.html_url})`,
+			created_at: formatDate(pr.created_at),
+			last_update: `${diffInDays(pr.updated_at)} days`,
+			pending_reviewers: `${pr.requested_reviewers.map((person) => person.login).join("<br>")}`,
+			labels: `${pr.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
 		};
 	});
 }
@@ -271,6 +265,8 @@ ${tables.longRunningPRs}
 ## Top 3 Oldest Issues
 
 ${tables.oldestIssues}
+
+${isGitHubAction() ? `> workflow: ${getWorkflowRunUrl()}` : ""}
   `;
 
 	core.info("Creating issue with monthly roadmap report");

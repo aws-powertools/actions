@@ -2,9 +2,7 @@
  * Searches for an issue based on query parameters.
  * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
  *
- * @typedef {import('@octokit/types').OctokitResponse} Issue
  * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<{Issue}>} - Promise resolving to issue
 
  */
 export async function findIssue({ github, context, core, searchQuery }) {
@@ -24,9 +22,7 @@ export async function findIssue({ github, context, core, searchQuery }) {
 
 /**
  * Creates a new issue
- * @typedef {import('@octokit/types').OctokitResponse} Issue
  * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<Issue>} - Newly created issue
  */
 export async function createIssue({ github, context, core, title = "", body = "", labels = [] }) {
 	try {
@@ -46,9 +42,8 @@ export async function createIssue({ github, context, core, title = "", body = ""
 /**
  * Updates an existing issue number.
  *
- * @typedef {import('@octokit/types').OctokitResponse} Issue
  * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<Issue>} - Newly updated issue
+ * @returns {Promise<Object>} - Newly updated issue
  */
 export async function updateIssue({ github, context, core, issueNumber, title = "", body = "", labels = [] }) {
 	try {
@@ -67,9 +62,7 @@ export async function updateIssue({ github, context, core, issueNumber, title = 
 }
 
 /**
- * @typedef {import('@octokit/types').OctokitResponse} Issue
  * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<Issue}> - Newly created or updated issue
  */
 export async function createOrUpdateIssue({ github, context, core, searchQuery, title = "", body = "", labels = [] }) {
 	if (searchQuery === undefined) {
@@ -89,16 +82,14 @@ export async function createOrUpdateIssue({ github, context, core, searchQuery, 
 		title,
 		body,
 		labels,
-		issueNumber: existingReportingIssue.issueNumber,
+		issueNumber: existingReportingIssue.number,
 	});
 }
 
 /**
  * List issues
  *
- * @typedef {import('@octokit/types').OctokitResponse} Issue
  * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<Issue[]>} - List of issues
  */
 export async function listIssues({
 	github,
@@ -113,7 +104,9 @@ export async function listIssues({
 	let issues = [];
 
 	try {
-		core.info(`Listing issues. Filtered by labels: '${labels}', Sorted by:'${sortBy}', ;Limit: ${limit}`);
+		core.info(
+			`Listing issues. Filtered by labels: '${labels}', Sorted by:'${sortBy}', Excluding labels: '${excludeLabels}', Limit: ${limit}`,
+		);
 
 		for await (const { data: ret } of github.paginate.iterator(github.rest.issues.listForRepo, {
 			owner: context.repo.owner,
@@ -131,11 +124,6 @@ export async function listIssues({
 
 				return issue.labels.every((label) => !excludeLabels.includes(label.name));
 			});
-
-			// const issuesOnly = ret.filter((issue) => (issue) => !Object.hasOwn(issue, "pull_request"));
-			// const unblockedIssues = issuesOnly.filter((issue) =>
-			// 	issue.labels.every((label) => !excludeLabels.includes(label.name)),
-			// );
 
 			issues.push(...issuesOnly);
 
