@@ -2,6 +2,8 @@ const DEFAULT_EMPTY_RESPONSE = [{}];
 const MONTH = new Date().toLocaleString("default", { month: "long" });
 const BLOCKED_LABELS = ["do-not-merge", "need-issue", "need-rfc", "need-customer-feedback"];
 
+import { createOrUpdateIssue, listIssues } from "../../github_utils/issues.mjs";
+
 /**
  * Calculate the difference in days between the current date and a given datetime.
  *
@@ -85,19 +87,16 @@ ${rows}`;
  *
  */
 async function getTopFeatureRequests({ github, context, core }) {
-	core.info("Fetching feature requests sorted by +1 reactions");
-
-	const { data: issues } = await github.rest.issues.listForRepo({
-		owner: context.repo.owner,
-		repo: context.repo.repo,
-		labels: "feature-request",
-		sort: "reactions-+1",
+	core.info("Fetching most popular feature requests");
+	const issues = await listIssues({
+		github,
+		context,
+		core,
+		limit: 3,
+		sortBy: "reactions-+1",
+		labels: ["feature-request"],
 		direction: "desc",
-		per_page: 3,
 	});
-
-	core.info("Successfully fetched issues");
-	core.debug(issues);
 
 	return issues.map((issue) => ({
 		title: `[${issue.title}](${issue.html_url})`,
@@ -120,17 +119,16 @@ async function getTopFeatureRequests({ github, context, core }) {
  *
  */
 async function getTopMostCommented({ github, context, core }) {
-	core.info("Fetching issues sorted by comments");
-
-	const { data: issues } = await github.rest.issues.listForRepo({
-		owner: context.repo.owner,
-		repo: context.repo.repo,
-		sort: "comments",
+	core.info("Fetching most commented issues");
+	const issues = await listIssues({
+		github,
+		context,
+		core,
+		limit: 3,
+		sortBy: "comments",
 		direction: "desc",
-		per_page: 3,
 	});
 
-	core.info("Successfully fetched issues");
 	core.debug(issues);
 
 	return issues.map((issue) => ({
@@ -155,25 +153,19 @@ async function getTopMostCommented({ github, context, core }) {
  */
 async function getTopOldestIssues({ github, context, core }) {
 	core.info("Fetching issues sorted by creation date");
-	const { data: issues } = await github.rest.issues.listForRepo({
-		owner: context.repo.owner,
-		repo: context.repo.repo,
-		sort: "created",
+	const issues = await listIssues({
+		github,
+		context,
+		core,
+		limit: 3,
+		sortBy: "created",
 		direction: "asc",
-		per_page: 30,
+		excludeLabels: BLOCKED_LABELS,
 	});
 
-	core.info("Successfully fetched issues");
 	core.debug(issues);
 
-	core.info(`Filtering out issues that contained blocking labels: ${BLOCKED_LABELS}`);
-	const top3 = issues
-		.filter((issue) => issue.labels.every((label) => !BLOCKED_LABELS.includes(label.name)))
-		.slice(0, 3);
-
-	core.debug(top3);
-
-	return top3.map((issue) => {
+	return issues.map((issue) => {
 		return {
 			title: `[${issue.title}](${issue.html_url})`,
 			created_at: formatDate(issue.created_at),
@@ -295,101 +287,6 @@ ${tables.oldestIssues}
 		.write();
 
 	return ret;
-}
-
-/**
- * @param {import('@types/github-script').AsyncFunctionArguments}
- *
- */
-export async function createOrUpdateIssue({ github, context, core, searchQuery, title = "", body = "", labels = [] }) {
-	if (searchQuery === undefined) {
-		return await createIssue({ github, context, core, title, body, labels });
-	}
-
-	const existingReportingIssue = await findIssue({ github, context, core, searchQuery });
-
-	if (!existingReportingIssue.issueNumber) {
-		return await createIssue({ github, context, core, title, body, labels });
-	}
-
-	return await updateIssue({
-		github,
-		context,
-		core,
-		title,
-		body,
-		labels,
-		issueNumber: existingReportingIssue.issueNumber,
-	});
-}
-
-/**
- * Searches for an issue based on query parameters.
- * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
- *
- * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<{details: Object, issueNumber: number}>} - Promise resolving to issue details and its number (0 if not found)
-
- */
-export async function findIssue({ github, context, core, searchQuery }) {
-	try {
-		core.info(`Searching whether issue exists. Search params: '${searchQuery}'`);
-
-		const {
-			data: { items: issues },
-		} = await github.rest.search.issuesAndPullRequests({ q: searchQuery });
-
-		return {
-			details: issues[0],
-			issueNumber: issues[0]?.number ?? 0,
-		};
-	} catch (error) {
-		core.error(`Unable to create issue in repository '${owner}/${repo}'. Error: ${error}`);
-		core.debug(body);
-	}
-}
-
-/**
- * Creates a new issue
- *
- * @param {import('@types/github-script').AsyncFunctionArguments}
- *
- */
-export async function createIssue({ github, context, core, title = "", body = "", labels = [] }) {
-	try {
-		return await github.rest.issues.create({
-			owner: context.repo.owner,
-			repo: context.repo.repo,
-			title,
-			body,
-			labels,
-		});
-	} catch (error) {
-		core.error(`Unable to create issue in repository '${owner}/${repo}'. Error: ${error}`);
-		core.debug(body);
-	}
-}
-
-/**
- * Updates an existing issue number.
- *
- * @param {import('@types/github-script').AsyncFunctionArguments}
- *
- */
-export async function updateIssue({ github, context, core, issueNumber, title = "", body = "", labels = [] }) {
-	try {
-		core.info(`Updating existing issue ${issueNumber}`);
-
-		return await github.rest.issues.update({
-			owner: context.repo.owner,
-			repo: context.repo.repo,
-			issue_number: issueNumber,
-			body: body,
-		});
-	} catch (error) {
-		core.error(`Unable to update issue number '${issueNumber}'. Error: ${error}`);
-		throw error;
-	}
 }
 
 /** @param {import('@types/github-script').AsyncFunctionArguments} AsyncFunctionArguments */
