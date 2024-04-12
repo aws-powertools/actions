@@ -2,9 +2,9 @@ const DEFAULT_EMPTY_RESPONSE = [{}];
 const MONTH = new Date().toLocaleString("default", { month: "long" });
 const BLOCKED_LABELS = ["do-not-merge", "need-issue", "need-rfc", "need-customer-feedback"];
 
-import { createOrUpdateIssue, listIssues } from "../../github_utils/src/issues.mjs";
-import { listPullRequests } from "../../github_utils/src/pull_requests.mjs";
-import { getWorkflowRunUrl, isGitHubAction } from "../../github_utils/src/actions.mjs";
+import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
+import { listPullRequests } from "github_pull_requests/src/pull_requests.mjs";
+import { getWorkflowRunUrl, isGitHubAction } from "github_actions/src/functions.mjs";
 import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
 import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
 import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
