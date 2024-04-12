@@ -1,7 +1,7 @@
 /**
  * Formats a datetime string into a localized human date string e.g., April 5, 2024.
  *
- * @param {string} datetime - The datetime string to format.
+ * @param {string|Date} datetime - The datetime string to format.
  * @returns {string} The formatted date string.
  *
  * @example

@@ -1,7 +1,7 @@
 /**
  * Calculate the difference in days between the current date and a given datetime.
  *
- * @param {string} datetime - The datetime string to calculate the difference from.
+ * @param {string|Date} datetime - The datetime string to calculate the difference from.
  * @returns {number} - The difference in days between the current date and the given datetime.
  */
 export function diffInDaysFromToday(datetime) {
