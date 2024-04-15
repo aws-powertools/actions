@@ -2,12 +2,12 @@ const DEFAULT_EMPTY_RESPONSE = [{}];
 const MONTH = new Date().toLocaleString("default", { month: "long" });
 const BLOCKED_LABELS = ["do-not-merge", "need-issue", "need-rfc", "need-customer-feedback"];
 
-import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
-import { listPullRequests } from "github_pull_requests/src/pull_requests.mjs";
 import { getWorkflowRunUrl, isGitHubAction } from "github_actions/src/functions.mjs";
-import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
-import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
+import { listPullRequests } from "github_pull_requests/src/pull_requests.mjs";
 import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
+import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
+import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
+import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
 
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
@@ -118,7 +118,7 @@ async function getTopOldestIssues({ github, context, core }) {
  * @property {string} labels - The labels of the PR, enclosed in backticks.
  * @returns {Promise<Array<Response>>} A promise resolving with an array of PR objects.
  */
-async function getLongRunningPRs({ github, context, core }) {
+export async function getLongRunningPRs({ github, context, core }) {
 	core.info("Fetching PRs sorted by long-running");
 
 	const prs = await listPullRequests({
