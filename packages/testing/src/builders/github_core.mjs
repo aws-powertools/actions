@@ -1,10 +1,11 @@
 import { vi } from "vitest";
 import { Octokit } from "@octokit/rest";
 
-export function buildGithubClient({ token }) {
+export function buildGithubClient({ token, debug = false }) {
 	return new Octokit({
 		auth: token,
 		log: console,
+		...(debug ? {} : { log: debug }),
 	});
 }
 
