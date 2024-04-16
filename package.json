@@ -6,7 +6,8 @@
     "packages/github_issues",
     "packages/github_pull_requests",
     "packages/github_actions",
-    "packages/schemas"
+    "packages/schemas",
+    "packages/testing"
   ],
   "devDependencies": {
     "@anatine/zod-mock": "^3.13.4",

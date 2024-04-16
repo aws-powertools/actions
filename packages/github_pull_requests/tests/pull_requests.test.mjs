@@ -1,10 +1,10 @@
 import { getLongRunningPRs } from "monthly_roadmap/src/index.mjs";
-import { beforeAll, afterAll, afterEach, it, expect, describe, vi } from "vitest";
-import { listPullRequests } from "../src/pull_requests.mjs";
 import { setupServer } from "msw/node";
-import { listPullRequestsHandler } from "./interceptors/pull_requests_handler";
-import { buildPullRequests } from "./builders/pull_requests.mjs";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "./builders/github_core.mjs";
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
+import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
+import { listPullRequestsHandler } from "../../testing/src/interceptors/pull_requests_handler";
+import { listPullRequests } from "../src/pull_requests.mjs";
 
 const server = setupServer();
 const org = "aws-powertools";
