@@ -2,7 +2,10 @@ import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
 import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
-import { listPullRequestsHandler } from "../../testing/src/interceptors/pull_requests_handler";
+import {
+	listPullRequestsHandler,
+	listPullRequestsFailureHandler,
+} from "../../testing/src/interceptors/pull_requests_handler";
 import { listPullRequests } from "../src/pull_requests.mjs";
 import { MAX_PULL_REQUESTS_PER_PAGE } from "../src/constants.mjs";
 
@@ -85,5 +88,21 @@ describe("list pull requests", () => {
 
 		// THEN
 		expect(ret.length).toBe(totalPRs);
+	});
+
+	it("should throw error when GitHub API call fails (http 500)", async () => {
+		// GIVEN
+		const err = "Unable to process request at this time";
+		server.use(...listPullRequestsFailureHandler({ org, repo, err }));
+
+		// WHEN
+		// THEN
+		const ret = await expect(
+			listPullRequests({
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+				context: buildGithubContext({ org, repo }),
+				core: buildGithubCore(),
+			}),
+		).rejects.toThrowError(err);
 	});
 });

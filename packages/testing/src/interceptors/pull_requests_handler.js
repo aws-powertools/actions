@@ -7,3 +7,11 @@ export const listPullRequestsHandler = ({ data, org, repo }) => {
 		}),
 	];
 };
+
+export const listPullRequestsFailureHandler = ({ org, repo, err = "Unable to process request" }) => {
+	return [
+		http.get(`https://api.github.com/repos/${org}/${repo}/pulls`, ({ request, params }) => {
+			return new HttpResponse(err, { status: 500 });
+		}),
+	];
+};
