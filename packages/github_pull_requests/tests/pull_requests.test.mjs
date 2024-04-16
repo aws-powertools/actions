@@ -17,7 +17,7 @@ describe("list pull requests", () => {
 
 	afterEach(() => server.resetHandlers());
 
-	it("should list feature request default parameters", async () => {
+	it("should list pull requests (default parameters)", async () => {
 		// GIVEN
 		const data = buildPullRequests({ max: 5 });
 		server.use(...listPullRequestsHandler({ data, org, repo }));
@@ -33,7 +33,7 @@ describe("list pull requests", () => {
 		expect(ret).toStrictEqual(data);
 	});
 
-	it("should list feature request excluding certain labels", async () => {
+	it("should exclude results with certain labels", async () => {
 		// GIVEN
 		const BLOCKED_LABELS = "do-not-merge";
 		const data = buildPullRequests({ max: 5, includeLabels: [BLOCKED_LABELS] });
@@ -68,7 +68,7 @@ describe("list pull requests", () => {
 		expect(ret.length).toBe(1);
 	});
 
-	it("should paginate to list all PRs when limit is higher", async () => {
+	it("should paginate to list all available pull requests when the limit is higher", async () => {
 		// GIVEN
 		const totalPRs = MAX_PULL_REQUESTS_PER_PAGE + 1;
 
