@@ -1,5 +1,5 @@
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
 import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
 import {
@@ -9,11 +9,11 @@ import {
 import { listPullRequests } from "../src/pull_requests.mjs";
 import { MAX_PULL_REQUESTS_PER_PAGE } from "../src/constants.mjs";
 
-const server = setupServer();
-const org = "aws-powertools";
-const repo = "powertools-lambda-python";
-
 describe("list pull requests", () => {
+	const server = setupServer();
+	const org = "aws-powertools";
+	const repo = "powertools-lambda-python";
+
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 	afterAll(() => server.close());
@@ -104,5 +104,9 @@ describe("list pull requests", () => {
 				core: buildGithubCore(),
 			}),
 		).rejects.toThrowError(err);
+	});
+
+	it("should filter out issues from results", async () => {
+		throw new Error("Not Implemented");
 	});
 });
