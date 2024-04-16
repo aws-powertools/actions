@@ -8,7 +8,7 @@ const commentSchema = z.object({
 		avatar: z.string().url(),
 	}),
 	content: z.string(),
-	created_at: z.date(),
+	created_at: z.string().datetime(),
 });
 
 export const labelSchema = z.object({
@@ -41,7 +41,7 @@ export const pullRequestSchema = z.object({
 	}),
 	created_at: z.string().datetime(),
 	updated_at: z.string().datetime(),
-	mergedAt: z.date().nullable(),
+	mergedAt: z.string().datetime().nullable(),
 	comments: z.array(commentSchema),
 	labels: z.array(labelSchema),
 	requested_reviewers: z.array(reviewerSchema),

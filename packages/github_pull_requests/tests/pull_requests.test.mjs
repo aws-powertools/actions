@@ -32,6 +32,6 @@ describe("list pull requests", () => {
 		});
 
 		// THEN
-		expect(ret.length).greaterThan(0);
+		expect(ret).toStrictEqual(data);
 	});
 });
