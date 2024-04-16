@@ -8,12 +8,14 @@
     "packages/github_actions"
   ],
   "devDependencies": {
+    "@anatine/zod-mock": "^3.13.4",
     "@biomejs/biome": "1.6.4",
     "@faker-js/faker": "^8.4.1",
     "@octokit/rest": "^20.1.0",
     "@types/github-script": "github:actions/github-script",
     "msw": "^2.2.13",
-    "vitest": "^1.4.0"
+    "vitest": "^1.4.0",
+    "zod": "^3.22.4"
   },
   "scripts": {
     "test": "vitest",
