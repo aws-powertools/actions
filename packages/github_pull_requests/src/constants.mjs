@@ -1,0 +1,2 @@
+export const MAX_PULL_REQUESTS_PER_PAGE = 30;
+export const MAX_PULL_REQUEST_LIMIT = 10;

@@ -1,10 +1,10 @@
-import { getLongRunningPRs } from "monthly_roadmap/src/index.mjs";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
 import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
 import { listPullRequestsHandler } from "../../testing/src/interceptors/pull_requests_handler";
 import { listPullRequests } from "../src/pull_requests.mjs";
+import { MAX_PULL_REQUESTS_PER_PAGE } from "../src/constants.mjs";
 
 const server = setupServer();
 const org = "aws-powertools";
@@ -17,9 +17,9 @@ describe("list pull requests", () => {
 
 	afterEach(() => server.resetHandlers());
 
-	it("should list feature request regardless of the labels", async () => {
+	it("should list feature request default parameters", async () => {
 		// GIVEN
-		const data = buildPullRequests({ max: 5, includeLabels: ["feature-request"] });
+		const data = buildPullRequests({ max: 5 });
 		server.use(...listPullRequestsHandler({ data, org, repo }));
 
 		// WHEN
@@ -66,5 +66,24 @@ describe("list pull requests", () => {
 
 		// THEN
 		expect(ret.length).toBe(1);
+	});
+
+	it("should paginate to list all PRs when limit is higher", async () => {
+		// GIVEN
+		const totalPRs = MAX_PULL_REQUESTS_PER_PAGE + 1;
+
+		const data = buildPullRequests({ max: totalPRs });
+		server.use(...listPullRequestsHandler({ data, org, repo }));
+
+		// WHEN
+		const ret = await listPullRequests({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			limit: totalPRs,
+		});
+
+		// THEN
+		expect(ret.length).toBe(totalPRs);
 	});
 });

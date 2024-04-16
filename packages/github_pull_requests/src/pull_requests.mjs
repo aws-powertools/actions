@@ -1,3 +1,5 @@
+import { MAX_PULL_REQUESTS_PER_PAGE, MAX_PULL_REQUEST_LIMIT } from "./constants.mjs";
+
 /**
  * List Pull Requests
  *
@@ -10,7 +12,8 @@ export async function listPullRequests({
 	context,
 	core,
 	sortBy,
-	limit = 10,
+	limit = MAX_PULL_REQUEST_LIMIT,
+	pageSize = MAX_PULL_REQUESTS_PER_PAGE,
 	direction = "asc",
 	excludeLabels = [],
 }) {
@@ -25,7 +28,7 @@ export async function listPullRequests({
 			state: "open",
 			sort: sortBy,
 			direction,
-			per_page: 30,
+			per_page: pageSize,
 		})) {
 			const pullRequestOnly = ret.filter((pr) => pr.labels.every((label) => !excludeLabels.includes(label.name)));
 
