@@ -24,7 +24,7 @@ describe("list pull requests", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 		});
@@ -41,7 +41,7 @@ describe("list pull requests", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 			excludeLabels: BLOCKED_LABELS,
@@ -58,7 +58,7 @@ describe("list pull requests", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 			limit: 1,
