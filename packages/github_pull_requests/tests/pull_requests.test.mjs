@@ -26,7 +26,7 @@ describe("list pull requests", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient(),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 		});

@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/rest";
 
 export function buildGithubClient({ token }) {
 	return new Octokit({
-		auth: token || process.env.GITHUB_TOKEN,
+		auth: token,
 		log: console,
 	});
 }
