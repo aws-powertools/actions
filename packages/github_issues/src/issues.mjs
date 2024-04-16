@@ -13,10 +13,10 @@ export async function findIssue({ github, context, core, searchQuery }) {
 			data: { items: issues },
 		} = await github.rest.search.issuesAndPullRequests({ q: searchQuery });
 
+		core.debug(issues);
 		return issues[0];
 	} catch (error) {
-		core.error(`Unable to create issue in repository '${owner}/${repo}'. Error: ${error}`);
-		core.debug(body);
+		core.error(`Unable to create issue in repository '${context.owner}/${context.repo}'. Error: ${error}`);
 	}
 }
 
