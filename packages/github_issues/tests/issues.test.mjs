@@ -31,4 +31,56 @@ describe("list issues", () => {
 		// THEN
 		expect(ret).toStrictEqual(data);
 	});
+
+	it("should filter out pull requests from results", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should exclude results with certain labels", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should limit the number of issues returned", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should paginate to list all available pull requests when the limit is higher", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should throw error when GitHub API call fails (http 500)", async () => {
+		throw new Error("Not implemented");
+	});
+});
+
+describe("search issues", () => {
+	it("should find an issue based on search", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should not fail when issue is not found", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should throw error when GitHub API call fails (http 500)", async () => {
+		throw new Error("Not implemented");
+	});
+});
+
+describe("create and updating issues", () => {
+	it("should create an issue (default parameters)", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should update an issue (default parameters)", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should create an issue if one doesn't exist when updating", async () => {
+		throw new Error("Not implemented");
+	});
+
+	it("should throw error when GitHub API call fails (http 500)", async () => {
+		throw new Error("Not implemented");
+	});
 });
