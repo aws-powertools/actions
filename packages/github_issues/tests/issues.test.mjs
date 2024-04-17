@@ -4,6 +4,7 @@ import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../te
 import { buildIssues } from "../../testing/src/builders/issues.mjs";
 import { listIssuesHandler } from "../../testing/src/interceptors/issues_handler.mjs";
 import { listIssues } from "../src/issues.mjs";
+import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
 
 describe("list issues", () => {
 	const server = setupServer();
@@ -84,8 +85,23 @@ describe("list issues", () => {
 		expect(ret.length).toBe(1);
 	});
 
-	it("should paginate to list all available pull requests when the limit is higher", async () => {
-		throw new Error("Not implemented");
+	it("should paginate to list all available issues when the limit is higher", async () => {
+		// GIVEN
+		const totalIssues = MAX_ISSUES_PER_PAGE + 1;
+
+		const data = buildIssues({ max: totalIssues });
+		server.use(...listIssuesHandler({ data, org, repo }));
+
+		// WHEN
+		const ret = await listIssues({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			limit: totalIssues,
+		});
+
+		// THEN
+		expect(ret.length).toBe(totalIssues);
 	});
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {

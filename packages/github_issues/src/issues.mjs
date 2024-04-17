@@ -1,9 +1,10 @@
+import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";
+
 /**
  * Searches for an issue based on query parameters.
  * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
  *
  * @param {import('@types/github-script').AsyncFunctionArguments}
-
  */
 export async function findIssue({ github, context, core, searchQuery }) {
 	try {
@@ -97,7 +98,8 @@ export async function listIssues({
 	core,
 	labels,
 	sortBy,
-	limit = 10,
+	limit = MAX_ISSUES_LIMIT,
+	pageSize = MAX_ISSUES_PER_PAGE,
 	direction = "asc",
 	excludeLabels = [],
 }) {
@@ -114,7 +116,7 @@ export async function listIssues({
 			labels,
 			sort: sortBy,
 			direction,
-			per_page: 30,
+			per_page: pageSize,
 		})) {
 			const issuesOnly = ret.filter((issue) => {
 				// ignore PRs
