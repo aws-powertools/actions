@@ -192,12 +192,16 @@ describe("search issues", () => {
 	});
 });
 
-describe.skip("create and updating issues", () => {
+describe.skip("create issues", () => {
 	it.todo("should create an issue (default parameters)", async () => {});
 
-	it.todo("should update an issue (default parameters)", async () => {});
-
 	it.todo("should create an issue if one doesn't exist when updating", async () => {});
+
+	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
+});
+
+describe.skip("update issues", () => {
+	it.todo("should update an issue (default parameters)", async () => {});
 
 	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });
