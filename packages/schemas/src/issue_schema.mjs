@@ -85,13 +85,17 @@ export const issueSchema = z.object({
 	state_reason: z.null(),
 });
 
-/**
- * When a Pull Request is returned from GitHub Issues API
- */
-export const pullRequestIssueSchema = z.object({
+const pullRequestSummarySchema = z.object({
 	diff_url: z.string().url(),
 	html_url: z.string().url(),
 	patch_url: z.string().url(),
 	url: z.string().url(),
 	merged_at: z.string().datetime().nullable(),
+});
+
+/**
+ * GitHub Issues API can return a Pull Request as an Issue
+ */
+export const pullRequestAsIssueSchema = issueSchema.extend({
+	pull_request: pullRequestSummarySchema,
 });

@@ -1,16 +1,21 @@
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
-import { buildIssues } from "../../testing/src/builders/issues.mjs";
-import { listIssuesHandler, listIssuesFailureHandler } from "../../testing/src/interceptors/issues_handler.mjs";
+import { buildIssues, buildSearchIssues } from "../../testing/src/builders/issues.mjs";
+import {
+	listIssuesHandler,
+	listIssuesFailureHandler,
+	findIssueHandler,
+} from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
-import { listIssues } from "../src/issues.mjs";
+import { findIssue, listIssues } from "../src/issues.mjs";
+import { faker } from "@faker-js/faker";
+
+const server = setupServer();
+const org = "aws-powertools";
+const repo = "powertools-lambda-python";
 
 describe("list issues", () => {
-	const server = setupServer();
-	const org = "aws-powertools";
-	const repo = "powertools-lambda-python";
-
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 	afterAll(() => server.close());
@@ -122,33 +127,58 @@ describe("list issues", () => {
 });
 
 describe("search issues", () => {
+	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+
+	afterAll(() => server.close());
+
+	afterEach(() => server.resetHandlers());
+
 	it("should find an issue based on search", async () => {
-		throw new Error("Not implemented");
+		// GIVEN
+		const issueTitle = faker.lorem.lines(1);
+		const searchQuery = `${issueTitle} is:issue in:title state:open repo:${org}/${repo}`;
+
+		const data = buildSearchIssues({ max: 2, overrides: { title: issueTitle } });
+		server.use(...findIssueHandler({ data, org, repo }));
+
+		// WHEN
+		const ret = await findIssue({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+			core: buildGithubCore(),
+			context: buildGithubContext({ org, repo }),
+			searchQuery,
+		});
+
+		// THEN
+		expect(ret).toStrictEqual(data.items);
 	});
 
 	it("should not fail when issue is not found", async () => {
-		throw new Error("Not implemented");
+		// GIVEN
+		const data = buildSearchIssues({ max: 0 });
+		server.use(...findIssueHandler({ data, org, repo }));
+
+		// WHEN
+		const ret = await findIssue({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+			core: buildGithubCore(),
+			context: buildGithubContext({ org, repo }),
+			searchQuery: "not be found",
+		});
+
+		// THEN
+		expect(ret.length).toBe(0);
 	});
 
-	it("should throw error when GitHub API call fails (http 500)", async () => {
-		throw new Error("Not implemented");
-	});
+	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });
 
-describe("create and updating issues", () => {
-	it("should create an issue (default parameters)", async () => {
-		throw new Error("Not implemented");
-	});
+describe.skip("create and updating issues", () => {
+	it.todo("should create an issue (default parameters)", async () => {});
 
-	it("should update an issue (default parameters)", async () => {
-		throw new Error("Not implemented");
-	});
+	it.todo("should update an issue (default parameters)", async () => {});
 
-	it("should create an issue if one doesn't exist when updating", async () => {
-		throw new Error("Not implemented");
-	});
+	it.todo("should create an issue if one doesn't exist when updating", async () => {});
 
-	it("should throw error when GitHub API call fails (http 500)", async () => {
-		throw new Error("Not implemented");
-	});
+	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });

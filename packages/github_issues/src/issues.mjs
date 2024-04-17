@@ -1,10 +1,14 @@
 import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";
+import { issueSchema, pullRequestAsIssueSchema } from "../../schemas/src/issue_schema.mjs";
+import { z } from "zod";
 
 /**
  * Searches for an issue based on query parameters.
  * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
  *
  * @param {import('@types/github-script').AsyncFunctionArguments}
+ * @typedef {(z.infer<typeof issueSchema>[] | z.infer<typeof pullRequestAsIssueSchema>[])} SearchResult
+ * @returns {Promise<SearchResult>} Response - Search containing results
  */
 export async function findIssue({ github, context, core, searchQuery }) {
 	try {
@@ -15,7 +19,7 @@ export async function findIssue({ github, context, core, searchQuery }) {
 		} = await github.rest.search.issuesAndPullRequests({ q: searchQuery });
 
 		core.debug(issues);
-		return issues[0];
+		return issues;
 	} catch (error) {
 		core.error(`Unable to create issue in repository '${context.owner}/${context.repo}'. Error: ${error}`);
 	}
@@ -70,9 +74,9 @@ export async function createOrUpdateIssue({ github, context, core, searchQuery, 
 		return await createIssue({ github, context, core, title, body, labels });
 	}
 
-	const existingReportingIssue = await findIssue({ github, context, core, searchQuery });
+	const existingReportingIssues = await findIssue({ github, context, core, searchQuery });
 
-	if (existingReportingIssue === undefined) {
+	if (existingReportingIssues[0] === undefined) {
 		return await createIssue({ github, context, core, title, body, labels });
 	}
 

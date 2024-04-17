@@ -1,5 +1,5 @@
 import { generateMock } from "@anatine/zod-mock";
-import { issueSchema, labelSchema, pullRequestIssueSchema } from "schemas/src/issue_schema.mjs";
+import { issueSchema, labelSchema, pullRequestAsIssueSchema } from "schemas/src/issue_schema.mjs";
 import { z } from "zod";
 
 /**
@@ -10,6 +10,7 @@ import { z } from "zod";
  * @param {string} [options.org="aws-powertools"] - The organization name.
  * @param {string} [options.repo="powertools-lambda-python"] - The repository name.
  * @param {string} [options.isPr=false] - Whether to transform an issue mock to a PR-like GitHub Issues API.
+ * @param {z.infer<typeof issueSchema>} [options.overrides] - Object to override from schema
  * @returns {z.infer<typeof issueSchema>[]} Issue - An array of mocked issues.
  */
 export function buildIssues({
@@ -18,18 +19,19 @@ export function buildIssues({
 	org = "aws-powertools",
 	repo = "powertools-lambda-python",
 	isPr = false,
+	overrides,
 }) {
-	const prs = [];
+	const issues = [];
 
 	for (let i = 1; i < max + 1; i++) {
-		prs.push({
+		issues.push({
 			...mockIssue({ org, repo, issueNumber: i, isPr }),
 			...mockLabels(labels),
-			// pull_request: undefined,
+			...overrides,
 		});
 	}
 
-	return prs;
+	return issues;
 }
 
 /**
@@ -42,18 +44,15 @@ export function buildIssues({
  * @returns {z.infer<typeof issueSchema>} Issue - The mock issue object.
  */
 const mockIssue = ({ org, repo, issueNumber, isPr = false }) => {
+	const schema = isPr ? pullRequestAsIssueSchema : issueSchema;
 	const type = isPr ? "pull" : "issues";
-	const issue = generateMock(issueSchema, {
+	const html_url = `https://github.com/${org}/${repo}/${type}/${issueNumber}`;
+
+	return generateMock(schema, {
 		stringMap: {
-			html_url: () => `https://github.com/${org}/${repo}/${type}/${issueNumber}`,
+			html_url: () => html_url,
 		},
 	});
-
-	if (isPr) {
-		issue.pull_request = generateMock(pullRequestIssueSchema);
-	}
-
-	return issue;
 };
 
 /**
@@ -80,3 +79,41 @@ const mockLabels = (labels = []) => {
 
 	return { labels: mockedLabels };
 };
+
+/**
+ * Builds an array of mock issues with associated labels following Search Endpoint.
+ * Search Endpoint ref: https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28
+ * @param {Object} options - The options object.
+ * @param {number} [options.max=10] - The maximum number of issues to generate.
+ * @param {string[]} [options.labels=[]] - Labels to include in the mock issues.
+ * @param {string} [options.org="aws-powertools"] - The organization name.
+ * @param {string} [options.repo="powertools-lambda-python"] - The repository name.
+ * @param {z.infer<typeof issueSchema>} [options.overrides] - Object to override from schema
+ *
+ * @typedef {Object} SearchResponse
+ * @property {z.infer<typeof issueSchema>[]} items - One or more issues found based on query.
+ * @property {number} totalCount - Total issues found.
+ * @property {boolean} incomplete_results - Whether the results are incomplete.
+ * @returns {SearchResponse} Response - Search containing results
+ */
+export function buildSearchIssues({
+	max = 10,
+	labels = [],
+	org = "aws-powertools",
+	repo = "powertools-lambda-python",
+	overrides,
+}) {
+	const issues = buildIssues({
+		max,
+		labels,
+		org,
+		repo,
+		overrides,
+	});
+
+	return {
+		items: issues,
+		totalCount: issues.length,
+		incomplete_results: false,
+	};
+}
