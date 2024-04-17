@@ -84,3 +84,14 @@ export const issueSchema = z.object({
 	performed_via_github_app: githubAppSchema.nullable(),
 	state_reason: z.null(),
 });
+
+/**
+ * When a Pull Request is returned from GitHub Issues API
+ */
+export const pullRequestIssueSchema = z.object({
+	diff_url: z.string().url(),
+	html_url: z.string().url(),
+	patch_url: z.string().url(),
+	url: z.string().url(),
+	merged_at: z.string().datetime().nullable(),
+});

@@ -33,7 +33,21 @@ describe("list issues", () => {
 	});
 
 	it("should filter out pull requests from results", async () => {
-		throw new Error("Not implemented");
+		// GIVEN
+		const realIssues = buildIssues({ max: 2 });
+		const prAsIssues = buildIssues({ max: 2, isPr: true });
+		server.use(...listIssuesHandler({ data: [...realIssues, ...prAsIssues], org, repo }));
+
+		// WHEN
+		const ret = await listIssues({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			labels: ["feature"],
+		});
+
+		// THEN
+		expect(ret).toStrictEqual(realIssues);
 	});
 
 	it("should exclude results with certain labels", async () => {
