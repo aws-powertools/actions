@@ -6,7 +6,7 @@ import { z } from "zod";
  * Builds an array of mock issues with associated labels based on the provided parameters.
  * @param {Object} options - The options object.
  * @param {number} [options.max=10] - The maximum number of issues to generate.
- * @param {string[]} [options.includeLabels=[]] - Labels to include in the mock issues.
+ * @param {string[]} [options.labels=[]] - Labels to include in the mock issues.
  * @param {string} [options.org="aws-powertools"] - The organization name.
  * @param {string} [options.repo="powertools-lambda-python"] - The repository name.
  * @param {string} [options.isPr=false] - Whether to transform an issue mock to a PR-like GitHub Issues API.
@@ -14,7 +14,7 @@ import { z } from "zod";
  */
 export function buildIssues({
 	max = 10,
-	includeLabels = [],
+	labels = [],
 	org = "aws-powertools",
 	repo = "powertools-lambda-python",
 	isPr = false,
@@ -24,7 +24,7 @@ export function buildIssues({
 	for (let i = 1; i < max + 1; i++) {
 		prs.push({
 			...mockIssue({ org, repo, issueNumber: i, isPr }),
-			...mockLabels(includeLabels),
+			...mockLabels(labels),
 			// pull_request: undefined,
 		});
 	}

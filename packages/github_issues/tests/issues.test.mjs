@@ -3,8 +3,8 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../testing/src/builders/issues.mjs";
 import { listIssuesHandler } from "../../testing/src/interceptors/issues_handler.mjs";
-import { listIssues } from "../src/issues.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
+import { listIssues } from "../src/issues.mjs";
 
 describe("list issues", () => {
 	const server = setupServer();
@@ -54,7 +54,7 @@ describe("list issues", () => {
 	it("should exclude results with certain labels", async () => {
 		const BLOCKED_LABELS = "do-not-merge";
 
-		const data = buildIssues({ max: 5, includeLabels: [BLOCKED_LABELS] });
+		const data = buildIssues({ max: 5, labels: [BLOCKED_LABELS] });
 		server.use(...listIssuesHandler({ data, org, repo }));
 
 		// WHEN

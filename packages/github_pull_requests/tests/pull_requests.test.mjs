@@ -39,7 +39,7 @@ describe("list pull requests", () => {
 	it("should exclude results with certain labels", async () => {
 		// GIVEN
 		const BLOCKED_LABELS = "do-not-merge";
-		const data = buildPullRequests({ max: 5, includeLabels: [BLOCKED_LABELS] });
+		const data = buildPullRequests({ max: 5, labels: [BLOCKED_LABELS] });
 		server.use(...listPullRequestsHandler({ data, org, repo }));
 
 		// WHEN
