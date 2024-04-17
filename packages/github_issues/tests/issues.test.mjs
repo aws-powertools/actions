@@ -69,7 +69,19 @@ describe("list issues", () => {
 	});
 
 	it("should limit the number of issues returned", async () => {
-		throw new Error("Not implemented");
+		const data = buildIssues({ max: 2 });
+		server.use(...listIssuesHandler({ data, org, repo }));
+
+		// WHEN
+		const ret = await listIssues({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			limit: 1,
+		});
+
+		// THEN
+		expect(ret.length).toBe(1);
 	});
 
 	it("should paginate to list all available pull requests when the limit is higher", async () => {
