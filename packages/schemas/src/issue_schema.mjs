@@ -17,7 +17,7 @@ const userSchema = z.object({
 	repos_url: z.string().url(),
 	events_url: z.string().url(),
 	received_events_url: z.string().url(),
-	type: z.string(),
+	type: z.enum(["Bot", "User"]),
 	site_admin: z.boolean(),
 });
 
@@ -70,7 +70,7 @@ export const issueSchema = z.object({
 	state: z.enum(["open", "closed"]),
 	locked: z.boolean(),
 	assignee: userSchema.nullable(),
-	assignees: z.array(z.unknown()),
+	assignees: z.array(userSchema.nullable()),
 	milestone: z.null(),
 	comments: z.number(),
 	created_at: z.string().datetime(),
@@ -81,6 +81,6 @@ export const issueSchema = z.object({
 	body: z.string(),
 	reactions: reactionsSchema,
 	timeline_url: z.string().url(),
-	performed_via_github_app: z.null(),
+	performed_via_github_app: githubAppSchema.nullable(),
 	state_reason: z.null(),
 });

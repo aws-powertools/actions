@@ -7,3 +7,11 @@ export const findIssueHandler = ({ data }) => {
 		}),
 	];
 };
+
+export const listIssuesHandler = ({ data, org, repo }) => {
+	return [
+		http.get(`https://api.github.com/repos/${org}/${repo}/issues`, ({ request, params }) => {
+			return HttpResponse.json(data);
+		}),
+	];
+};
