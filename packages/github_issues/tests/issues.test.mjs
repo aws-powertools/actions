@@ -51,7 +51,21 @@ describe("list issues", () => {
 	});
 
 	it("should exclude results with certain labels", async () => {
-		throw new Error("Not implemented");
+		const BLOCKED_LABELS = "do-not-merge";
+
+		const data = buildIssues({ max: 5, includeLabels: [BLOCKED_LABELS] });
+		server.use(...listIssuesHandler({ data, org, repo }));
+
+		// WHEN
+		const ret = await listIssues({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			excludeLabels: BLOCKED_LABELS,
+		});
+
+		// THEN
+		expect(ret.length).toBe(0);
 	});
 
 	it("should limit the number of issues returned", async () => {
