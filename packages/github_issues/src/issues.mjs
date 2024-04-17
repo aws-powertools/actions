@@ -27,21 +27,31 @@ export async function findIssue({ github, core, searchQuery }) {
 }
 
 /**
- * Creates a new issue
+ * Creates a new issue.
+ * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
  * @param {import('@types/github-script').AsyncFunctionArguments}
+ * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue.
  */
-export async function createIssue({ github, context, core, title = "", body = "", labels = [] }) {
+export async function createIssue(
+	title,
+	{ github, context, core, body = "", labels = [], assignees = [], milestone = null },
+) {
 	try {
-		return await github.rest.issues.create({
+		const issue = await github.rest.issues.create({
 			owner: context.repo.owner,
 			repo: context.repo.repo,
 			title,
 			body,
 			labels,
+			assignees,
+			milestone,
 		});
+
+		core.debug(issue);
+		return issue.data;
 	} catch (error) {
-		core.error(`Unable to create issue in repository '${owner}/${repo}'. Error: ${error}`);
-		core.debug(body);
+		core.error(`Unable to create issue in repository '${context.repo.owner}/${context.repo.repo}'. Error: ${error}`);
+		throw error;
 	}
 }
 
@@ -72,13 +82,13 @@ export async function updateIssue({ github, context, core, issueNumber, title = 
  */
 export async function createOrUpdateIssue({ github, context, core, searchQuery, title = "", body = "", labels = [] }) {
 	if (searchQuery === undefined) {
-		return await createIssue({ github, context, core, title, body, labels });
+		return await createIssue(title, { github, context, core, body, labels });
 	}
 
 	const existingReportingIssues = await findIssue({ github, context, core, searchQuery });
 
 	if (existingReportingIssues[0] === undefined) {
-		return await createIssue({ github, context, core, title, body, labels });
+		return await createIssue(title, { github, context, core, body, labels });
 	}
 
 	return await updateIssue({
@@ -88,7 +98,7 @@ export async function createOrUpdateIssue({ github, context, core, searchQuery, 
 		title,
 		body,
 		labels,
-		issueNumber: existingReportingIssue.number,
+		issueNumber: existingReportingIssues.number,
 	});
 }
 
