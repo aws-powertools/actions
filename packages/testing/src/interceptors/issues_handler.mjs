@@ -15,3 +15,11 @@ export const listIssuesHandler = ({ data, org, repo }) => {
 		}),
 	];
 };
+
+export const listIssuesFailureHandler = ({ org, repo, err = "Unable to process request" }) => {
+	return [
+		http.get(`https://api.github.com/repos/${org}/${repo}/issues`, ({ request, params }) => {
+			return new HttpResponse(err, { status: 500 });
+		}),
+	];
+};

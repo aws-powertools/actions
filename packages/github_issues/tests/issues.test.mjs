@@ -2,7 +2,7 @@ import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../testing/src/builders/issues.mjs";
-import { listIssuesHandler } from "../../testing/src/interceptors/issues_handler.mjs";
+import { listIssuesHandler, listIssuesFailureHandler } from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
 import { listIssues } from "../src/issues.mjs";
 
@@ -105,7 +105,19 @@ describe("list issues", () => {
 	});
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
-		throw new Error("Not implemented");
+		// GIVEN
+		const err = "Unable to process request at this time";
+		server.use(...listIssuesFailureHandler({ org, repo, err }));
+
+		// WHEN
+		// THEN
+		const ret = await expect(
+			listIssues({
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+				context: buildGithubContext({ org, repo }),
+				core: buildGithubCore(),
+			}),
+		).rejects.toThrowError(err);
 	});
 });
 
