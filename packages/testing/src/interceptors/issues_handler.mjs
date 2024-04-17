@@ -31,3 +31,11 @@ export const listIssuesFailureHandler = ({ org, repo, err = "Unable to process r
 		}),
 	];
 };
+
+export const createIssueHandler = ({ data, org, repo }) => {
+	return [
+		http.post(`https://api.github.com/repos/${org}/${repo}/issues`, async ({ request, params }) => {
+			return HttpResponse.json(data);
+		}),
+	];
+};

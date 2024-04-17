@@ -7,9 +7,10 @@ import {
 	listIssuesFailureHandler,
 	findIssueHandler,
 	findIssueFailureHandler,
+	createIssueHandler,
 } from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
-import { findIssue, listIssues } from "../src/issues.mjs";
+import { findIssue, listIssues, createIssue } from "../src/issues.mjs";
 import { faker } from "@faker-js/faker";
 
 const org = "aws-powertools";
@@ -192,8 +193,33 @@ describe("search issues", () => {
 	});
 });
 
-describe.skip("create issues", () => {
-	it.todo("should create an issue (default parameters)", async () => {});
+describe("create issues", () => {
+	const server = setupServer();
+
+	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+
+	afterAll(() => server.close());
+
+	afterEach(() => server.resetHandlers());
+
+	it("should create an issue (default parameters)", async () => {
+		// GIVEN
+		const data = buildIssues({ max: 1 })[0];
+		server.use(...createIssueHandler({ data, org, repo }));
+
+		// WHEN
+		const ret = await createIssue("Test", {
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			extra: {
+				assignee: "test",
+			},
+		});
+
+		// THEN
+		expect(ret).toStrictEqual(data);
+	});
 
 	it.todo("should create an issue if one doesn't exist when updating", async () => {});
 
