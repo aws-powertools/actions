@@ -237,6 +237,8 @@ describe("create issues", () => {
 		expect(ret).toStrictEqual(data);
 	});
 
+	it.todo("should update issue when one already exists", async () => {});
+
 	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });
 
