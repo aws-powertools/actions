@@ -10,7 +10,7 @@ import { z } from "zod";
  * @typedef {(z.infer<typeof issueSchema>[] | z.infer<typeof pullRequestAsIssueSchema>[])} SearchResult
  * @returns {Promise<SearchResult>} Response - Search containing results
  */
-export async function findIssue({ github, context, core, searchQuery }) {
+export async function findIssue({ github, core, searchQuery }) {
 	try {
 		core.info(`Searching whether issue exists. Search params: '${searchQuery}'`);
 
