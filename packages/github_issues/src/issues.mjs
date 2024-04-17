@@ -21,7 +21,8 @@ export async function findIssue({ github, context, core, searchQuery }) {
 		core.debug(issues);
 		return issues;
 	} catch (error) {
-		core.error(`Unable to create issue in repository '${context.owner}/${context.repo}'. Error: ${error}`);
+		core.error(`Unable to search for issues at this time. Error: ${error}`);
+		throw error;
 	}
 }
 

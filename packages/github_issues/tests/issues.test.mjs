@@ -6,16 +6,18 @@ import {
 	listIssuesHandler,
 	listIssuesFailureHandler,
 	findIssueHandler,
+	findIssueFailureHandler,
 } from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
 import { findIssue, listIssues } from "../src/issues.mjs";
 import { faker } from "@faker-js/faker";
 
-const server = setupServer();
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";
 
 describe("list issues", () => {
+	const server = setupServer();
+
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 	afterAll(() => server.close());
@@ -127,6 +129,8 @@ describe("list issues", () => {
 });
 
 describe("search issues", () => {
+	const server = setupServer();
+
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
 	afterAll(() => server.close());
@@ -170,7 +174,22 @@ describe("search issues", () => {
 		expect(ret.length).toBe(0);
 	});
 
-	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
+	it("should throw error when GitHub API call fails (http 500)", async () => {
+		// GIVEN
+		const err = "Unable to process request at this time";
+		server.use(...findIssueFailureHandler({ err }));
+
+		// WHEN
+		// THEN
+		await expect(
+			findIssue({
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+				core: buildGithubCore(),
+				context: buildGithubContext({ org, repo }),
+				searchQuery: "not be found",
+			}),
+		).rejects.toThrowError(err);
+	});
 });
 
 describe.skip("create and updating issues", () => {
