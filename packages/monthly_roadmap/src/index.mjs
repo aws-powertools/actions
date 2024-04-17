@@ -208,7 +208,7 @@ ${isGitHubAction() ? `> workflow: ${getWorkflowRunUrl()}` : ""}
 	const searchParams = `is:issue in:title state:open repo:${context.repo.owner}/${context.repo.repo}`;
 	const searchQuery = `${issueTitle} ${searchParams}`;
 
-	const ret = await createOrUpdateIssue({ github, context, core, searchQuery, body, title: issueTitle });
+	const ret = await createOrUpdateIssue(issueTitle, { github, context, core, searchQuery, body });
 
 	await core.summary
 		.addHeading("Monthly roadmap reminder created")

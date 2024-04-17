@@ -10,7 +10,7 @@ import {
 	createIssueHandler,
 } from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
-import { findIssue, listIssues, createIssue } from "../src/issues.mjs";
+import { findIssue, listIssues, createIssue, updateIssue, createOrUpdateIssue } from "../src/issues.mjs";
 import { faker } from "@faker-js/faker";
 
 const org = "aws-powertools";
@@ -212,22 +212,35 @@ describe("create issues", () => {
 			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
-			extra: {
-				assignee: "test",
-			},
 		});
 
 		// THEN
 		expect(ret).toStrictEqual(data);
 	});
 
-	it.todo("should create an issue if one doesn't exist when updating", async () => {});
+	it("should only create an issue if one does not exist yet", async () => {
+		// GIVEN
+		const createdIssue = buildIssues({ max: 1 })[0];
+		const noIssueFound = buildSearchIssues({ max: 0 });
+
+		server.use(...findIssueHandler({ data: noIssueFound }), ...createIssueHandler({ data: createdIssue, org, repo }));
+
+		// WHEN
+		const ret = await createOrUpdateIssue("Test", {
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			searchQuery: "Test issue that won't be found",
+		});
+
+		// THEN
+		expect(ret).toStrictEqual(data);
+	});
 
 	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });
 
 describe.skip("update issues", () => {
 	it.todo("should update an issue (default parameters)", async () => {});
-
 	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });
