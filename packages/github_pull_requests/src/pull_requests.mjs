@@ -1,4 +1,4 @@
-import { MAX_PULL_REQUESTS_PER_PAGE, MAX_PULL_REQUEST_LIMIT } from "./constants.mjs";
+import { MAX_PULL_REQUESTS_PER_PAGE, MAX_PULL_REQUESTS_LIMIT } from "./constants.mjs";
 
 /**
  * List Pull Requests
@@ -12,7 +12,7 @@ export async function listPullRequests({
 	context,
 	core,
 	sortBy,
-	limit = MAX_PULL_REQUEST_LIMIT,
+	limit = MAX_PULL_REQUESTS_LIMIT,
 	pageSize = MAX_PULL_REQUESTS_PER_PAGE,
 	direction = "asc",
 	excludeLabels = [],
