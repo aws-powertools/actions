@@ -41,7 +41,7 @@ export const pullRequestSchema = z.object({
 	}),
 	created_at: z.string().datetime(),
 	updated_at: z.string().datetime(),
-	mergedAt: z.string().datetime().nullable(),
+	merged_at: z.string().datetime().nullable(),
 	comments: z.array(commentSchema),
 	labels: z.array(labelSchema),
 	requested_reviewers: z.array(reviewerSchema),
