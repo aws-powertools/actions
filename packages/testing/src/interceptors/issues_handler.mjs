@@ -39,3 +39,11 @@ export const createIssueHandler = ({ data, org, repo }) => {
 		}),
 	];
 };
+
+export const updateIssueHandler = ({ data, issueNumber, org, repo }) => {
+	return [
+		http.patch(`https://api.github.com/repos/${org}/${repo}/issues/${issueNumber}`, async ({ request, params }) => {
+			return HttpResponse.json(data);
+		}),
+	];
+};

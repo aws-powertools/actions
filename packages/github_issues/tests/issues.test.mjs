@@ -8,6 +8,7 @@ import {
 	findIssueHandler,
 	findIssueFailureHandler,
 	createIssueHandler,
+	updateIssueHandler,
 } from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
 import { findIssue, listIssues, createIssue, updateIssue, createOrUpdateIssue } from "../src/issues.mjs";
@@ -234,7 +235,7 @@ describe("create issues", () => {
 		});
 
 		// THEN
-		expect(ret).toStrictEqual(data);
+		expect(ret).toStrictEqual(createdIssue);
 	});
 
 	it.todo("should update issue when one already exists", async () => {});
@@ -242,7 +243,29 @@ describe("create issues", () => {
 	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });
 
-describe.skip("update issues", () => {
-	it.todo("should update an issue (default parameters)", async () => {});
+describe("update issues", () => {
+	const server = setupServer();
+
+	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
+
+	afterAll(() => server.close());
+
+	afterEach(() => server.resetHandlers());
+
+	it("should update an issue (default parameters)", async () => {
+		// GIVEN
+		const issue = buildIssues({ max: 1 })[0];
+		server.use(...updateIssueHandler({ data: issue, issueNumber: issue.number, org, repo }));
+
+		// WHEN
+		const ret = await updateIssue({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+		});
+
+		// THEN
+		expect(ret).toStrictEqual(issue);
+	});
 	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
 });

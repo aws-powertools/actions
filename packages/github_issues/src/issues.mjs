@@ -1,6 +1,6 @@
-import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";
-import { issueSchema, pullRequestAsIssueSchema } from "../../schemas/src/issue_schema.mjs";
 import { z } from "zod";
+import { issueSchema, pullRequestAsIssueSchema } from "../../schemas/src/issue_schema.mjs";
+import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";
 
 /**
  * Searches for an issue based on query parameters.
@@ -61,19 +61,24 @@ export async function createIssue(
  * @param {import('@types/github-script').AsyncFunctionArguments}
  * @returns {Promise<Object>} - Newly updated issue
  */
-export async function updateIssue({ github, context, core, issueNumber, title = "", body = "", labels = [] }) {
+export async function updateIssue({ github, context, core, issueNumber, title, body, labels }) {
 	try {
 		core.info(`Updating existing issue ${issueNumber}`);
 
-		return await github.rest.issues.update({
+		const issue = await github.rest.issues.update({
 			owner: context.repo.owner,
 			repo: context.repo.repo,
 			issue_number: issueNumber,
-			body: body,
+			body,
+			labels,
+			title,
 		});
-	} catch (error) {
-		core.error(`Unable to update issue number '${issueNumber}'. Error: ${error}`);
-		throw error;
+
+		core.debug(issue);
+		return issue.data;
+	} catch (err) {
+		core.error(`Unable to update issue number '${issueNumber}'. Error: ${err}`);
+		throw err;
 	}
 }
 
@@ -82,9 +87,11 @@ export async function updateIssue({ github, context, core, issueNumber, title = 
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
  */
 export async function createOrUpdateIssue(title, { github, context, core, searchQuery, body = "", labels = [] }) {
-	const existingReportingIssues = await findIssue({ github, context, core, searchQuery });
+	const searchResult = await findIssue({ github, context, core, searchQuery });
 
-	if (existingReportingIssues[0] === undefined) {
+	const reportingIssue = searchResult[0];
+
+	if (reportingIssue === undefined) {
 		return await createIssue(title, { github, context, core, body, labels });
 	}
 
@@ -95,7 +102,7 @@ export async function createOrUpdateIssue(title, { github, context, core, search
 		title,
 		body,
 		labels,
-		issueNumber: existingReportingIssues.number,
+		issueNumber: reportingIssue.number,
 	});
 }
 
