@@ -262,6 +262,7 @@ describe("update issues", () => {
 			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
+			issueNumber: issue.number,
 		});
 
 		// THEN
