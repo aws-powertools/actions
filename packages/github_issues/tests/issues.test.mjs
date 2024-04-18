@@ -1,19 +1,20 @@
+import { faker } from "@faker-js/faker";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
 import { buildIssues, buildSearchIssues } from "../../testing/src/builders/issues.mjs";
 import {
-	listIssuesHandler,
-	listIssuesFailureHandler,
-	findIssueHandler,
-	findIssueFailureHandler,
+	createIssueFailureHandler,
 	createIssueHandler,
-	updateIssueHandler,
+	findIssueFailureHandler,
+	findIssueHandler,
+	listIssuesFailureHandler,
+	listIssuesHandler,
 	updateIssueFailureHandler,
+	updateIssueHandler,
 } from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
-import { findIssue, listIssues, createIssue, updateIssue, createOrUpdateIssue } from "../src/issues.mjs";
-import { faker } from "@faker-js/faker";
+import { createIssue, createOrUpdateIssue, findIssue, listIssues, updateIssue } from "../src/issues.mjs";
 
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";
@@ -243,7 +244,22 @@ describe("create issues", () => {
 
 	it.todo("should update issue when one already exists", async () => {});
 
-	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
+	it("should throw error when GitHub API call fails (http 500)", async () => {
+		// GIVEN
+		const err = "Unable to process request at this time";
+		server.use(...createIssueFailureHandler({ org, repo, err }));
+
+		// WHEN
+		// THEN
+		await expect(
+			createIssue({
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+				context: buildGithubContext({ org, repo }),
+				core: buildGithubCore(),
+				title: "Test",
+			}),
+		).rejects.toThrowError(err);
+	});
 });
 
 describe("update issues", () => {

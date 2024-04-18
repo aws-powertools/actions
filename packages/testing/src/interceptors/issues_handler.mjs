@@ -40,6 +40,14 @@ export const createIssueHandler = ({ data, org, repo }) => {
 	];
 };
 
+export const createIssueFailureHandler = ({ org, repo, err = "Unable to process request" }) => {
+	return [
+		http.post(`https://api.github.com/repos/${org}/${repo}/issues`, async ({ request, params }) => {
+			return new HttpResponse(err, { status: 500 });
+		}),
+	];
+};
+
 export const updateIssueHandler = ({ data, issueNumber, org, repo }) => {
 	return [
 		http.patch(`https://api.github.com/repos/${org}/${repo}/issues/${issueNumber}`, async ({ request, params }) => {
