@@ -1,13 +1,13 @@
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
-import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
+import { buildGithubClient, buildGithubContext, buildGithubCore } from "testing/src/builders/github_core.mjs";
+import { buildPullRequests } from "testing/src/builders/pull_requests.mjs";
 import {
-	listPullRequestsHandler,
 	listPullRequestsFailureHandler,
-} from "../../testing/src/interceptors/pull_requests_handler";
-import { listPullRequests } from "../src/pull_requests.mjs";
-import { MAX_PULL_REQUESTS_PER_PAGE } from "../src/constants.mjs";
+	listPullRequestsHandler,
+} from "testing/src/interceptors/pull_requests_handler.js";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { MAX_PULL_REQUESTS_PER_PAGE } from "../../../src/constants.mjs";
+import { listPullRequests } from "../../../src/pull_requests.mjs";
 
 describe("list pull requests", () => {
 	const server = setupServer();
