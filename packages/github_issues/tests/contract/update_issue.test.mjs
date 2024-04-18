@@ -8,7 +8,7 @@ import { updateIssue } from "../src/issues.mjs";
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";
 
-describe("update issues", () => {
+describe("update issues contract", () => {
 	const server = setupServer();
 
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
