@@ -61,7 +61,18 @@ export async function createIssue(
  * @param {import('@types/github-script').AsyncFunctionArguments}
  * @returns {Promise<Object>} - Newly updated issue
  */
-export async function updateIssue({ github, context, core, issueNumber, title, body, labels }) {
+export async function updateIssue({
+	github,
+	context,
+	core,
+	issueNumber,
+	title,
+	body,
+	labels,
+	assignees,
+	state,
+	milestone,
+}) {
 	try {
 		core.info(`Updating existing issue ${issueNumber}`);
 
@@ -72,6 +83,9 @@ export async function updateIssue({ github, context, core, issueNumber, title, b
 			body,
 			labels,
 			title,
+			assignees,
+			state,
+			milestone,
 		});
 
 		core.debug(issue);
