@@ -19,6 +19,7 @@ import { z } from "zod";
  * @param {number} [options.pageSize] - Pagination size for each List Pull Requests API call (max 100)
  * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
  * @param {string[]} [options.excludeLabels] - Exclude pull requests containing these labels
+ * @param {("open" | "closed" | "all")} [options.state="open"] - Limit listing to pull requests in these state
  *
  * @returns {Promise<z.infer<typeof pullRequestSchema>[]>}
  */
@@ -31,6 +32,7 @@ export async function listPullRequests({
 	pageSize = MAX_PULL_REQUESTS_PER_PAGE,
 	direction = "asc",
 	excludeLabels = [],
+	state = "open",
 }) {
 	let prs = [];
 
@@ -40,7 +42,7 @@ export async function listPullRequests({
 		for await (const { data: ret } of github.paginate.iterator(github.rest.pulls.list, {
 			owner: context.repo.owner,
 			repo: context.repo.repo,
-			state: "open",
+			state,
 			sort: sortBy,
 			direction,
 			per_page: pageSize,
