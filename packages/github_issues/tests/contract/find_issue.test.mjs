@@ -27,7 +27,7 @@ describe("search issues contract", () => {
 		const searchQuery = `${issueTitle} is:issue in:title state:open repo:${org}/${repo}`;
 
 		const searchResults = buildSearchIssues({ max: 2, overrides: { title: issueTitle } });
-		server.use(...findIssueHandler({ searchResults }));
+		server.use(...findIssueHandler({ data: searchResults }));
 
 		// WHEN
 		const ret = await findIssue({
@@ -55,7 +55,7 @@ describe("search issues contract", () => {
 		});
 
 		// THEN
-		expect(ret.length).toBe(0);
+		expect(ret).toBeUndefined();
 	});
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {

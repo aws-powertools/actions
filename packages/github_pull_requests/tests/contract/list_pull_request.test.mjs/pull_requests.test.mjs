@@ -2,17 +2,25 @@ import { setupServer } from "msw/node";
 import {
 	listPullRequestsFailureHandler,
 	listPullRequestsHandler,
-} from "testing/src/interceptors/pull_requests_handler.mjs";
+} from "../../../../testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { MAX_PULL_REQUESTS_PER_PAGE } from "../../../src/constants.mjs";
 import { listPullRequests } from "../../../src/pull_requests.mjs";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
-import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
+import {
+	buildGithubClient,
+	buildGithubContext,
+	buildGithubCore,
+} from "../../../../testing/src/builders/github_core.mjs";
+import { buildPullRequests } from "../../../../testing/src/builders/pull_requests.mjs";
+
+const org = "aws-powertools";
+const repo = "powertools-lambda-python";
 
 describe("list pull requests contract", () => {
 	const server = setupServer();
-	const org = "aws-powertools";
-	const repo = "powertools-lambda-python";
+	const github = buildGithubClient({ token: process.env.GITHUB_TOKEN });
+	const context = buildGithubContext({ org, repo });
+	const core = buildGithubCore();
 
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
@@ -27,9 +35,9 @@ describe("list pull requests contract", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 		});
 
 		// THEN
@@ -44,9 +52,9 @@ describe("list pull requests contract", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 			excludeLabels: BLOCKED_LABELS,
 		});
 
@@ -61,9 +69,9 @@ describe("list pull requests contract", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 			limit: 1,
 		});
 
@@ -80,9 +88,9 @@ describe("list pull requests contract", () => {
 
 		// WHEN
 		const ret = await listPullRequests({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 			limit: totalPRs,
 		});
 
@@ -99,14 +107,10 @@ describe("list pull requests contract", () => {
 		// THEN
 		const ret = await expect(
 			listPullRequests({
-				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-				context: buildGithubContext({ org, repo }),
-				core: buildGithubCore(),
+				github,
+				context,
+				core,
 			}),
 		).rejects.toThrowError(err);
-	});
-
-	it("should filter out issues from results", async () => {
-		throw new Error("Not Implemented");
 	});
 });
