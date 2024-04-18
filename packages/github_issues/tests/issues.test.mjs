@@ -281,6 +281,19 @@ describe("create issues", () => {
 			}),
 		).rejects.toThrowError(err);
 	});
+
+	it("should throw if issue title is missing", async () => {
+		// GIVEN
+		// WHEN
+		// THEN
+		await expect(
+			createIssue({
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+				context: buildGithubContext({ org, repo }),
+				core: buildGithubCore(),
+			}),
+		).rejects.toThrowError("Issue title is required");
+	});
 });
 
 describe("update issues", () => {

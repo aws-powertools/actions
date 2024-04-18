@@ -33,6 +33,10 @@ export async function findIssue({ github, core, searchQuery }) {
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue.
  */
 export async function createIssue({ github, context, core, title, body, labels, assignees, milestone }) {
+	if (title === undefined) {
+		throw new Error("Issue title is required in CREATE operations.");
+	}
+
 	try {
 		const issue = await github.rest.issues.create({
 			owner: context.repo.owner,
