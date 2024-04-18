@@ -1,13 +1,11 @@
-const DEFAULT_EMPTY_RESPONSE = [{}];
-const MONTH = new Date().toLocaleString("default", { month: "long" });
-const BLOCKED_LABELS = ["do-not-merge", "need-issue", "need-rfc", "need-customer-feedback"];
+import {BLOCKED_LABELS, DEFAULT_EMPTY_RESPONSE} from "./constants.mjs";
 
-import { getWorkflowRunUrl, isGitHubAction } from "github_actions/src/functions.mjs";
-import { listPullRequests } from "github_pull_requests/src/pull_requests.mjs";
-import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
-import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
-import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
-import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
+import {getWorkflowRunUrl, isGitHubAction} from "github_actions/src/functions.mjs";
+import {listPullRequests} from "github_pull_requests/src/pull_requests.mjs";
+import {diffInDaysFromToday} from "../../date_utils/src/date_diff.mjs";
+import {formatISOtoLongDate} from "../../date_utils/src/formatter.mjs";
+import {createOrUpdateIssue, listIssues} from "../../github_issues/src/issues.mjs";
+import {buildMarkdownTable} from "../../markdown/src/builder.mjs";
 
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
@@ -21,7 +19,7 @@ import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
  * @returns {Promise<Array<Response>>} A promise resolving with an array of issue objects.
  *
  */
-async function getTopFeatureRequests({ github, context, core }) {
+export async function getTopFeatureRequests({ github, context, core }) {
 	core.info("Fetching most popular feature requests");
 	const issues = await listIssues({
 		github,
@@ -53,7 +51,7 @@ async function getTopFeatureRequests({ github, context, core }) {
  * @returns {Promise<Array<Response>>} A promise resolving with an array of issue objects.
  *
  */
-async function getTopMostCommented({ github, context, core }) {
+export async function getTopMostCommented({ github, context, core }) {
 	core.info("Fetching most commented issues");
 	const issues = await listIssues({
 		github,
@@ -84,7 +82,7 @@ async function getTopMostCommented({ github, context, core }) {
  * @property {string} labels - The labels of the issue, enclosed in backticks.
  * @returns {Promise<Array<Response>>} A promise resolving with an array of issue objects.
  */
-async function getTopOldestIssues({ github, context, core }) {
+export async function getTopOldestIssues({ github, context, core }) {
 	core.info("Fetching issues sorted by creation date");
 	const issues = await listIssues({
 		github,
@@ -204,6 +202,7 @@ ${isGitHubAction() ? `> workflow: ${getWorkflowRunUrl()}` : ""}
 
 	core.info("Creating issue with monthly roadmap report");
 
+    const MONTH = new Date().toLocaleString("default", { month: "long" });
 	const issueTitle = `Roadmap update reminder - ${MONTH}`;
 	const searchParams = `is:issue in:title state:open repo:${context.repo.owner}/${context.repo.repo}`;
 	const searchQuery = `${issueTitle} ${searchParams}`;
