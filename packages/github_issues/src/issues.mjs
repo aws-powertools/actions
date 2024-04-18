@@ -32,10 +32,7 @@ export async function findIssue({ github, core, searchQuery }) {
  * @param {import('@types/github-script').AsyncFunctionArguments}
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue.
  */
-export async function createIssue(
-	title,
-	{ github, context, core, body = "", labels = [], assignees = [], milestone = null },
-) {
+export async function createIssue({ github, context, core, title, body, labels, assignees, milestone }) {
 	try {
 		const issue = await github.rest.issues.create({
 			owner: context.repo.owner,
@@ -100,13 +97,13 @@ export async function updateIssue({
  * @param {import('@types/github-script').AsyncFunctionArguments}
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
  */
-export async function createOrUpdateIssue(title, { github, context, core, searchQuery, body = "", labels = [] }) {
+export async function createOrUpdateIssue({ github, context, core, searchQuery, title, body = "", labels = [] }) {
 	const searchResult = await findIssue({ github, context, core, searchQuery });
 
 	const reportingIssue = searchResult[0];
 
 	if (reportingIssue === undefined) {
-		return await createIssue(title, { github, context, core, body, labels });
+		return await createIssue({ github, context, core, title, body, labels });
 	}
 
 	return await updateIssue({

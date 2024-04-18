@@ -209,10 +209,11 @@ describe("create issues", () => {
 		server.use(...createIssueHandler({ data, org, repo }));
 
 		// WHEN
-		const ret = await createIssue("Test", {
+		const ret = await createIssue({
 			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
+			title: "Test",
 		});
 
 		// THEN
@@ -227,11 +228,12 @@ describe("create issues", () => {
 		server.use(...findIssueHandler({ data: noIssueFound }), ...createIssueHandler({ data: createdIssue, org, repo }));
 
 		// WHEN
-		const ret = await createOrUpdateIssue("Test", {
+		const ret = await createOrUpdateIssue({
 			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 			searchQuery: "Test issue that won't be found",
+			title: "Test",
 		});
 
 		// THEN
