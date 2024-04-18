@@ -325,4 +325,17 @@ describe("update issues", () => {
 			}),
 		).rejects.toThrowError(err);
 	});
+
+	it("should throw if issue number is missing", async () => {
+		// GIVEN
+		// WHEN
+		// THEN
+		await expect(
+			updateIssue({
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+				context: buildGithubContext({ org, repo }),
+				core: buildGithubCore(),
+			}),
+		).rejects.toThrowError("Issue number is required");
+	});
 });
