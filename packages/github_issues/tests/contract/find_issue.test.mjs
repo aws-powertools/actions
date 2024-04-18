@@ -2,9 +2,9 @@ import { faker } from "@faker-js/faker";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
-import { buildSearchIssues } from "../../testing/src/builders/issues.mjs";
+import { buildSearchIssues } from "../../../testing/src/builders/issues.mjs";
 import { findIssueFailureHandler, findIssueHandler } from "../../testing/src/interceptors/issues_handler.mjs";
-import { findIssue } from "../src/issues.mjs";
+import { findIssue } from "../../src/issues.mjs";
 
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";
