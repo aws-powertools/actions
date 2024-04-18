@@ -1,16 +1,19 @@
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
-import { buildIssues } from "../../testing/src/builders/issues.mjs";
-import { listIssuesFailureHandler, listIssuesHandler } from "../../testing/src/interceptors/issues_handler.mjs";
-import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
-import { listIssues } from "../src/issues.mjs";
+import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
+import { buildIssues } from "../../../testing/src/builders/issues.mjs";
+import { listIssuesFailureHandler, listIssuesHandler } from "../../../testing/src/interceptors/issues_handler.mjs";
+import { MAX_ISSUES_PER_PAGE } from "../../src/constants.mjs";
+import { listIssues } from "../../src/issues.mjs";
 
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";
 
 describe("list issues contract", () => {
 	const server = setupServer();
+	const github = buildGithubClient({ token: process.env.GITHUB_TOKEN });
+	const context = buildGithubContext({ org, repo });
+	const core = buildGithubCore();
 
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
@@ -20,18 +23,18 @@ describe("list issues contract", () => {
 
 	it("should list issues (default parameters)", async () => {
 		// GIVEN
-		const data = buildIssues({ max: 5 });
-		server.use(...listIssuesHandler({ data, org, repo }));
+		const existingIssues = buildIssues({ max: 5 });
+		server.use(...listIssuesHandler({ data: existingIssues, org, repo }));
 
 		// WHEN
 		const ret = await listIssues({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 		});
 
 		// THEN
-		expect(ret).toStrictEqual(data);
+		expect(ret).toStrictEqual(existingIssues);
 	});
 
 	it("should filter out pull requests from results", async () => {
@@ -42,10 +45,9 @@ describe("list issues contract", () => {
 
 		// WHEN
 		const ret = await listIssues({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
-			labels: ["feature"],
+			github,
+			context,
+			core,
 		});
 
 		// THEN
@@ -55,14 +57,14 @@ describe("list issues contract", () => {
 	it("should exclude results with certain labels", async () => {
 		const BLOCKED_LABELS = "do-not-merge";
 
-		const data = buildIssues({ max: 5, labels: [BLOCKED_LABELS] });
-		server.use(...listIssuesHandler({ data, org, repo }));
+		const existingIssues = buildIssues({ max: 5, labels: [BLOCKED_LABELS] });
+		server.use(...listIssuesHandler({ data: existingIssues, org, repo }));
 
 		// WHEN
 		const ret = await listIssues({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 			excludeLabels: BLOCKED_LABELS,
 		});
 
@@ -71,38 +73,41 @@ describe("list issues contract", () => {
 	});
 
 	it("should limit the number of issues returned", async () => {
-		const data = buildIssues({ max: 2 });
-		server.use(...listIssuesHandler({ data, org, repo }));
+		// GIVEN
+		const maxIssuesToReturn = 1;
+		const existingIssues = buildIssues({ max: 2 });
+
+		server.use(...listIssuesHandler({ data: existingIssues, org, repo }));
 
 		// WHEN
 		const ret = await listIssues({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
-			limit: 1,
+			github,
+			context,
+			core,
+			limit: maxIssuesToReturn,
 		});
 
 		// THEN
-		expect(ret.length).toBe(1);
+		expect(ret.length).toBe(maxIssuesToReturn);
 	});
 
 	it("should paginate to list all available issues when the limit is higher", async () => {
 		// GIVEN
-		const totalIssues = MAX_ISSUES_PER_PAGE + 1;
+		const totalCount = MAX_ISSUES_PER_PAGE + 1;
 
-		const data = buildIssues({ max: totalIssues });
-		server.use(...listIssuesHandler({ data, org, repo }));
+		const existingIssues = buildIssues({ max: totalCount });
+		server.use(...listIssuesHandler({ data: existingIssues, org, repo }));
 
 		// WHEN
 		const ret = await listIssues({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
-			limit: totalIssues,
+			github,
+			context,
+			core,
+			limit: totalCount,
 		});
 
 		// THEN
-		expect(ret.length).toBe(totalIssues);
+		expect(ret.length).toBe(totalCount);
 	});
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
@@ -114,9 +119,9 @@ describe("list issues contract", () => {
 		// THEN
 		const ret = await expect(
 			listIssues({
-				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-				context: buildGithubContext({ org, repo }),
-				core: buildGithubCore(),
+				github,
+				context,
+				core,
 			}),
 		).rejects.toThrowError(err);
 	});
