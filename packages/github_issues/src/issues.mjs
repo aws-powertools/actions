@@ -59,7 +59,7 @@ export async function createIssue(
  * Updates an existing issue number.
  *
  * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<Object>} - Newly updated issue
+ * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue. - Newly updated issue
  */
 export async function updateIssue({
 	github,
