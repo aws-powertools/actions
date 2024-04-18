@@ -1,14 +1,14 @@
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
-import { buildIssues, buildSearchIssues } from "../../testing/src/builders/issues.mjs";
+import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
+import { buildIssues, buildSearchIssues } from "../../../testing/src/builders/issues.mjs";
 import {
 	createIssueFailureHandler,
 	createIssueHandler,
 	findIssueHandler,
 	updateIssueHandler,
-} from "../../testing/src/interceptors/issues_handler.mjs";
-import { createIssue, createOrUpdateIssue } from "../src/issues.mjs";
+} from "../../../testing/src/interceptors/issues_handler.mjs";
+import { createIssue, createOrUpdateIssue } from "../../src/issues.mjs";
 
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";
@@ -24,8 +24,8 @@ describe("create issues contract", () => {
 
 	it("should create an issue (default parameters)", async () => {
 		// GIVEN
-		const data = buildIssues({ max: 1 })[0];
-		server.use(...createIssueHandler({ data, org, repo }));
+		const issue = buildIssues({ max: 1 })[0];
+		server.use(...createIssueHandler({ data: issue, org, repo }));
 
 		// WHEN
 		const ret = await createIssue({
@@ -36,7 +36,7 @@ describe("create issues contract", () => {
 		});
 
 		// THEN
-		expect(ret).toStrictEqual(data);
+		expect(ret).toStrictEqual(issue);
 	});
 
 	it("should only create an issue if one does not exist yet", async () => {
