@@ -1,6 +1,11 @@
 import { generateMock } from "@anatine/zod-mock";
-import { issueSchema, labelSchema, pullRequestAsIssueSchema } from "schemas/src/issue_schema.mjs";
 import { z } from "zod";
+import {
+	issueSchema,
+	issueSearchSchema,
+	labelSchema,
+	pullRequestAsIssueSchema,
+} from "../../../schemas/src/issue_schema.mjs";
 
 /**
  * Builds an array of mock issues with associated labels based on the provided parameters.
@@ -91,11 +96,7 @@ const mockLabels = (labels = []) => {
  * @param {z.infer<typeof issueSchema[]>} [options.issues] - Existing issues to build search response.
  * @param {z.infer<typeof issueSchema>} [options.overrides] - Object to override from schema
  *
- * @typedef {Object} SearchResponse
- * @property {z.infer<typeof issueSchema>[]} items - One or more issues found based on query.
- * @property {number} totalCount - Total issues found.
- * @property {boolean} incomplete_results - Whether the results are incomplete.
- * @returns {SearchResponse} Response - Search containing results
+ * @returns {z.infer<typeof issueSearchSchema>} SearchResponse - Search containing results
  */
 export function buildSearchIssues({
 	max = 10,
@@ -121,7 +122,7 @@ export function buildSearchIssues({
 
 	return {
 		items: issues,
-		totalCount: issues.length,
+		total_count: issues.length,
 		incomplete_results: false,
 	};
 }

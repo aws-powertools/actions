@@ -130,3 +130,9 @@ const pullRequestSummarySchema = z.object({
 export const pullRequestAsIssueSchema = issueSchema.extend({
 	pull_request: pullRequestSummarySchema,
 });
+
+export const issueSearchSchema = z.object({
+	items: z.array(issueSchema),
+	total_count: z.number().int(),
+	incomplete_results: z.boolean(),
+});
