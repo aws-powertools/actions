@@ -5,8 +5,22 @@ import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";
 /**
  * Searches for an issue based on query parameters.
  * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
+ * @param {Object} options - Config.
+ * @param {import('@octokit/rest').Octokit} options.github - Octokit pre-authenticated instance
+ * @param {typeof import("@actions/core/lib/core")} options.core - GitHub Core
+ * @param {string} [options.searchQuery] - Search query to find issues and pull requests
  *
- * @param {import('@types/github-script').AsyncFunctionArguments}
+ * @example Finding an issue labeled as bug
+ *
+ * import { core } from "@actions/core";
+ * import { Octokit } from "@octokit/rest";
+ *
+ * const octokit = new Octokit(auth: process.env.GITHUB_TOKEN);
+ * const core = require('@actions/core');
+ *
+ * const searchQuery = 'New bug is:issue label:bug in:title';
+ * const issues = await findIssue({ github: octokit, core, searchQuery });
+ *
  * @typedef {(z.infer<typeof issueSchema>[] | z.infer<typeof pullRequestAsIssueSchema>[])} SearchResult
  * @returns {Promise<SearchResult>} Response - Search containing results
  */
@@ -29,8 +43,41 @@ export async function findIssue({ github, core, searchQuery }) {
 /**
  * Creates a new issue.
  * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
- * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue.
+ * @param {Object} options - Config.
+ * @param {import('@octokit/rest').Octokit} options.github - Octokit pre-authenticated instance
+ *
+ * @param {Object} options.context - GitHub Context information
+ * @param {Object} options.context.repo - Context Repository information
+ * @param {string} options.context.repo.owner - The organization name.
+ * @param {string} options.context.repo.repo - The repository name.
+ *
+ * @param {typeof import("@actions/core/lib/core")} options.core - GitHub Core
+ *
+ * @param {string} options.title - Issue title
+ * @param {string} [options.body] - Issue body (description)
+ * @param {string[]} [options.labels] - Labels to assign
+ * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+ * @param {number} [options.milestone] - Milestone number to assign this issue to
+ *
+ * @example Creating an issue
+ *
+ * import { core } from "@actions/core";
+ * import { Octokit } from "@octokit/rest";
+ *
+ * const octokit = new Octokit(auth: process.env.GITHUB_TOKEN);
+ * const core = require('@actions/core');
+ *
+ * const issue = await createIssue({
+ *   github: octokit,
+ *   core,
+ *   title: 'New Issue',
+ *   body: 'This is a new issue created using the createIssue function.',
+ *   labels: ['enhancement'],
+ *   assignees: ['heitorlessa'],
+ *   milestone: 1
+ * });
+ *
+ * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue
  */
 export async function createIssue({ github, context, core, title, body, labels, assignees, milestone }) {
 	if (title === undefined) {
@@ -59,8 +106,45 @@ export async function createIssue({ github, context, core, title, body, labels, 
 /**
  * Updates an existing issue number.
  *
- * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue. - Newly updated issue
+ * @param {Object} options - Config.
+ * @param {import('@octokit/rest').Octokit} options.github - Octokit pre-authenticated instance
+ *
+ * @param {Object} options.context - GitHub Context information
+ * @param {Object} options.context.repo - Context Repository information
+ * @param {string} options.context.repo.owner - The organization name.
+ * @param {string} options.context.repo.repo - The repository name.
+ *
+ * @param {typeof import("@actions/core/lib/core")} options.core - GitHub Core
+ *
+ * @param {string} options.issueNumber - Issue number to update
+ * @param {string} [options.title] - Issue title
+ * @param {string} [options.body] - Issue body (description)
+ * @param {string[]} [options.labels] - Labels to assign
+ * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+ * @param {("open"|"closed")} [options.state] - Issue state to update to
+ * @param {number} [options.milestone] - Milestone number
+ *
+ * @example Updating an existing issue
+ *
+ * import { core } from "@actions/core";
+ * import { Octokit } from "@octokit/rest";
+ *
+ * const octokit = new Octokit(auth: process.env.GITHUB_TOKEN);
+ * const core = require('@actions/core');
+ *
+ * const issue = await updateIssue({
+ *   github: octokit,
+ *   core,
+ *   issueNumber: 10,
+ *   title: 'New title',
+ *   body: 'Updated description',
+ *   labels: ['enhancement', 'need-customer-feedback],
+ *   assignees: ['heitorlessa'],
+ *   state: "closed",
+ *   milestone: 1
+ * });
+ *
+ * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly updated issue
  */
 export async function updateIssue({
 	github,
@@ -102,7 +186,42 @@ export async function updateIssue({
 }
 
 /**
- * @param {import('@types/github-script').AsyncFunctionArguments}
+ * Update existing issue if found, or create it.
+ *
+ * @param {Object} options - Config.
+ * @param {import('@octokit/rest').Octokit} options.github - Octokit pre-authenticated instance
+ *
+ * @param {Object} options.context - GitHub Context information
+ * @param {Object} options.context.repo - Context Repository information
+ * @param {string} options.context.repo.owner - The organization name.
+ * @param {string} options.context.repo.repo - The repository name.
+ *
+ * @param {typeof import("@actions/core/lib/core")} options.core - GitHub Core
+ *
+ * @param {string} [options.searchQuery] - Search query to find issue to update
+ * @param {string} [options.title] - Issue title
+ * @param {string} [options.body] - Issue body (description)
+ * @param {string[]} [options.labels] - Labels to assign
+ * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+ * @param {("open" | "closed")} [options.state] - Issue state to update to
+ * @param {number} [options.milestone] - Milestone number
+ *
+ * @example Update roadmap issue, or create it if not found
+ *
+ * import { core } from "@actions/core";
+ * import { Octokit } from "@octokit/rest";
+ *
+ * const octokit = new Octokit(auth: process.env.GITHUB_TOKEN);
+ *
+ * const issue = await createOrUpdateIssue({
+ *   github: octokit,
+ *   core,
+ *   searchQuery: 'Roadmap reminder is:issue in:title label:report-roadmap',
+ *   body: 'The new roadmap is...',
+ *   labels: ['report-roadmap'],
+ *   assignees: ['heitorlessa'],
+ * });
+ *
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
  */
 export async function createOrUpdateIssue({
@@ -142,7 +261,40 @@ export async function createOrUpdateIssue({
 /**
  * List issues
  *
- * @param {import('@types/github-script').AsyncFunctionArguments}
+ * @param {Object} options - Config.
+ * @param {import('@octokit/rest').Octokit} options.github - Octokit pre-authenticated instance
+ *
+ * @param {Object} options.context - GitHub Context information
+ * @param {Object} options.context.repo - Context Repository information
+ * @param {string} options.context.repo.owner - The organization name.
+ * @param {string} options.context.repo.repo - The repository name.
+ *
+ * @param {typeof import("@actions/core/lib/core")} options.core - GitHub Core
+ *
+ * @param {string[]} [options.labels] - Include issues containing these labels
+ * @param {("created" | "updated" | "comments")} [options.sortBy] - Search query to find issue to update
+ * @param {number} [options.limit] - Max number of issues to return (default 10)
+ * @param {number} [options.pageSize] - Pagination size for each List Issues API call (max 100)
+ * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
+ * @param {string[]} [options.excludeLabels] - Exclude issues containing these labels
+ *
+ * @example List feature requests, excluding blocked issues
+ *
+ * import { core } from "@actions/core";
+ * import { Octokit } from "@octokit/rest";
+ *
+ * const octokit = new Octokit(auth: process.env.GITHUB_TOKEN);
+ *
+ * const issues = await listIssues({
+ *   github: octokit,
+ *   core,
+ *   labels: ['feature-request'],
+ *   sortBy: 'created',
+ *   limit: 15,
+ *   excludeLabels: ['do-not-merge']
+ * });
+ *
+ * @returns {Promise<z.infer<typeof issueSchema>[]>} Issue - Newly created issue
  */
 export async function listIssues({
 	github,
