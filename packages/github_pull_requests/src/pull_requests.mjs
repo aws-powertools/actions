@@ -1,4 +1,4 @@
-import { MAX_PULL_REQUESTS_PER_PAGE, MAX_PULL_REQUESTS_LIMIT } from "./constants.mjs";
+import { MAX_PULL_REQUESTS_LIMIT, MAX_PULL_REQUESTS_PER_PAGE } from "./constants.mjs";
 
 /**
  * List Pull Requests

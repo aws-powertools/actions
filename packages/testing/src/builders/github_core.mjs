@@ -1,5 +1,5 @@
-import { vi } from "vitest";
 import { Octokit } from "@octokit/rest";
+import { vi } from "vitest";
 
 /**
  * Builds and returns a new Octokit client instance for interacting with the GitHub API.

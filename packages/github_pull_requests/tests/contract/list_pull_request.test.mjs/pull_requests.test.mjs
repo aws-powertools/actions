@@ -1,6 +1,4 @@
 import { setupServer } from "msw/node";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
-import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
 import {
 	listPullRequestsFailureHandler,
 	listPullRequestsHandler,
@@ -8,6 +6,8 @@ import {
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { MAX_PULL_REQUESTS_PER_PAGE } from "../../../src/constants.mjs";
 import { listPullRequests } from "../../../src/pull_requests.mjs";
+import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../testing/src/builders/github_core.mjs";
+import { buildPullRequests } from "../../testing/src/builders/pull_requests.mjs";
 
 describe("list pull requests contract", () => {
 	const server = setupServer();
