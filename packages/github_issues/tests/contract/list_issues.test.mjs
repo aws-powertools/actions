@@ -9,7 +9,7 @@ import { listIssues } from "../src/issues.mjs";
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";
 
-describe("list issues", () => {
+describe("list issues contract", () => {
 	const server = setupServer();
 
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
