@@ -1,11 +1,26 @@
 import { MAX_PULL_REQUESTS_LIMIT, MAX_PULL_REQUESTS_PER_PAGE } from "./constants.mjs";
+import { pullRequestSchema } from "../../schemas/src/pull_request_schema";
+import { z } from "zod";
 
 /**
  * List Pull Requests
+ * @param {Object} options - Config.
+ * @param {import('@octokit/rest').Octokit} options.github - Octokit pre-authenticated instance
  *
- * @typedef {import('@octokit/types').OctokitResponse} Issue
- * @param {import('@types/github-script').AsyncFunctionArguments}
- * @returns {Promise<Issue[]>} - List of PRs
+ * @param {Object} options.context - GitHub Context information
+ * @param {Object} options.context.repo - Context Repository information
+ * @param {string} options.context.repo.owner - The organization name.
+ * @param {string} options.context.repo.repo - The repository name.
+ *
+ * @param {typeof import("@actions/core/lib/core")} options.core - GitHub Core
+ *
+ * @param {("created" | "updated" | "popularity" | "long-running")} [options.sortBy] - Sort results by
+ * @param {number} [options.limit] - Max number of pull requests to return (default 10)
+ * @param {number} [options.pageSize] - Pagination size for each List Pull Requests API call (max 100)
+ * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
+ * @param {string[]} [options.excludeLabels] - Exclude pull requests containing these labels
+ *
+ * @returns {Promise<z.infer<typeof pullRequestSchema>[]>}
  */
 export async function listPullRequests({
 	github,
