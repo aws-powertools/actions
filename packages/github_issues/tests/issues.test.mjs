@@ -212,7 +212,7 @@ describe("create issues", () => {
 
 		// WHEN
 		const ret = await createIssue({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 			title: "Test",
@@ -231,7 +231,7 @@ describe("create issues", () => {
 
 		// WHEN
 		const ret = await createOrUpdateIssue({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 			searchQuery: "Test issue that won't be found",
@@ -254,7 +254,7 @@ describe("create issues", () => {
 
 		// WHEN
 		const ret = await createOrUpdateIssue({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 			searchQuery: existingIssues[0].title,
@@ -288,7 +288,7 @@ describe("create issues", () => {
 		// THEN
 		await expect(
 			createIssue({
-				github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 				context: buildGithubContext({ org, repo }),
 				core: buildGithubCore(),
 			}),
@@ -312,7 +312,7 @@ describe("update issues", () => {
 
 		// WHEN
 		const ret = await updateIssue({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 			context: buildGithubContext({ org, repo }),
 			core: buildGithubCore(),
 			issueNumber: issue.number,
@@ -345,7 +345,7 @@ describe("update issues", () => {
 		// THEN
 		await expect(
 			updateIssue({
-				github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
 				context: buildGithubContext({ org, repo }),
 				core: buildGithubCore(),
 			}),
