@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 
-import { createMonthlyRoadmapReport } from "../src/index.mjs";
+import { createMonthlyRoadmapReport } from "../../src/index.mjs";
 
 // exploratory testing to speed up prototyping
 test("update existing issue", async () => {
