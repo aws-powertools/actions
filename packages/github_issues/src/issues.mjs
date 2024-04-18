@@ -272,7 +272,7 @@ export async function createOrUpdateIssue({
  * @param {typeof import("@actions/core/lib/core")} options.core - GitHub Core
  *
  * @param {string[]} [options.labels] - Include issues containing these labels
- * @param {("created" | "updated" | "comments")} [options.sortBy] - Search query to find issue to update
+ * @param {("created" | "updated" | "comments")} [options.sortBy] - Sort results by
  * @param {number} [options.limit] - Max number of issues to return (default 10)
  * @param {number} [options.pageSize] - Pagination size for each List Issues API call (max 100)
  * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
