@@ -18,10 +18,17 @@ export function buildGithubClient({ token, debug = false }) {
 
 /**
  * Builds and returns a GitHub context object with the provided organization and repository information.
+ *
+ * @typedef {Object} GitHubContext
+ * @property {Object} repo - The repository information.
+ * @property {string} repo.owner - The GitHub organization name.
+ * @property {string} repo.repo - The GitHub repository name.
+ *
  * @param {Object} options - The options object.
  * @param {string} options.org - The organization name.
  * @param {string} options.repo - The repository name.
- * @returns {Object} - The GitHub context object with owner and repository details.
+ *
+ * @returns {GitHubContext} - The GitHub context object with owner and repository details.
  */
 export function buildGithubContext({ org, repo }) {
 	return {
@@ -34,7 +41,8 @@ export function buildGithubContext({ org, repo }) {
 
 /**
  * Returns a mocked GitHub Actions Core object for info, error, debug logging, and summary generation.
- * @returns {typeof import("@actions/core/lib/core")} - Core object mock.
+ * @typedef {typeof import("@actions/core/lib/core")} GitHubCore
+ * @returns {GitHubCore}- Core object mock.
  */
 export function buildGithubCore() {
 	return vi.mocked({

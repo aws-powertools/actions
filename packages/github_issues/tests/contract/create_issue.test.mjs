@@ -15,6 +15,9 @@ const repo = "powertools-lambda-python";
 
 describe("create issues contract", () => {
 	const server = setupServer();
+	const github = buildGithubClient({ token: process.env.GITHUB_TOKEN });
+	const context = buildGithubContext({ org, repo });
+	const core = buildGithubCore();
 
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
@@ -24,19 +27,19 @@ describe("create issues contract", () => {
 
 	it("should create an issue (default parameters)", async () => {
 		// GIVEN
-		const issue = buildIssues({ max: 1 })[0];
-		server.use(...createIssueHandler({ data: issue, org, repo }));
+		const createdIssue = buildIssues({ max: 1 })[0];
+		server.use(...createIssueHandler({ data: createdIssue, org, repo }));
 
 		// WHEN
 		const ret = await createIssue({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 			title: "Test",
 		});
 
 		// THEN
-		expect(ret).toStrictEqual(issue);
+		expect(ret).toStrictEqual(createdIssue);
 	});
 
 	it("should only create an issue if one does not exist yet", async () => {
@@ -48,9 +51,9 @@ describe("create issues contract", () => {
 
 		// WHEN
 		const ret = await createOrUpdateIssue({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
+			github,
+			context,
+			core,
 			searchQuery: "Test issue that won't be found",
 			title: "Test",
 		});
@@ -64,22 +67,24 @@ describe("create issues contract", () => {
 		const existingIssues = buildIssues({ max: 1 });
 		const foundIssue = buildSearchIssues({ issues: existingIssues });
 
+		const existingIssue = existingIssues[0];
+
 		server.use(
 			...findIssueHandler({ data: foundIssue }),
-			...updateIssueHandler({ data: existingIssues[0], issueNumber: existingIssues[0].number, org, repo }),
+			...updateIssueHandler({ data: existingIssue, issueNumber: existingIssue.number, org, repo }),
 		);
 
 		// WHEN
 		const ret = await createOrUpdateIssue({
-			github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-			context: buildGithubContext({ org, repo }),
-			core: buildGithubCore(),
-			searchQuery: existingIssues[0].title,
-			title: existingIssues[0].title,
+			github,
+			context,
+			core,
+			searchQuery: existingIssue.title,
+			title: existingIssue.title,
 		});
 
 		// THEN
-		expect(ret).toStrictEqual(existingIssues[0]);
+		expect(ret).toStrictEqual(existingIssue);
 	});
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
