@@ -1,9 +1,9 @@
-import {afterEach, beforeEach, describe, expect, it, test, vi} from "vitest";
-import {diffInDaysFromToday} from "../../src/date_diff.mjs";
-import {formatISOtoLongDate} from "../../src/formatter.mjs";
+import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
+import { diffInDaysFromToday } from "../../src/date_diff.mjs";
+import { formatISOtoLongDate } from "../../src/formatter.mjs";
 
 test("format ISO date", () => {
-	const date = "2024-01-01T12:00:00Z"
+	const date = "2024-01-01T12:00:00Z";
 	expect(formatISOtoLongDate(date)).toBe("January 1, 2024");
 });
 

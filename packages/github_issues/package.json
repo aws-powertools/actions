@@ -1,11 +1,11 @@
 {
-    "name": "github_issues",
-    "version": "1.0.0",
-    "description": "GitHub Issues management",
-    "devDependencies": {},
-    "scripts": {
-        "test": "vitest"
-    },
-    "author": "",
-    "license": "ISC"
+	"name": "github_issues",
+	"version": "1.0.0",
+	"description": "GitHub Issues management",
+	"devDependencies": {},
+	"scripts": {
+		"test": "vitest"
+	},
+	"author": "",
+	"license": "ISC"
 }

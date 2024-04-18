@@ -1,6 +1,6 @@
 {
-  "name": "testing",
-  "version": "1.0.0",
-  "description": "tooling to build fake data, network interceptors, etc.",
-  "devDependencies": {}
+	"name": "testing",
+	"version": "1.0.0",
+	"description": "tooling to build fake data, network interceptors, etc.",
+	"devDependencies": {}
 }

@@ -1,14 +1,14 @@
 {
-  "name": "github_pull_requests",
-  "version": "1.0.0",
-  "description": "GitHub Pull Requests management",
-  "directories": {
-    "test": "tests"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "vitest"
-  },
-  "author": "",
-  "license": "ISC"
+	"name": "github_pull_requests",
+	"version": "1.0.0",
+	"description": "GitHub Pull Requests management",
+	"directories": {
+		"test": "tests"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"test": "vitest"
+	},
+	"author": "",
+	"license": "ISC"
 }
