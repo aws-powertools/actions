@@ -88,6 +88,7 @@ const mockLabels = (labels = []) => {
  * @param {string[]} [options.labels=[]] - Labels to include in the mock issues.
  * @param {string} [options.org="aws-powertools"] - The organization name.
  * @param {string} [options.repo="powertools-lambda-python"] - The repository name.
+ * @param {z.infer<typeof issueSchema[]>} [options.issues] - Existing issues to build search response.
  * @param {z.infer<typeof issueSchema>} [options.overrides] - Object to override from schema
  *
  * @typedef {Object} SearchResponse
@@ -101,15 +102,22 @@ export function buildSearchIssues({
 	labels = [],
 	org = "aws-powertools",
 	repo = "powertools-lambda-python",
+	issues,
 	overrides,
 }) {
-	const issues = buildIssues({
-		max,
-		labels,
-		org,
-		repo,
-		overrides,
-	});
+	if (issues === undefined) {
+		issues = buildIssues({
+			max,
+			labels,
+			org,
+			repo,
+			overrides,
+		});
+	}
+
+	if (!Array.isArray(issues)) {
+		throw new Error("Received a single issue; We only accept an array of issues.");
+	}
 
 	return {
 		items: issues,

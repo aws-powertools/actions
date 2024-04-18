@@ -73,6 +73,10 @@ export async function updateIssue({
 	try {
 		core.info(`Updating existing issue ${issueNumber}`);
 
+		if (issueNumber === undefined) {
+			throw new Error("Issue number is required in UPDATE operations.");
+		}
+
 		const issue = await github.rest.issues.update({
 			owner: context.repo.owner,
 			repo: context.repo.repo,

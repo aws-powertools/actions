@@ -242,7 +242,28 @@ describe("create issues", () => {
 		expect(ret).toStrictEqual(createdIssue);
 	});
 
-	it.todo("should update issue when one already exists", async () => {});
+	it("should update issue when one already exists", async () => {
+		// GIVEN
+		const existingIssues = buildIssues({ max: 1 });
+		const foundIssue = buildSearchIssues({ issues: existingIssues });
+
+		server.use(
+			...findIssueHandler({ data: foundIssue }),
+			...updateIssueHandler({ data: existingIssues[0], issueNumber: existingIssues[0].number, org, repo }),
+		);
+
+		// WHEN
+		const ret = await createOrUpdateIssue({
+			github: buildGithubClient({ token: process.env.GITHUB_TOKEN, debug: true }),
+			context: buildGithubContext({ org, repo }),
+			core: buildGithubCore(),
+			searchQuery: existingIssues[0].title,
+			title: existingIssues[0].title,
+		});
+
+		// THEN
+		expect(ret).toStrictEqual(existingIssues[0]);
+	});
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
