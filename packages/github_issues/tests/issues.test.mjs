@@ -9,6 +9,7 @@ import {
 	findIssueFailureHandler,
 	createIssueHandler,
 	updateIssueHandler,
+	updateIssueFailureHandler,
 } from "../../testing/src/interceptors/issues_handler.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../src/constants.mjs";
 import { findIssue, listIssues, createIssue, updateIssue, createOrUpdateIssue } from "../src/issues.mjs";
@@ -270,5 +271,21 @@ describe("update issues", () => {
 		// THEN
 		expect(ret).toStrictEqual(issue);
 	});
-	it.todo("should throw error when GitHub API call fails (http 500)", async () => {});
+	it("should throw error when GitHub API call fails (http 500)", async () => {
+		// GIVEN
+		const issueNumber = 0;
+		const err = "Unable to process request at this time";
+		server.use(...updateIssueFailureHandler({ issueNumber, err, org, repo }));
+
+		// WHEN
+		// THEN
+		await expect(
+			updateIssue({
+				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
+				context: buildGithubContext({ org, repo }),
+				core: buildGithubCore(),
+				issueNumber,
+			}),
+		).rejects.toThrowError(err);
+	});
 });
