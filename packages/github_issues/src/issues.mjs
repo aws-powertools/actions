@@ -97,23 +97,37 @@ export async function updateIssue({
  * @param {import('@types/github-script').AsyncFunctionArguments}
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
  */
-export async function createOrUpdateIssue({ github, context, core, searchQuery, title, body = "", labels = [] }) {
+export async function createOrUpdateIssue({
+	github,
+	context,
+	core,
+	searchQuery,
+	title,
+	body,
+	labels,
+	assignees,
+	state,
+	milestone,
+}) {
 	const searchResult = await findIssue({ github, context, core, searchQuery });
 
 	const reportingIssue = searchResult[0];
 
 	if (reportingIssue === undefined) {
-		return await createIssue({ github, context, core, title, body, labels });
+		return await createIssue({ github, context, core, title, body, labels, milestone, assignees });
 	}
 
 	return await updateIssue({
 		github,
 		context,
 		core,
+		issueNumber: reportingIssue.number,
 		title,
 		body,
 		labels,
-		issueNumber: reportingIssue.number,
+		milestone,
+		assignees,
+		state,
 	});
 }
 
