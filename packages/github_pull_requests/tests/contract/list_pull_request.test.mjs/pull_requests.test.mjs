@@ -2,7 +2,7 @@ import { setupServer } from "msw/node";
 import {
 	listPullRequestsFailureHandler,
 	listPullRequestsHandler,
-} from "testing/src/interceptors/pull_requests_handler.js";
+} from "testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { MAX_PULL_REQUESTS_PER_PAGE } from "../../../src/constants.mjs";
 import { listPullRequests } from "../../../src/pull_requests.mjs";
