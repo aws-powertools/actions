@@ -1,5 +1,12 @@
 import { http, HttpResponse } from "msw";
 
+import { issueSearchSchema, issueSchema } from "../../../schemas/src/issue_schema.mjs";
+
+/**
+ * Interceptor for GitHub Search issues and pull requests
+ * API: https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28
+ * @param {z.infer<typeof issueSearchSchema>} SearchResponse - Search results to return
+ */
 export const findIssueHandler = ({ data }) => {
 	return [
 		http.get("https://api.github.com/search/issues", ({ request, params }) => {
@@ -8,6 +15,11 @@ export const findIssueHandler = ({ data }) => {
 	];
 };
 
+/**
+ * Interceptor for GitHub Search issues and pull requests that returns HTTP 500
+ * API: https://docs.github.com/en/rest/search/search?apiVersion=2022-11-28
+ * @param {string>} err - Error to return
+ */
 export const findIssueFailureHandler = ({ err = "Unable to process request" }) => {
 	return [
 		http.get("https://api.github.com/search/issues", ({ request, params }) => {
@@ -16,6 +28,14 @@ export const findIssueFailureHandler = ({ err = "Unable to process request" }) =
 	];
 };
 
+/**
+ * Interceptor for GitHub List Repository Issues
+ * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#list-repository-issues
+ * @param {Object} options - Config.
+ * @param {z.infer<typeof issueSchema>} options.data - List Issues result.
+ * @param {string} options.org - The organization of the repository.
+ * @param {string} options.repo - The repository name.
+ */
 export const listIssuesHandler = ({ data, org, repo }) => {
 	return [
 		http.get(`https://api.github.com/repos/${org}/${repo}/issues`, ({ request, params }) => {
@@ -24,6 +44,14 @@ export const listIssuesHandler = ({ data, org, repo }) => {
 	];
 };
 
+/**
+ * Interceptor for GitHub List Repository Issues that returns HTTP 500
+ * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#list-repository-issues
+ * @param {Object} options - Config.
+ * @param {string} options.org - The organization of the repository.
+ * @param {string} options.repo - The repository name.
+ * @param {string} options.err - Error to return.
+ */
 export const listIssuesFailureHandler = ({ org, repo, err = "Unable to process request" }) => {
 	return [
 		http.get(`https://api.github.com/repos/${org}/${repo}/issues`, ({ request, params }) => {
@@ -32,6 +60,14 @@ export const listIssuesFailureHandler = ({ org, repo, err = "Unable to process r
 	];
 };
 
+/**
+ * Interceptor for GitHub Create Issue
+ * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
+ * @param {Object} options - Config.
+ * @param {z.infer<typeof issueSchema>} options.data - List Issues result.
+ * @param {string} options.org - The organization of the repository.
+ * @param {string} options.repo - The repository name.
+ */
 export const createIssueHandler = ({ data, org, repo }) => {
 	return [
 		http.post(`https://api.github.com/repos/${org}/${repo}/issues`, async ({ request, params }) => {
@@ -40,6 +76,14 @@ export const createIssueHandler = ({ data, org, repo }) => {
 	];
 };
 
+/**
+ * Interceptor for GitHub Create Issue that returns HTTP 500
+ * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
+ * @param {Object} options - Config.
+ * @param {string} options.org - The organization of the repository.
+ * @param {string} options.repo - The repository name.
+ * @param {string} options.err - Error to return.
+ */
 export const createIssueFailureHandler = ({ org, repo, err = "Unable to process request" }) => {
 	return [
 		http.post(`https://api.github.com/repos/${org}/${repo}/issues`, async ({ request, params }) => {
@@ -48,6 +92,15 @@ export const createIssueFailureHandler = ({ org, repo, err = "Unable to process 
 	];
 };
 
+/**
+ * Interceptor for GitHub Update Issue
+ * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
+ * @param {Object} options - Config.
+ * @param {z.infer<typeof issueSchema>} options.data - Update Issue result.
+ * @param {number} options.issueNumber - Issue number to update.
+ * @param {string} options.org - The organization of the repository.
+ * @param {string} options.repo - The repository name.
+ */
 export const updateIssueHandler = ({ data, issueNumber, org, repo }) => {
 	return [
 		http.patch(`https://api.github.com/repos/${org}/${repo}/issues/${issueNumber}`, async ({ request, params }) => {
@@ -56,6 +109,15 @@ export const updateIssueHandler = ({ data, issueNumber, org, repo }) => {
 	];
 };
 
+/**
+ * Interceptor for GitHub Update Issue
+ * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#update-an-issue
+ * @param {Object} options - Config.
+ * @param {number} options.issueNumber - Issue number to update.
+ * @param {string} options.org - The organization of the repository.
+ * @param {string} options.repo - The repository name.
+ * @param {string} options.err - Error to return.
+ */
 export const updateIssueFailureHandler = ({ issueNumber, org, repo, err = "Unable to process request" }) => {
 	return [
 		http.patch(`https://api.github.com/repos/${org}/${repo}/issues/${issueNumber}`, async ({ request, params }) => {
