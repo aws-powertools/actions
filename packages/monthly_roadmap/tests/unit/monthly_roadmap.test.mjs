@@ -1,11 +1,12 @@
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../../testing/src/builders/issues.mjs";
 import { buildTopFeatureRequests } from "../../../testing/src/builders/monthly_roadmap.mjs";
 import { listIssuesHandler } from "../../../testing/src/interceptors/issues_handler.mjs";
 import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT } from "../../src/constants.mjs";
 import { getTopFeatureRequests } from "../../src/index.mjs";
+import * as issueModule from "../../../github_issues/src/issues.mjs";
 
 describe("build monthly roadmap", () => {
 	const org = "test";
@@ -35,7 +36,28 @@ describe("build monthly roadmap", () => {
 			expect(topFeatureRequests).toStrictEqual(expectedTopFeatureRequests);
 		});
 
-		it.todo("Test for regressions in params", async () => {});
+		it("Test for regressions in params", async () => {
+			// GIVEN
+			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
+			listIssuesSpy.mockImplementation(({ options }) => {
+				return buildIssues({ max: TOP_FEATURE_REQUESTS_LIMIT, labels: [FEATURE_REQUEST_LABEL] });
+			});
+
+			// WHEN
+			await getTopFeatureRequests({ github, context, core });
+
+			// THEN
+			// TODO: make labels param more robust; everything else shouldn't suffer regression
+			expect(listIssuesSpy).toHaveBeenCalledWith({
+				github,
+				context,
+				core,
+				limit: TOP_FEATURE_REQUESTS_LIMIT,
+				sortBy: "reactions-+1",
+				labels: ["feature-request"],
+				direction: "desc",
+			});
+		});
 	});
 
 	it.todo("get top 3 most commented issues", async () => {});
