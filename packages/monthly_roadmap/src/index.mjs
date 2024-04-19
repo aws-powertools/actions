@@ -1,11 +1,13 @@
-import {BLOCKED_LABELS, DEFAULT_EMPTY_RESPONSE} from "./constants.mjs";
+import { BLOCKED_LABELS, DEFAULT_EMPTY_RESPONSE } from "./constants.mjs";
 
-import {getWorkflowRunUrl, isGitHubAction} from "github_actions/src/functions.mjs";
-import {listPullRequests} from "github_pull_requests/src/pull_requests.mjs";
-import {diffInDaysFromToday} from "../../date_utils/src/date_diff.mjs";
-import {formatISOtoLongDate} from "../../date_utils/src/formatter.mjs";
-import {createOrUpdateIssue, listIssues} from "../../github_issues/src/issues.mjs";
-import {buildMarkdownTable} from "../../markdown/src/builder.mjs";
+import { getWorkflowRunUrl, isGitHubAction } from "github_actions/src/functions.mjs";
+import { listPullRequests } from "github_pull_requests/src/pull_requests.mjs";
+import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
+import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
+import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
+import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
+import { TOP_FEATURE_REQUESTS_LIMIT } from "./constants.mjs";
+import { TopFeatureRequest } from "./TopFeatureRequests.mjs";
 
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
@@ -16,7 +18,7 @@ import {buildMarkdownTable} from "../../markdown/src/builder.mjs";
  * @property {string} created_at - The creation date of the issue, formatted as April 5, 2024.
  * @property {number} reaction_count - The total number of reactions on the issue.
  * @property {string} labels - The labels of the issue, enclosed in backticks.
- * @returns {Promise<Array<Response>>} A promise resolving with an array of issue objects.
+ * @returns {Promise<TopFeatureRequest[]>} A promise resolving with an array of issue objects.
  *
  */
 export async function getTopFeatureRequests({ github, context, core }) {
@@ -25,18 +27,13 @@ export async function getTopFeatureRequests({ github, context, core }) {
 		github,
 		context,
 		core,
-		limit: 3,
+		limit: TOP_FEATURE_REQUESTS_LIMIT,
 		sortBy: "reactions-+1",
 		labels: ["feature-request"],
 		direction: "desc",
 	});
 
-	return issues.map((issue) => ({
-		title: `[${issue.title}](${issue.html_url})`,
-		created_at: formatISOtoLongDate(issue.created_at),
-		reaction_count: issue.reactions.total_count,
-		labels: `${issue.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
-	}));
+	return issues.map((issue) => new TopFeatureRequest(issue));
 }
 
 /**
@@ -202,7 +199,7 @@ ${isGitHubAction() ? `> workflow: ${getWorkflowRunUrl()}` : ""}
 
 	core.info("Creating issue with monthly roadmap report");
 
-    const MONTH = new Date().toLocaleString("default", { month: "long" });
+	const MONTH = new Date().toLocaleString("default", { month: "long" });
 	const issueTitle = `Roadmap update reminder - ${MONTH}`;
 	const searchParams = `is:issue in:title state:open repo:${context.repo.owner}/${context.repo.repo}`;
 	const searchQuery = `${issueTitle} ${searchParams}`;
