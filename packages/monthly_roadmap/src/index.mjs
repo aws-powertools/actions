@@ -7,7 +7,8 @@ import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
 import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
 import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
 import { TopFeatureRequest } from "./TopFeatureRequests.mjs";
-import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT } from "./constants.mjs";
+import { TopMostCommented } from "./TopMostCommented.mjs";
+import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT, TOP_MOST_COMMENTED_LIMIT } from "./constants.mjs";
 
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
@@ -45,7 +46,7 @@ export async function getTopFeatureRequests({ github, context, core }) {
  * @property {string} created_at - The creation date of the issue, formatted as April 5, 2024.
  * @property {number} comment_count - The total number of comments in the issue.
  * @property {string} labels - The labels of the issue, enclosed in backticks.
- * @returns {Promise<Array<Response>>} A promise resolving with an array of issue objects.
+ * @returns {Promise<Array<TopMostCommented>>} A promise resolving with an array of issue objects.
  *
  */
 export async function getTopMostCommented({ github, context, core }) {
@@ -54,17 +55,12 @@ export async function getTopMostCommented({ github, context, core }) {
 		github,
 		context,
 		core,
-		limit: 3,
+		limit: TOP_MOST_COMMENTED_LIMIT,
 		sortBy: "comments",
 		direction: "desc",
 	});
 
-	return issues.map((issue) => ({
-		title: `[${issue.title}](${issue.html_url})`,
-		created_at: formatISOtoLongDate(issue.created_at),
-		comment_count: issue.comments,
-		labels: `${issue.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
-	}));
+	return issues.map((issue) => new TopMostCommented(issue));
 }
 
 /**

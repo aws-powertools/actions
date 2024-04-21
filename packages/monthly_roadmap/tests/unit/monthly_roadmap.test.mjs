@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import * as issueModule from "../../../github_issues/src/issues.mjs";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../../testing/src/builders/issues.mjs";
-import { buildTopFeatureRequests } from "../../../testing/src/builders/monthly_roadmap.mjs";
-import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT } from "../../src/constants.mjs";
-import { getTopFeatureRequests } from "../../src/index.mjs";
+import { buildTopFeatureRequests, buildTopMostCommented } from "../../../testing/src/builders/monthly_roadmap.mjs";
+import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT, TOP_MOST_COMMENTED_LIMIT } from "../../src/constants.mjs";
+import { getTopFeatureRequests, getTopMostCommented } from "../../src/index.mjs";
 
 describe("build monthly roadmap", () => {
 	const org = "test";
@@ -40,7 +40,31 @@ describe("build monthly roadmap", () => {
 			});
 		});
 
-		it.todo("get top 3 most commented issues", async () => {});
+		it("get top 3 most commented issues", async () => {
+			// GIVEN
+			const existingTopCommentedIssues = buildIssues({ max: 2 });
+			const expectedTopCommentedIssues = buildTopMostCommented(existingTopCommentedIssues);
+
+			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
+			listIssuesSpy.mockImplementation(() => {
+				return existingTopCommentedIssues;
+			});
+
+			// WHEN
+			const topCommentedIssues = await getTopMostCommented({ github, context, core });
+
+			// THEN
+			expect(topCommentedIssues).toStrictEqual(expectedTopCommentedIssues);
+			expect(listIssuesSpy).toHaveBeenCalledWith({
+				github,
+				context,
+				core,
+				limit: TOP_MOST_COMMENTED_LIMIT,
+				sortBy: "comments",
+				direction: "desc",
+			});
+		});
+
 		it.todo("get top 3 oldest issues", async () => {});
 		it.todo("get top 3 long running PRs", async () => {});
 	});
