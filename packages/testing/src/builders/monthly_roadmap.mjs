@@ -1,5 +1,6 @@
 import { TopFeatureRequest } from "../../../monthly_roadmap/src/TopFeatureRequests.mjs";
 import { TopMostCommented } from "../../../monthly_roadmap/src/TopMostCommented.mjs";
+import { TopOldest } from "../../../monthly_roadmap/src/TopOldest.mjs";
 import { issueSchema } from "../../../schemas/src/issue_schema.mjs";
 
 /**
@@ -18,4 +19,13 @@ export function buildTopFeatureRequests(issues) {
  */
 export function buildTopMostCommented(issues) {
 	return issues.map((issue) => new TopMostCommented(issue));
+}
+
+/**
+ * Builds an array of top oldest issues from GitHub issues
+ * @param {z.infer<typeof issueSchema>[]} issues - Top oldest issues.
+ * @returns {TopOldest[]} Oldest issues - An array of top oldest issues.
+ */
+export function buildTopOldestIssues(issues) {
+	return issues.map((issue) => new TopOldest(issue));
 }

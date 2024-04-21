@@ -8,7 +8,13 @@ import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.
 import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
 import { TopFeatureRequest } from "./TopFeatureRequests.mjs";
 import { TopMostCommented } from "./TopMostCommented.mjs";
-import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT, TOP_MOST_COMMENTED_LIMIT } from "./constants.mjs";
+import { TopOldest } from "./TopOldest.mjs";
+import {
+	FEATURE_REQUEST_LABEL,
+	TOP_FEATURE_REQUESTS_LIMIT,
+	TOP_MOST_COMMENTED_LIMIT,
+	TOP_OLDEST_LIMIT,
+} from "./constants.mjs";
 
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
@@ -73,7 +79,7 @@ export async function getTopMostCommented({ github, context, core }) {
  * @property {string} created_at - The creation date of the issue, formatted as April 5, 2024.
  * @property {number} last_update - Number of days since the last update.
  * @property {string} labels - The labels of the issue, enclosed in backticks.
- * @returns {Promise<Array<Response>>} A promise resolving with an array of issue objects.
+ * @returns {Promise<Array<TopOldest>>} A promise resolving with an array of issue objects.
  */
 export async function getTopOldestIssues({ github, context, core }) {
 	core.info("Fetching issues sorted by creation date");
@@ -81,20 +87,13 @@ export async function getTopOldestIssues({ github, context, core }) {
 		github,
 		context,
 		core,
-		limit: 3,
+		limit: TOP_OLDEST_LIMIT,
 		sortBy: "created",
 		direction: "asc",
 		excludeLabels: BLOCKED_LABELS,
 	});
 
-	return issues.map((issue) => {
-		return {
-			title: `[${issue.title}](${issue.html_url})`,
-			created_at: formatISOtoLongDate(issue.created_at),
-			last_update: `${diffInDaysFromToday(issue.updated_at)} days`,
-			labels: `${issue.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
-		};
-	});
+	return issues.map((issue) => new TopOldest(issue));
 }
 
 /**

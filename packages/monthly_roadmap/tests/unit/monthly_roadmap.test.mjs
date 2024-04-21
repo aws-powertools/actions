@@ -2,9 +2,19 @@ import { describe, expect, it, vi } from "vitest";
 import * as issueModule from "../../../github_issues/src/issues.mjs";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../../testing/src/builders/issues.mjs";
-import { buildTopFeatureRequests, buildTopMostCommented } from "../../../testing/src/builders/monthly_roadmap.mjs";
-import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT, TOP_MOST_COMMENTED_LIMIT } from "../../src/constants.mjs";
-import { getTopFeatureRequests, getTopMostCommented } from "../../src/index.mjs";
+import {
+	buildTopFeatureRequests,
+	buildTopMostCommented,
+	buildTopOldestIssues,
+} from "../../../testing/src/builders/monthly_roadmap.mjs";
+import {
+	BLOCKED_LABELS,
+	FEATURE_REQUEST_LABEL,
+	TOP_FEATURE_REQUESTS_LIMIT,
+	TOP_MOST_COMMENTED_LIMIT,
+	TOP_OLDEST_LIMIT,
+} from "../../src/constants.mjs";
+import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "../../src/index.mjs";
 
 describe("build monthly roadmap", () => {
 	const org = "test";
@@ -65,7 +75,32 @@ describe("build monthly roadmap", () => {
 			});
 		});
 
-		it.todo("get top 3 oldest issues", async () => {});
+		it("get top oldest issues", async () => {
+			// GIVEN
+			const existingOldestIssues = buildIssues({ max: 2 });
+			const expectedTopOldestIssues = buildTopOldestIssues(existingOldestIssues);
+
+			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
+			listIssuesSpy.mockImplementation(() => {
+				return existingOldestIssues;
+			});
+
+			// WHEN
+			const topOldestIssues = await getTopOldestIssues({ github, context, core });
+
+			// THEN
+			expect(topOldestIssues).toStrictEqual(expectedTopOldestIssues);
+			expect(listIssuesSpy).toHaveBeenCalledWith({
+				github,
+				context,
+				core,
+				limit: TOP_OLDEST_LIMIT,
+				sortBy: "created",
+				direction: "asc",
+				excludeLabels: BLOCKED_LABELS,
+			});
+		});
+
 		it.todo("get top 3 long running PRs", async () => {});
 	});
 });
