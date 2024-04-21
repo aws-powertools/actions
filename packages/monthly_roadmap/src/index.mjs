@@ -16,6 +16,9 @@ import {
 	TOP_OLDEST_LIMIT,
 } from "./constants.mjs";
 
+import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
+import { ISSUES_SORT_BY } from "../../github_issues/src/constants.mjs";
+
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
  *
@@ -35,7 +38,7 @@ export async function getTopFeatureRequests({ github, context, core }) {
 		context,
 		core,
 		limit: TOP_FEATURE_REQUESTS_LIMIT,
-		sortBy: "reactions-+1",
+		sortBy: ISSUES_SORT_BY.REACTION_PLUS_1,
 		labels: [FEATURE_REQUEST_LABEL],
 		direction: "desc",
 	});
@@ -62,7 +65,7 @@ export async function getTopMostCommented({ github, context, core }) {
 		context,
 		core,
 		limit: TOP_MOST_COMMENTED_LIMIT,
-		sortBy: "comments",
+		sortBy: ISSUES_SORT_BY.COMMENTS,
 		direction: "desc",
 	});
 
@@ -88,7 +91,7 @@ export async function getTopOldestIssues({ github, context, core }) {
 		context,
 		core,
 		limit: TOP_OLDEST_LIMIT,
-		sortBy: "created",
+		sortBy: ISSUES_SORT_BY.CREATED,
 		direction: "asc",
 		excludeLabels: BLOCKED_LABELS,
 	});
@@ -116,7 +119,7 @@ export async function getLongRunningPRs({ github, context, core }) {
 		context,
 		core,
 		limit: TOP_LONG_RUNNING_PR_LIMIT,
-		sortBy: "long-running",
+		sortBy: PULL_REQUESTS_SORT_BY.LONG_RUNNING,
 		direction: "desc",
 		excludeLabels: BLOCKED_LABELS,
 	});

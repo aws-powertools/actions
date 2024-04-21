@@ -1,4 +1,6 @@
+import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
 import { describe, expect, it, vi } from "vitest";
+import { ISSUES_SORT_BY } from "../../../github_issues/src/constants.mjs";
 import * as issueModule from "../../../github_issues/src/issues.mjs";
 import * as pullRequestModule from "../../../github_pull_requests/src/pull_requests.mjs";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
@@ -48,7 +50,7 @@ describe("build monthly roadmap", () => {
 				context,
 				core,
 				limit: TOP_FEATURE_REQUESTS_LIMIT,
-				sortBy: "reactions-+1",
+				sortBy: ISSUES_SORT_BY.REACTION_PLUS_1,
 				labels: [FEATURE_REQUEST_LABEL],
 				direction: "desc",
 			});
@@ -74,7 +76,7 @@ describe("build monthly roadmap", () => {
 				context,
 				core,
 				limit: TOP_MOST_COMMENTED_LIMIT,
-				sortBy: "comments",
+				sortBy: ISSUES_SORT_BY.COMMENTS,
 				direction: "desc",
 			});
 		});
@@ -99,7 +101,7 @@ describe("build monthly roadmap", () => {
 				context,
 				core,
 				limit: TOP_OLDEST_LIMIT,
-				sortBy: "created",
+				sortBy: ISSUES_SORT_BY.CREATED,
 				direction: "asc",
 				excludeLabels: BLOCKED_LABELS,
 			});
@@ -126,7 +128,7 @@ describe("build monthly roadmap", () => {
 				context,
 				core,
 				limit: TOP_LONG_RUNNING_PR_LIMIT,
-				sortBy: "long-running",
+				sortBy: PULL_REQUESTS_SORT_BY.LONG_RUNNING,
 				direction: "desc",
 				excludeLabels: BLOCKED_LABELS,
 			});
