@@ -6,8 +6,8 @@ import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
 import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
 import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
 import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
-import { TOP_FEATURE_REQUESTS_LIMIT } from "./constants.mjs";
 import { TopFeatureRequest } from "./TopFeatureRequests.mjs";
+import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT } from "./constants.mjs";
 
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
@@ -29,7 +29,7 @@ export async function getTopFeatureRequests({ github, context, core }) {
 		core,
 		limit: TOP_FEATURE_REQUESTS_LIMIT,
 		sortBy: "reactions-+1",
-		labels: ["feature-request"],
+		labels: [FEATURE_REQUEST_LABEL],
 		direction: "desc",
 	});
 

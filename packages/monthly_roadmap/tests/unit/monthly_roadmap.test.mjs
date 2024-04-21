@@ -36,25 +36,24 @@ describe("build monthly roadmap", () => {
 			expect(topFeatureRequests).toStrictEqual(expectedTopFeatureRequests);
 		});
 
-		it("Test for regressions in params", async () => {
+		it("get top feature requests (default params)", async () => {
 			// GIVEN
 			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
 			listIssuesSpy.mockImplementation(({ options }) => {
-				return buildIssues({ max: TOP_FEATURE_REQUESTS_LIMIT, labels: [FEATURE_REQUEST_LABEL] });
+				return buildIssues({ labels: [FEATURE_REQUEST_LABEL] });
 			});
 
 			// WHEN
 			await getTopFeatureRequests({ github, context, core });
 
 			// THEN
-			// TODO: make labels param more robust; everything else shouldn't suffer regression
 			expect(listIssuesSpy).toHaveBeenCalledWith({
 				github,
 				context,
 				core,
 				limit: TOP_FEATURE_REQUESTS_LIMIT,
 				sortBy: "reactions-+1",
-				labels: ["feature-request"],
+				labels: [FEATURE_REQUEST_LABEL],
 				direction: "desc",
 			});
 		});
