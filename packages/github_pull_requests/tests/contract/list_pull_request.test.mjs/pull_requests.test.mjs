@@ -1,17 +1,17 @@
 import { setupServer } from "msw/node";
-import {
-	listPullRequestsFailureHandler,
-	listPullRequestsHandler,
-} from "../../../../testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { MAX_PULL_REQUESTS_PER_PAGE } from "../../../src/constants.mjs";
-import { listPullRequests } from "../../../src/pull_requests.mjs";
 import {
 	buildGithubClient,
 	buildGithubContext,
 	buildGithubCore,
 } from "../../../../testing/src/builders/github_core.mjs";
 import { buildPullRequests } from "../../../../testing/src/builders/pull_requests.mjs";
+import {
+	listPullRequestsFailureHandler,
+	listPullRequestsHandler,
+} from "../../../../testing/src/interceptors/pull_requests_handler.mjs";
+import { MAX_PULL_REQUESTS_PER_PAGE } from "../../../src/constants.mjs";
+import { listPullRequests } from "../../../src/pull_requests.mjs";
 
 const org = "aws-powertools";
 const repo = "powertools-lambda-python";

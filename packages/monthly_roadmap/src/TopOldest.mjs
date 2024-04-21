@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { issueSchema } from "../../schemas/src/issue_schema.mjs";
-import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
 import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
+import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
+import { issueSchema } from "../../schemas/src/issue_schema.mjs";
 
 /**
  * Represents a top oldest issue for reporting.
