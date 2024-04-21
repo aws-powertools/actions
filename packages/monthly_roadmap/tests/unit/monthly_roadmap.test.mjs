@@ -1,12 +1,10 @@
-import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as issueModule from "../../../github_issues/src/issues.mjs";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../../testing/src/builders/issues.mjs";
 import { buildTopFeatureRequests } from "../../../testing/src/builders/monthly_roadmap.mjs";
-import { listIssuesHandler } from "../../../testing/src/interceptors/issues_handler.mjs";
 import { FEATURE_REQUEST_LABEL, TOP_FEATURE_REQUESTS_LIMIT } from "../../src/constants.mjs";
 import { getTopFeatureRequests } from "../../src/index.mjs";
-import * as issueModule from "../../../github_issues/src/issues.mjs";
 
 describe("build monthly roadmap", () => {
 	const org = "test";
@@ -15,38 +13,22 @@ describe("build monthly roadmap", () => {
 	const context = buildGithubContext({ org, repo });
 	const core = buildGithubCore();
 
-	describe("top feature requests", () => {
-		const server = setupServer();
-
-		beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-		afterAll(() => server.close());
-		afterEach(() => server.resetHandlers());
-
-		it("get top 3 feature requests", async () => {
+	describe("data fetching", () => {
+		it("get top feature requests (default params)", async () => {
 			// GIVEN
-			const existingFeatureRequests = buildIssues({ max: TOP_FEATURE_REQUESTS_LIMIT, labels: [FEATURE_REQUEST_LABEL] });
+			const existingFeatureRequests = buildIssues({ max: 2, labels: [FEATURE_REQUEST_LABEL] });
 			const expectedTopFeatureRequests = buildTopFeatureRequests(existingFeatureRequests);
 
-			server.use(...listIssuesHandler({ data: existingFeatureRequests, org, repo }));
+			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
+			listIssuesSpy.mockImplementation(() => {
+				return existingFeatureRequests;
+			});
 
 			// WHEN
 			const topFeatureRequests = await getTopFeatureRequests({ github, context, core });
 
 			// THEN
 			expect(topFeatureRequests).toStrictEqual(expectedTopFeatureRequests);
-		});
-
-		it("get top feature requests (default params)", async () => {
-			// GIVEN
-			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
-			listIssuesSpy.mockImplementation(({ options }) => {
-				return buildIssues({ labels: [FEATURE_REQUEST_LABEL] });
-			});
-
-			// WHEN
-			await getTopFeatureRequests({ github, context, core });
-
-			// THEN
 			expect(listIssuesSpy).toHaveBeenCalledWith({
 				github,
 				context,
@@ -57,9 +39,9 @@ describe("build monthly roadmap", () => {
 				direction: "desc",
 			});
 		});
-	});
 
-	it.todo("get top 3 most commented issues", async () => {});
-	it.todo("get top 3 oldest issues", async () => {});
-	it.todo("get top 3 long running PRs", async () => {});
+		it.todo("get top 3 most commented issues", async () => {});
+		it.todo("get top 3 oldest issues", async () => {});
+		it.todo("get top 3 long running PRs", async () => {});
+	});
 });
