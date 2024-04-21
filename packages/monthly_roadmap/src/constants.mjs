@@ -4,3 +4,4 @@ export const FEATURE_REQUEST_LABEL = "feature-request";
 export const TOP_FEATURE_REQUESTS_LIMIT = 3;
 export const TOP_MOST_COMMENTED_LIMIT = 3;
 export const TOP_OLDEST_LIMIT = 3;
+export const TOP_LONG_RUNNING_PR_LIMIT = 3;

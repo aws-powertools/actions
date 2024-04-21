@@ -2,6 +2,7 @@ import { TopFeatureRequest } from "../../../monthly_roadmap/src/TopFeatureReques
 import { TopMostCommented } from "../../../monthly_roadmap/src/TopMostCommented.mjs";
 import { TopOldest } from "../../../monthly_roadmap/src/TopOldest.mjs";
 import { issueSchema } from "../../../schemas/src/issue_schema.mjs";
+import { TopLongRunning } from "../../../monthly_roadmap/src/TopLongRunningPullRequest.mjs";
 
 /**
  * Builds an array of top feature requests from GitHub issues
@@ -28,4 +29,13 @@ export function buildTopMostCommented(issues) {
  */
 export function buildTopOldestIssues(issues) {
 	return issues.map((issue) => new TopOldest(issue));
+}
+
+/**
+ * Builds an array of top long running from GitHub pull requests
+ * @param {z.infer<typeof issueSchema>[]} issues - Top long running.
+ * @returns {TopLongRunning[]} Long running PRs - An array of top long running pull requests.
+ */
+export function buildLongRunningPullRequests(issues) {
+	return issues.map((issue) => new TopLongRunning(issue));
 }

@@ -1,20 +1,24 @@
 import { describe, expect, it, vi } from "vitest";
 import * as issueModule from "../../../github_issues/src/issues.mjs";
+import * as pullRequestModule from "../../../github_pull_requests/src/pull_requests.mjs";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../../testing/src/builders/issues.mjs";
 import {
+	buildLongRunningPullRequests,
 	buildTopFeatureRequests,
 	buildTopMostCommented,
 	buildTopOldestIssues,
 } from "../../../testing/src/builders/monthly_roadmap.mjs";
+import { buildPullRequests } from "../../../testing/src/builders/pull_requests.mjs";
 import {
 	BLOCKED_LABELS,
 	FEATURE_REQUEST_LABEL,
 	TOP_FEATURE_REQUESTS_LIMIT,
+	TOP_LONG_RUNNING_PR_LIMIT,
 	TOP_MOST_COMMENTED_LIMIT,
 	TOP_OLDEST_LIMIT,
 } from "../../src/constants.mjs";
-import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "../../src/index.mjs";
+import { getLongRunningPRs, getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "../../src/index.mjs";
 
 describe("build monthly roadmap", () => {
 	const org = "test";
@@ -101,6 +105,31 @@ describe("build monthly roadmap", () => {
 			});
 		});
 
-		it.todo("get top 3 long running PRs", async () => {});
+		it("get top long running PRs", async () => {
+			// GIVEN
+			const existingPullRequests = buildPullRequests({ max: 2 });
+			const expectedPullRequests = buildLongRunningPullRequests(existingPullRequests);
+
+			// const listPullRequestsSpy = vi.spyOn(pullRequestModule, pullRequestModule.listPullRequests.name);
+			const listPullRequestsSpy = vi.spyOn(pullRequestModule, "listPullRequests");
+			listPullRequestsSpy.mockImplementation(() => {
+				return existingPullRequests;
+			});
+
+			// WHEN
+			const topLongRunningPullRequests = await getLongRunningPRs({ github, context, core });
+
+			// THEN
+			expect(topLongRunningPullRequests).toStrictEqual(expectedPullRequests);
+			expect(listPullRequestsSpy).toHaveBeenCalledWith({
+				github,
+				context,
+				core,
+				limit: TOP_LONG_RUNNING_PR_LIMIT,
+				sortBy: "long-running",
+				direction: "desc",
+				excludeLabels: BLOCKED_LABELS,
+			});
+		});
 	});
 });

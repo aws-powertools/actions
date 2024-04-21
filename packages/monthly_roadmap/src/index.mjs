@@ -1,17 +1,17 @@
-import { BLOCKED_LABELS, DEFAULT_EMPTY_RESPONSE } from "./constants.mjs";
-
 import { getWorkflowRunUrl, isGitHubAction } from "github_actions/src/functions.mjs";
 import { listPullRequests } from "github_pull_requests/src/pull_requests.mjs";
-import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
-import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";
 import { createOrUpdateIssue, listIssues } from "../../github_issues/src/issues.mjs";
 import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
 import { TopFeatureRequest } from "./TopFeatureRequests.mjs";
+import { TopLongRunning } from "./TopLongRunningPullRequest.mjs";
 import { TopMostCommented } from "./TopMostCommented.mjs";
 import { TopOldest } from "./TopOldest.mjs";
 import {
+	BLOCKED_LABELS,
+	DEFAULT_EMPTY_RESPONSE,
 	FEATURE_REQUEST_LABEL,
 	TOP_FEATURE_REQUESTS_LIMIT,
+	TOP_LONG_RUNNING_PR_LIMIT,
 	TOP_MOST_COMMENTED_LIMIT,
 	TOP_OLDEST_LIMIT,
 } from "./constants.mjs";
@@ -106,7 +106,7 @@ export async function getTopOldestIssues({ github, context, core }) {
  * @property {string} created_at - The creation date of the PR, formatted as April 5, 2024.
  * @property {number} last_update - Number of days since the last update.
  * @property {string} labels - The labels of the PR, enclosed in backticks.
- * @returns {Promise<Array<Response>>} A promise resolving with an array of PR objects.
+ * @returns {Promise<Array<TopLongRunning>>} A promise resolving with an array of PR objects.
  */
 export async function getLongRunningPRs({ github, context, core }) {
 	core.info("Fetching PRs sorted by long-running");
@@ -115,21 +115,13 @@ export async function getLongRunningPRs({ github, context, core }) {
 		github,
 		context,
 		core,
-		limit: 3,
+		limit: TOP_LONG_RUNNING_PR_LIMIT,
 		sortBy: "long-running",
 		direction: "desc",
 		excludeLabels: BLOCKED_LABELS,
 	});
 
-	return prs.map((pr) => {
-		return {
-			title: `[${pr.title}](${pr.html_url})`,
-			created_at: formatISOtoLongDate(pr.created_at),
-			last_update: `${diffInDaysFromToday(pr.updated_at)} days`,
-			pending_reviewers: `${pr.requested_reviewers.map((person) => person.login).join("<br>")}`,
-			labels: `${pr.labels.map((label) => `\`${label.name}\``).join("<br>")}`, // enclose each label with `<label>` for rendering
-		};
-	});
+	return prs.map((pr) => new TopLongRunning(pr));
 }
 
 /**
