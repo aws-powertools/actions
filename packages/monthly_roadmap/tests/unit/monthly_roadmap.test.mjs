@@ -50,7 +50,7 @@ describe("build monthly roadmap", () => {
 			});
 		});
 
-		it("get top 3 most commented issues", async () => {
+		it("get top most commented issues", async () => {
 			// GIVEN
 			const existingTopCommentedIssues = buildIssues({ max: 2 });
 			const expectedTopCommentedIssues = buildTopMostCommented(existingTopCommentedIssues);
