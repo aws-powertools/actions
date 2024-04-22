@@ -1,11 +1,11 @@
 import { generateMock } from "@anatine/zod-mock";
-import { z } from "zod";
 import {
 	issueSchema,
 	issueSearchSchema,
 	labelSchema,
 	pullRequestAsIssueSchema,
-} from "../../../schemas/src/issue_schema.mjs";
+} from "github/src/schemas/issues.mjs";
+import { z } from "zod";
 
 /**
  * Builds an array of mock issues with associated labels based on the provided parameters.

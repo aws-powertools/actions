@@ -1,5 +1,5 @@
+import { issueSchema, pullRequestAsIssueSchema } from "github/src/schemas/issues.mjs";
 import { z } from "zod";
-import { issueSchema, pullRequestAsIssueSchema } from "../../schemas/src/issue_schema.mjs";
 import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";
 
 /**

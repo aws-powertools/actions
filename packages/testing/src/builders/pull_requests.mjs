@@ -1,5 +1,5 @@
 import { generateMock } from "@anatine/zod-mock";
-import { labelSchema, pullRequestSchema } from "schemas/src/pull_request_schema.js";
+import { labelSchema, pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
 
 /**

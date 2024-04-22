@@ -1,4 +1,4 @@
-import { pullRequestSchema } from "schemas/src/pull_request_schema";
+import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
 import { diffInDaysFromToday } from "../../date_utils/src/date_diff.mjs";
 import { formatISOtoLongDate } from "../../date_utils/src/formatter.mjs";

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 
-import { issueSchema, issueSearchSchema } from "../../../schemas/src/issue_schema.mjs";
+import { issueSchema, issueSearchSchema } from "github/src/schemas/issues.mjs";
 
 /**
  * Interceptor for GitHub Search issues and pull requests

@@ -1,5 +1,5 @@
+import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
-import { pullRequestSchema } from "../../schemas/src/pull_request_schema";
 import { MAX_PULL_REQUESTS_LIMIT, MAX_PULL_REQUESTS_PER_PAGE } from "./constants.mjs";
 
 /**
