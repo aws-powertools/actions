@@ -2,8 +2,6 @@ import { Github } from "github/src/Github.mjs";
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
 import { describe, expect, it, vi } from "vitest";
 import { ISSUES_SORT_BY } from "../../../github_issues/src/constants.mjs";
-import * as issueModule from "../../../github_issues/src/issues.mjs";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../../testing/src/builders/issues.mjs";
 import {
 	buildLongRunningPullRequests,
@@ -23,32 +21,24 @@ import {
 import { getLongRunningPRs, getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "../../src/index.mjs";
 
 describe("build monthly roadmap", () => {
-	const org = "test";
-	const repo = "test-repo";
-	const github = buildGithubClient({ token: process.env.GITHUB_TOKEN });
-	const context = buildGithubContext({ org, repo });
-	const core = buildGithubCore();
-
 	describe("data fetching", () => {
 		it("get top feature requests (default params)", async () => {
 			// GIVEN
 			const existingFeatureRequests = buildIssues({ max: 2, labels: [FEATURE_REQUEST_LABEL] });
 			const expectedTopFeatureRequests = buildTopFeatureRequests(existingFeatureRequests);
+			const github = new Github();
 
-			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
+			const listIssuesSpy = vi.spyOn(github, "listIssues");
 			listIssuesSpy.mockImplementation(() => {
 				return existingFeatureRequests;
 			});
 
 			// WHEN
-			const topFeatureRequests = await getTopFeatureRequests({ github, context, core });
+			const topFeatureRequests = await getTopFeatureRequests({ github });
 
 			// THEN
 			expect(topFeatureRequests).toStrictEqual(expectedTopFeatureRequests);
 			expect(listIssuesSpy).toHaveBeenCalledWith({
-				github,
-				context,
-				core,
 				limit: TOP_FEATURE_REQUESTS_LIMIT,
 				sortBy: ISSUES_SORT_BY.REACTION_PLUS_1,
 				labels: [FEATURE_REQUEST_LABEL],
@@ -60,21 +50,19 @@ describe("build monthly roadmap", () => {
 			// GIVEN
 			const existingTopCommentedIssues = buildIssues({ max: 2 });
 			const expectedTopCommentedIssues = buildTopMostCommented(existingTopCommentedIssues);
+			const github = new Github();
 
-			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
+			const listIssuesSpy = vi.spyOn(github, "listIssues");
 			listIssuesSpy.mockImplementation(() => {
 				return existingTopCommentedIssues;
 			});
 
 			// WHEN
-			const topCommentedIssues = await getTopMostCommented({ github, context, core });
+			const topCommentedIssues = await getTopMostCommented({ github });
 
 			// THEN
 			expect(topCommentedIssues).toStrictEqual(expectedTopCommentedIssues);
 			expect(listIssuesSpy).toHaveBeenCalledWith({
-				github,
-				context,
-				core,
 				limit: TOP_MOST_COMMENTED_LIMIT,
 				sortBy: ISSUES_SORT_BY.COMMENTS,
 				direction: "desc",
@@ -85,21 +73,19 @@ describe("build monthly roadmap", () => {
 			// GIVEN
 			const existingOldestIssues = buildIssues({ max: 2 });
 			const expectedTopOldestIssues = buildTopOldestIssues(existingOldestIssues);
+			const github = new Github();
 
-			const listIssuesSpy = vi.spyOn(issueModule, "listIssues");
+			const listIssuesSpy = vi.spyOn(github, "listIssues");
 			listIssuesSpy.mockImplementation(() => {
 				return existingOldestIssues;
 			});
 
 			// WHEN
-			const topOldestIssues = await getTopOldestIssues({ github, context, core });
+			const topOldestIssues = await getTopOldestIssues({ github });
 
 			// THEN
 			expect(topOldestIssues).toStrictEqual(expectedTopOldestIssues);
 			expect(listIssuesSpy).toHaveBeenCalledWith({
-				github,
-				context,
-				core,
 				limit: TOP_OLDEST_LIMIT,
 				sortBy: ISSUES_SORT_BY.CREATED,
 				direction: "asc",

@@ -1,6 +1,9 @@
-import { Octokit } from "@octokit/rest";
 import * as core from "@actions/core";
+import { Octokit } from "@octokit/rest";
 import { MAX_PULL_REQUESTS_LIMIT, MAX_PULL_REQUESTS_PER_PAGE } from "github_pull_requests/src/constants.mjs";
+import { z } from "zod";
+import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "../../github_issues/src/constants.mjs";
+import { issueSchema } from "./schemas/issues.mjs";
 import { pullRequestSchema } from "./schemas/pull_requests";
 
 export class Github {
@@ -95,6 +98,88 @@ export class Github {
 			return prs;
 		} catch (error) {
 			this.core.error(`Unable to list pull requests. Error: ${error}`);
+			throw error;
+		}
+	}
+
+	/**
+	 * List issues
+	 *
+	 * @param {Object} options - Config.
+	 * @param {string[]} [options.labels] - Include issues containing these labels
+	 * @param {("created" | "updated" | "comments")} [options.sortBy] - Sort results by
+	 * @param {number} [options.limit] - Max number of issues to return (default 10)
+	 * @param {number} [options.pageSize] - Pagination size for each List Issues API call (max 100)
+	 * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
+	 * @param {string[]} [options.excludeLabels] - Exclude issues containing these labels
+	 *
+	 * @example List feature requests, excluding blocked issues
+	 *
+	 * import { core } from "@actions/core";
+	 * import { Octokit } from "@octokit/rest";
+	 *
+	 * const octokit = new Octokit(auth: process.env.GITHUB_TOKEN);
+	 *
+	 * const issues = await listIssues({
+	 *   github: octokit,
+	 *   core,
+	 *   labels: ['feature-request'],
+	 *   sortBy: 'created',
+	 *   limit: 15,
+	 *   excludeLabels: ['do-not-merge']
+	 * });
+	 *
+	 * @returns {Promise<z.infer<typeof issueSchema>[]>} Issue - Newly created issue
+	 */
+	async listIssues(options = {}) {
+		const {
+			labels,
+			sortBy,
+			limit = MAX_ISSUES_LIMIT,
+			pageSize = MAX_ISSUES_PER_PAGE,
+			direction = "asc",
+			excludeLabels = [],
+		} = options;
+
+		let issues = [];
+
+		try {
+			this.core.info(
+				`Listing issues. Filtered by labels: '${labels}', Sorted by:'${sortBy}', Excluding labels: '${excludeLabels}', Limit: ${limit}`,
+			);
+
+			// fetch as many issues as possible (`pageSize`), filter out PRs and issues labelled with any of our `excludeLabels`
+			// cap the results (`limit`)
+			for await (const { data: ret } of this.client.paginate.iterator(this.client.rest.issues.listForRepo, {
+				owner: context.repo.owner,
+				repo: context.repo.repo,
+				labels,
+				sort: sortBy,
+				direction,
+				per_page: pageSize,
+			})) {
+				const issuesOnly = ret.filter((issue) => {
+					// ignore PRs
+					if (Object.hasOwn(issue, "pull_request")) {
+						return false;
+					}
+
+					return issue.labels.every((label) => !excludeLabels.includes(label.name));
+				});
+
+				issues.push(...issuesOnly);
+
+				if (issues.length >= limit) {
+					issues = issues.slice(0, limit);
+					break;
+				}
+			}
+
+			this.core.debug(issues);
+
+			return issues;
+		} catch (error) {
+			this.core.error(`Unable to list issues. Error: ${error}`);
 			throw error;
 		}
 	}
