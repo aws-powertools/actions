@@ -17,6 +17,7 @@ import {
 } from "./constants.mjs";
 
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
+import { Github } from "../../github/src/Github.mjs";
 import { ISSUES_SORT_BY } from "../../github_issues/src/constants.mjs";
 
 /**
@@ -102,22 +103,16 @@ export async function getTopOldestIssues({ github, context, core }) {
 /**
  * Retrieves a list of long running pull requests from a repository, excluding blocked labels.
  *
- * @param {import('@types/github-script').AsyncFunctionArguments} AsyncFunctionArguments
- *
- * @typedef {Object} Response
- * @property {string} title - The title of the PR, with a link to the PR.
- * @property {string} created_at - The creation date of the PR, formatted as April 5, 2024.
- * @property {number} last_update - Number of days since the last update.
- * @property {string} labels - The labels of the PR, enclosed in backticks.
+ * @param {Object} options - Config.
+ * @param {Github} options.github - The Github client.
  * @returns {Promise<Array<TopLongRunning>>} A promise resolving with an array of PR objects.
  */
-export async function getLongRunningPRs({ github, context, core }) {
-	core.info("Fetching PRs sorted by long-running");
+export async function getLongRunningPRs(options = {}) {
+	const github = options.github || new Github();
 
-	const prs = await listPullRequests({
-		github,
-		context,
-		core,
+	github.core.info("Fetching PRs sorted by long-running");
+
+	const prs = await github.listPullRequests({
 		limit: TOP_LONG_RUNNING_PR_LIMIT,
 		sortBy: PULL_REQUESTS_SORT_BY.LONG_RUNNING,
 		direction: "desc",

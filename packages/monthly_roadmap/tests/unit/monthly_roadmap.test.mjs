@@ -1,8 +1,8 @@
+import { Github } from "github/src/Github.mjs";
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
 import { describe, expect, it, vi } from "vitest";
 import { ISSUES_SORT_BY } from "../../../github_issues/src/constants.mjs";
 import * as issueModule from "../../../github_issues/src/issues.mjs";
-import * as pullRequestModule from "../../../github_pull_requests/src/pull_requests.mjs";
 import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
 import { buildIssues } from "../../../testing/src/builders/issues.mjs";
 import {
@@ -111,22 +111,19 @@ describe("build monthly roadmap", () => {
 			// GIVEN
 			const existingPullRequests = buildPullRequests({ max: 2 });
 			const expectedPullRequests = buildLongRunningPullRequests(existingPullRequests);
+			const github = new Github();
 
-			// const listPullRequestsSpy = vi.spyOn(pullRequestModule, pullRequestModule.listPullRequests.name);
-			const listPullRequestsSpy = vi.spyOn(pullRequestModule, "listPullRequests");
+			const listPullRequestsSpy = vi.spyOn(github, "listPullRequests");
 			listPullRequestsSpy.mockImplementation(() => {
 				return existingPullRequests;
 			});
 
 			// WHEN
-			const topLongRunningPullRequests = await getLongRunningPRs({ github, context, core });
+			const topLongRunningPullRequests = await getLongRunningPRs({ github });
 
 			// THEN
 			expect(topLongRunningPullRequests).toStrictEqual(expectedPullRequests);
 			expect(listPullRequestsSpy).toHaveBeenCalledWith({
-				github,
-				context,
-				core,
 				limit: TOP_LONG_RUNNING_PR_LIMIT,
 				sortBy: PULL_REQUESTS_SORT_BY.LONG_RUNNING,
 				direction: "desc",
