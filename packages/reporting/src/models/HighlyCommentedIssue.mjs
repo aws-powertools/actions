@@ -11,8 +11,8 @@ export class HighlyCommentedIssue extends Issue {
 	 * @param {z.infer<typeof issueSchema>} issue - A GitHub issue.
 	 */
 	constructor(issue) {
-        super(issue);
-        /**
+		super(issue);
+		/**
 		 * The total number of comments.
 		 * @type {number}
 		 */

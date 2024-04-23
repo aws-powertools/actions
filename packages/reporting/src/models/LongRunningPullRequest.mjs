@@ -1,4 +1,4 @@
-import {PullRequest} from "./PullRequest.mjs";
+import { PullRequest } from "./PullRequest.mjs";
 
 /**
  * Represents a long-running pull request for reporting.

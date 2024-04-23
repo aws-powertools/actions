@@ -1,4 +1,4 @@
-import {Issue} from "./Issue.mjs";
+import { Issue } from "./Issue.mjs";
 
 /**
  * Represents an old issue for reporting.

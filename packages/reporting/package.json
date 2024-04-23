@@ -1,5 +1,5 @@
 {
-	"name": "monthly_roadmap",
+	"name": "reporting",
 	"private": true,
 	"type": "module",
 	"main": "index.js",

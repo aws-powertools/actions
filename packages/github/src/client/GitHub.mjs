@@ -1,14 +1,14 @@
 import * as core from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import {
-    MAX_ISSUES_LIMIT,
-    MAX_ISSUES_PER_PAGE,
-    MAX_PULL_REQUESTS_LIMIT,
-    MAX_PULL_REQUESTS_PER_PAGE
-} from "packages/github/src/constants.mjs";
+	MAX_ISSUES_LIMIT,
+	MAX_ISSUES_PER_PAGE,
+	MAX_PULL_REQUESTS_LIMIT,
+	MAX_PULL_REQUESTS_PER_PAGE,
+} from "github/src/constants.mjs";
+import { issueSchema, pullRequestAsIssueSchema } from "github/src/schemas/issues.mjs";
+import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
-import { issueSchema, pullRequestAsIssueSchema } from "../schemas/issues.mjs";
-import { pullRequestSchema } from "../schemas/pull_requests.js";
 
 export class GitHub {
 	#debug;
@@ -119,12 +119,9 @@ export class GitHub {
 	 *
 	 * @example List feature requests, excluding blocked issues
 	 *
-	 * import { core } from "@actions/core";
-	 * import { Octokit } from "@octokit/rest";
-	 *
-	 * const octokit = new Octokit(auth: process.env.GITHUB_TOKEN);
-	 *
-	 * const issues = await listIssues({
+	 * ```javascript
+     * const github = new GitHub();
+	 * const issues = await github.listIssues({
 	 *   github: octokit,
 	 *   core,
 	 *   labels: ['feature-request'],
@@ -132,7 +129,7 @@ export class GitHub {
 	 *   limit: 15,
 	 *   excludeLabels: ['do-not-merge']
 	 * });
-	 *
+	 * ```
 	 * @returns {Promise<z.infer<typeof issueSchema>[]>} Issue - Newly created issue
 	 */
 	async listIssues(options = {}) {
@@ -292,7 +289,7 @@ export class GitHub {
 	 *   issueNumber: 10,
 	 *   title: 'New title',
 	 *   body: 'Updated description',
-	 *   labels: ['enhancement', 'need-customer-feedback],
+	 *   labels: ['enhancement', 'need-customer-feedback'],
 	 *   assignees: ['heitorlessa'],
 	 *   state: "closed",
 	 *   milestone: 1
@@ -301,11 +298,9 @@ export class GitHub {
 	 * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly updated issue
 	 */
 	async updateIssue(options = {}) {
-        const {
-         issueNumber, title, body, labels, assignees, state, milestone
-        } = options
-        
-        if (issueNumber === undefined) {
+		const { issueNumber, title, body, labels, assignees, state, milestone } = options;
+
+		if (issueNumber === undefined) {
 			throw new Error("Issue number is required in UPDATE operations.");
 		}
 
@@ -336,7 +331,6 @@ export class GitHub {
 	 * Update existing issue if found, or create it.
 	 *
 	 * @param {Object} options - Config.
-	 * @param {GitHub} options.github - A GitHub client instance.
 	 * @param {string} [options.searchQuery] - Search query to find issue to update
 	 * @param {string} [options.title] - Issue title
 	 * @param {string} [options.body] - Issue body (description)
@@ -358,7 +352,7 @@ export class GitHub {
 	 * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
 	 */
 	async createOrUpdateIssue(options = {}) {
-		const { searchQuery, title, body, labels, assignees, state, milestone, github = new GitHub() } = options;
+		const { searchQuery, title, body, labels, assignees, state, milestone } = options;
 		const searchResult = await this.findIssue({ searchQuery });
 
 		const reportingIssue = searchResult[0];

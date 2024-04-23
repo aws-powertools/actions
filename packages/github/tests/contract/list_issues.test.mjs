@@ -1,9 +1,9 @@
+import { GitHub } from "github/src/client";
+import { MAX_ISSUES_PER_PAGE } from "github/src/constants.mjs";
 import { setupServer } from "msw/node";
-import { MAX_ISSUES_PER_PAGE } from "packages/github/src/constants.mjs";
-import { buildIssues } from "testing/src/builders/issues.mjs";
+import { buildIssues } from "testing/src/builders";
 import { listIssuesFailureHandler, listIssuesHandler } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { GitHub } from "../../src/client/GitHub.mjs";
 
 describe("list issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";
@@ -94,6 +94,6 @@ describe("list issues contract", () => {
 
 		// WHEN
 		// THEN
-		const ret = await expect(github.listIssues()).rejects.toThrowError(err);
+		await expect(github.listIssues()).rejects.toThrowError(err);
 	});
 });

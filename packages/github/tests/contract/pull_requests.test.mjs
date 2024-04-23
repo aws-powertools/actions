@@ -1,12 +1,12 @@
+import { GitHub } from "github/src/client";
+import { MAX_PULL_REQUESTS_PER_PAGE } from "github/src/constants.mjs";
 import { setupServer } from "msw/node";
-import { buildPullRequests } from "testing/src/builders/pull_requests.mjs";
+import { buildPullRequests } from "testing/src/builders";
 import {
 	listPullRequestsFailureHandler,
 	listPullRequestsHandler,
 } from "testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { GitHub } from "../../src/client/GitHub.mjs";
-import {MAX_PULL_REQUESTS_PER_PAGE} from "../../src/constants.mjs";
 
 describe("list pull requests contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

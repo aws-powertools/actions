@@ -1,14 +1,15 @@
-import { GitHub } from "github/src/client/GitHub.mjs";
-import {ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY} from "github/src/constants.mjs";
-import { buildGithubCore } from "testing/src/builders/github_core.mjs";
-import { buildIssues } from "testing/src/builders/issues.mjs";
+import { GitHub } from "github/src/client";
+import { ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY } from "github/src/constants.mjs";
+import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "reporting/src/issues";
 import {
+	buildGithubCore,
+	buildIssues,
 	buildLongRunningPullRequests,
+	buildPullRequests,
 	buildTopFeatureRequests,
 	buildTopMostCommented,
 	buildTopOldestIssues,
-} from "testing/src/builders/monthly_roadmap.mjs";
-import { buildPullRequests } from "testing/src/builders/pull_requests.mjs";
+} from "testing/src/builders";
 import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
@@ -18,13 +19,8 @@ import {
 	TOP_MOST_COMMENTED_LIMIT,
 	TOP_OLDEST_LIMIT,
 } from "../../src/constants.mjs";
-import {
-	createMonthlyRoadmapReport,
-	getLongRunningPRs,
-	getTopFeatureRequests,
-	getTopMostCommented,
-	getTopOldestIssues,
-} from "../../src/index.mjs";
+import { createMonthlyRoadmapReport } from "../../src/monthly_roadmap.mjs";
+import { getLongRunningPRs } from "../../src/pull_requests";
 
 describe("build monthly roadmap", () => {
 	describe("data fetching", () => {

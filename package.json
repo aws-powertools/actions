@@ -1,6 +1,6 @@
 {
   "workspaces": [
-    "packages/monthly_roadmap",
+    "packages/reporting",
     "packages/markdown",
     "packages/date_utils",
     "packages/testing",
@@ -20,7 +20,7 @@
   "scripts": {
     "dev": "npm ci",
     "test": "vitest",
-    "lint": "biome lint packages --apply",
+    "lint": "npm run format && biome lint packages --apply",
     "format": "biome format packages --write",
     "ci": "biome check packages"
   },

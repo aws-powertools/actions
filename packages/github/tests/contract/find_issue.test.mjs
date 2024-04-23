@@ -1,9 +1,9 @@
-import {faker} from "@faker-js/faker";
-import {setupServer} from "msw/node";
-import {buildSearchIssues} from "testing/src/builders/issues.mjs";
-import {findIssueFailureHandler, findIssueHandler} from "testing/src/interceptors/issues_handler.mjs";
-import {afterAll, afterEach, beforeAll, describe, expect, it} from "vitest";
-import {GitHub} from "../../src/client/GitHub.mjs";
+import { faker } from "@faker-js/faker";
+import { GitHub } from "github/src/client";
+import { setupServer } from "msw/node";
+import { buildSearchIssues } from "testing/src/builders";
+import { findIssueFailureHandler, findIssueHandler } from "testing/src/interceptors/issues_handler.mjs";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
 describe("search issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

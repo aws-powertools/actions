@@ -1,6 +1,6 @@
+import { GitHub } from "github/src/client";
 import { setupServer } from "msw/node";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "testing/src/builders/github_core.mjs";
-import { buildIssues, buildSearchIssues } from "testing/src/builders/issues.mjs";
+import { buildIssues, buildSearchIssues } from "testing/src/builders";
 import {
 	createIssueFailureHandler,
 	createIssueHandler,
@@ -8,10 +8,9 @@ import {
 	updateIssueHandler,
 } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { GitHub} from "../../src/client/GitHub.mjs";
 
 describe("create issues contract", () => {
-    process.env.GITHUB_REPOSITORY = "test-org/test-repo"
+	process.env.GITHUB_REPOSITORY = "test-org/test-repo";
 	const server = setupServer();
 
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
@@ -22,7 +21,7 @@ describe("create issues contract", () => {
 
 	it("should create an issue (default parameters)", async () => {
 		// GIVEN
-        const github = new GitHub();
+		const github = new GitHub();
 		const createdIssue = buildIssues({ max: 1 })[0];
 		server.use(...createIssueHandler({ data: createdIssue, org: github.owner, repo: github.repo }));
 
@@ -40,9 +39,12 @@ describe("create issues contract", () => {
 		// GIVEN
 		const createdIssue = buildIssues({ max: 1 })[0];
 		const noIssueFound = buildSearchIssues({ max: 0 });
-        const github = new GitHub();
+		const github = new GitHub();
 
-		server.use(...findIssueHandler({ data: noIssueFound }), ...createIssueHandler({ data: createdIssue, org: github.owner, repo: github.repo }));
+		server.use(
+			...findIssueHandler({ data: noIssueFound }),
+			...createIssueHandler({ data: createdIssue, org: github.owner, repo: github.repo }),
+		);
 
 		// WHEN
 		const ret = await github.createOrUpdateIssue({
@@ -59,12 +61,17 @@ describe("create issues contract", () => {
 		// GIVEN
 		const existingIssues = buildIssues({ max: 1 });
 		const foundIssue = buildSearchIssues({ issues: existingIssues });
-        const github = new GitHub();
+		const github = new GitHub();
 		const existingIssue = existingIssues[0];
 
 		server.use(
 			...findIssueHandler({ data: foundIssue }),
-			...updateIssueHandler({ data: existingIssue, issueNumber: existingIssue.number, org: github.owner, repo: github.repo }),
+			...updateIssueHandler({
+				data: existingIssue,
+				issueNumber: existingIssue.number,
+				org: github.owner,
+				repo: github.repo,
+			}),
 		);
 
 		// WHEN
@@ -81,16 +88,14 @@ describe("create issues contract", () => {
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
 		const err = "Unable to process request at this time";
-        const github = new GitHub();
+		const github = new GitHub();
 		server.use(...createIssueFailureHandler({ org: github.owner, repo: github.repo, err }));
 
 		// WHEN
 		// THEN
 		await expect(
 			github.createIssue({
-				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-				context: buildGithubContext({ org: github.owner, repo: github.repo }),
-				core: buildGithubCore(),
+				github,
 				title: "Test",
 			}),
 		).rejects.toThrowError(err);
@@ -98,11 +103,9 @@ describe("create issues contract", () => {
 
 	it("should throw if issue title is missing", async () => {
 		// GIVEN
-        const github = new GitHub();
+		const github = new GitHub();
 		// WHEN
 		// THEN
-		await expect(
-			github.createIssue(),
-		).rejects.toThrowError("Issue title is required");
+		await expect(github.createIssue()).rejects.toThrowError("Issue title is required");
 	});
 });
