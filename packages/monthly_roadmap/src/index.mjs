@@ -1,9 +1,5 @@
 import {getWorkflowRunUrl, isGitHubAction} from "github/src/functions.mjs";
 import {buildMarkdownTable} from "../../markdown/src/builder.mjs";
-import {TopFeatureRequest} from "./TopFeatureRequests.mjs";
-import {TopLongRunning} from "./TopLongRunningPullRequest.mjs";
-import {TopMostCommented} from "./TopMostCommented.mjs";
-import {TopOldest} from "./TopOldest.mjs";
 import {
     BLOCKED_LABELS,
     DEFAULT_EMPTY_RESPONSE,
@@ -13,6 +9,10 @@ import {
     TOP_MOST_COMMENTED_LIMIT,
     TOP_OLDEST_LIMIT,
 } from "./constants.mjs";
+import {HighlyCommentedIssue} from "./models/HighlyCommentedIssue.mjs";
+import {LongRunningPullRequest} from "./models/LongRunningPullRequest.mjs";
+import {OldestIssue} from "./models/OldestIssue.mjs";
+import {PopularFeatureRequest} from "./models/PopularFeatureRequest.mjs";
 
 import {GitHub} from "github/src/client/GitHub.mjs";
 import {ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY} from "github/src/constants.mjs";
@@ -22,7 +22,7 @@ import {ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY} from "github/src/constants.mjs";
  *
  * @param {Object} options - Config.
  * @param {GitHub} options.github - A GitHub client instance.
- * @returns {Promise<TopFeatureRequest[]>} A promise resolving with an array of issue objects.
+ * @returns {Promise<PopularFeatureRequest[]>} A promise resolving with an array of issue objects.
  *
  */
 export async function getTopFeatureRequests(options = {}) {
@@ -37,7 +37,7 @@ export async function getTopFeatureRequests(options = {}) {
 		direction: "desc",
 	});
 
-	return issues.map((issue) => new TopFeatureRequest(issue));
+	return issues.map((issue) => new PopularFeatureRequest(issue));
 }
 
 /**
@@ -45,7 +45,7 @@ export async function getTopFeatureRequests(options = {}) {
  *
  * @param {Object} options - Config.
  * @param {GitHub} options.github - A GitHub client instance.
- * @returns {Promise<Array<TopMostCommented>>} A promise resolving with an array of issue objects.
+ * @returns {Promise<Array<HighlyCommentedIssue>>} A promise resolving with an array of issue objects.
  *
  */
 export async function getTopMostCommented(options = {}) {
@@ -59,7 +59,7 @@ export async function getTopMostCommented(options = {}) {
 		direction: "desc",
 	});
 
-	return issues.map((issue) => new TopMostCommented(issue));
+	return issues.map((issue) => new HighlyCommentedIssue(issue));
 }
 
 /**
@@ -67,7 +67,7 @@ export async function getTopMostCommented(options = {}) {
  *
  * @param {Object} options - Config.
  * @param {GitHub} options.github - A GitHub client instance.
- * @returns {Promise<Array<TopOldest>>} A promise resolving with an array of issue objects.
+ * @returns {Promise<Array<OldestIssue>>} A promise resolving with an array of issue objects.
  */
 export async function getTopOldestIssues(options = {}) {
 	const { github = new GitHub({}) } = options;
@@ -81,7 +81,7 @@ export async function getTopOldestIssues(options = {}) {
 		excludeLabels: BLOCKED_LABELS,
 	});
 
-	return issues.map((issue) => new TopOldest(issue));
+	return issues.map((issue) => new OldestIssue(issue));
 }
 
 /**
@@ -89,7 +89,7 @@ export async function getTopOldestIssues(options = {}) {
  *
  * @param {Object} options - Config.
  * @param {GitHub} options.github - A GitHub client instance.
- * @returns {Promise<Array<TopLongRunning>>} A promise resolving with an array of PR objects.
+ * @returns {Promise<Array<LongRunningPullRequest>>} A promise resolving with an array of PR objects.
  */
 export async function getLongRunningPRs(options = {}) {
 	const { github = new GitHub({}) } = options;
@@ -103,7 +103,7 @@ export async function getLongRunningPRs(options = {}) {
 		excludeLabels: BLOCKED_LABELS,
 	});
 
-	return prs.map((pr) => new TopLongRunning(pr));
+	return prs.map((pr) => new LongRunningPullRequest(pr));
 }
 
 /**
