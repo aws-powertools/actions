@@ -1,15 +1,16 @@
 import { Github } from "github/src/Github.mjs";
+import { ISSUES_SORT_BY } from "github_issues/src/constants.mjs";
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
-import { describe, expect, it, vi } from "vitest";
-import { ISSUES_SORT_BY } from "../../../github_issues/src/constants.mjs";
-import { buildIssues } from "../../../testing/src/builders/issues.mjs";
+import { buildGithubCore } from "testing/src/builders/github_core.mjs";
+import { buildIssues } from "testing/src/builders/issues.mjs";
 import {
 	buildLongRunningPullRequests,
 	buildTopFeatureRequests,
 	buildTopMostCommented,
 	buildTopOldestIssues,
-} from "../../../testing/src/builders/monthly_roadmap.mjs";
-import { buildPullRequests } from "../../../testing/src/builders/pull_requests.mjs";
+} from "testing/src/builders/monthly_roadmap.mjs";
+import { buildPullRequests } from "testing/src/builders/pull_requests.mjs";
+import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
 	FEATURE_REQUEST_LABEL,
@@ -18,7 +19,13 @@ import {
 	TOP_MOST_COMMENTED_LIMIT,
 	TOP_OLDEST_LIMIT,
 } from "../../src/constants.mjs";
-import { getLongRunningPRs, getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "../../src/index.mjs";
+import {
+	createMonthlyRoadmapReport,
+	getLongRunningPRs,
+	getTopFeatureRequests,
+	getTopMostCommented,
+	getTopOldestIssues,
+} from "../../src/index.mjs";
 
 describe("build monthly roadmap", () => {
 	describe("data fetching", () => {
@@ -116,5 +123,28 @@ describe("build monthly roadmap", () => {
 				excludeLabels: BLOCKED_LABELS,
 			});
 		});
+	});
+
+	it("build report issue (default params)", async () => {
+		//     GIVEN
+		const github = new Github();
+		github.core = buildGithubCore(); // mock GH Action Summary functions
+
+		const existingIssues = buildIssues({ max: 2 });
+		const existingPullRequests = buildPullRequests({ max: 2 });
+
+		const listPullRequestsSpy = vi.spyOn(github, "listPullRequests");
+		listPullRequestsSpy.mockImplementation(() => existingPullRequests);
+
+		const listIssuesSpy = vi.spyOn(github, "listIssues");
+		listIssuesSpy.mockImplementation(() => existingIssues);
+
+		const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue");
+		createOrUpdateIssueSpy.mockImplementation(() => existingIssues[0]);
+
+		//     WHEN
+		const ret = await createMonthlyRoadmapReport({ github });
+		expect(ret).toBe(existingIssues[0]);
+		//     THEN
 	});
 });

@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
 import { Octokit } from "@octokit/rest";
+import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "github_issues/src/constants.mjs";
 import { MAX_PULL_REQUESTS_LIMIT, MAX_PULL_REQUESTS_PER_PAGE } from "github_pull_requests/src/constants.mjs";
 import { z } from "zod";
-import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "../../github_issues/src/constants.mjs";
-import { issueSchema } from "./schemas/issues.mjs";
+import { issueSchema, pullRequestAsIssueSchema } from "./schemas/issues.mjs";
 import { pullRequestSchema } from "./schemas/pull_requests";
 
 export class Github {
@@ -151,8 +151,8 @@ export class Github {
 			// fetch as many issues as possible (`pageSize`), filter out PRs and issues labelled with any of our `excludeLabels`
 			// cap the results (`limit`)
 			for await (const { data: ret } of this.client.paginate.iterator(this.client.rest.issues.listForRepo, {
-				owner: context.repo.owner,
-				repo: context.repo.repo,
+				owner: this.owner,
+				repo: this.repo,
 				labels,
 				sort: sortBy,
 				direction,
@@ -182,5 +182,191 @@ export class Github {
 			this.core.error(`Unable to list issues. Error: ${error}`);
 			throw error;
 		}
+	}
+
+	/**
+	 * Searches for an issue based on query parameters.
+	 * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
+	 * @param {Object} options - Config.
+	 * @param {Github} options.github - A Github client instance.
+	 * @param {string} [options.searchQuery] - Search query to find issues and pull requests
+	 *
+	 * @example Finding an issue labeled as bug
+	 * ```javascript
+	 * const github = new Github();
+	 * const searchQuery = 'New bug is:issue label:bug in:title';
+	 * const issues = await github.findIssue({ searchQuery });
+	 * ```
+	 * @typedef {(z.infer<typeof issueSchema>[] | z.infer<typeof pullRequestAsIssueSchema>[])} SearchResult
+	 * @returns {Promise<SearchResult>} Response - Search containing results
+	 */
+	async findIssue(options = {}) {
+		const { searchQuery } = options;
+
+		try {
+			this.core.info(`Searching whether issue exists. Search params: '${searchQuery}'`);
+
+			const {
+				data: { items: issues },
+			} = await this.client.rest.search.issuesAndPullRequests({ q: searchQuery });
+
+			this.core.debug(issues);
+			return issues;
+		} catch (error) {
+			this.core.error(`Unable to search for issues at this time. Error: ${error}`);
+			throw error;
+		}
+	}
+
+	/**
+	 * Creates a new issue.
+	 * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
+	 * @param {Object} options - Config.
+	 * @param {string} options.title - Issue title
+	 * @param {string} [options.body] - Issue body (description)
+	 * @param {string[]} [options.labels] - Labels to assign
+	 * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+	 * @param {number} [options.milestone] - Milestone number to assign this issue to
+	 *
+	 * @example Creating an issue
+	 * ```javascript
+	 * const github = new Github();
+	 * const issue = await github.createIssue({
+	 *   title: 'New Issue',
+	 *   body: 'This is a new issue created using the createIssue function.',
+	 *   labels: ['enhancement'],
+	 *   assignees: ['heitorlessa'],
+	 *   milestone: 1
+	 * });
+	 *```
+	 * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue
+	 */
+	async createIssue(options = {}) {
+		const { title, body, labels, assignees, milestone } = options;
+
+		if (title === undefined) {
+			throw new Error("Issue title is required in CREATE operations.");
+		}
+
+		try {
+			const issue = await this.client.rest.issues.create({
+				owner: this.owner,
+				repo: this.repo,
+				title,
+				body,
+				labels,
+				assignees,
+				milestone,
+			});
+
+			this.core.debug(issue);
+			return issue.data;
+		} catch (error) {
+			this.core.error(`Unable to create issue in repository '${this.owner}/${this.repo}'. Error: ${error}`);
+			throw error;
+		}
+	}
+
+	/**
+	 * Updates an existing issue number.
+	 *
+	 * @param {Object} options - Config.
+	 * @param {number} options.issueNumber - Issue number to update
+	 * @param {string} [options.title] - Issue title
+	 * @param {string} [options.body] - Issue body (description)
+	 * @param {string[]} [options.labels] - Labels to assign
+	 * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+	 * @param {("open"|"closed")} [options.state] - Issue state to update to
+	 * @param {number} [options.milestone] - Milestone number
+	 *
+	 * @example Updating an existing issue
+	 *```javascript
+	 * const github = new Github();
+	 * const issue = await github.updateIssue({
+	 *   github: octokit,
+	 *   core,
+	 *   issueNumber: 10,
+	 *   title: 'New title',
+	 *   body: 'Updated description',
+	 *   labels: ['enhancement', 'need-customer-feedback],
+	 *   assignees: ['heitorlessa'],
+	 *   state: "closed",
+	 *   milestone: 1
+	 * });
+	 * ```
+	 * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly updated issue
+	 */
+	async updateIssue({ issueNumber, title, body, labels, assignees, state, milestone }) {
+		if (issueNumber === undefined) {
+			throw new Error("Issue number is required in UPDATE operations.");
+		}
+
+		try {
+			this.core.info(`Updating existing issue ${issueNumber}`);
+
+			const issue = await this.client.rest.issues.update({
+				owner: this.owner,
+				repo: this.repo,
+				issue_number: issueNumber,
+				body,
+				labels,
+				title,
+				assignees,
+				state,
+				milestone,
+			});
+
+			this.core.debug(issue);
+			return issue.data;
+		} catch (err) {
+			this.core.error(`Unable to update issue number '${issueNumber}'. Error: ${err}`);
+			throw err;
+		}
+	}
+
+	/**
+	 * Update existing issue if found, or create it.
+	 *
+	 * @param {Object} options - Config.
+	 * @param {Github} options.github - A Github client instance.
+	 * @param {string} [options.searchQuery] - Search query to find issue to update
+	 * @param {string} [options.title] - Issue title
+	 * @param {string} [options.body] - Issue body (description)
+	 * @param {string[]} [options.labels] - Labels to assign
+	 * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+	 * @param {("open" | "closed")} [options.state] - Issue state to update to
+	 * @param {number} [options.milestone] - Milestone number
+	 *
+	 * @example Update roadmap issue, or create it if not found
+	 * ```javascript
+	 * const github = new Github();
+	 * const issue = await createOrUpdateIssue({
+	 *   searchQuery: 'Roadmap reminder is:issue in:title label:report-roadmap',
+	 *   body: 'The new roadmap is...',
+	 *   labels: ['report-roadmap'],
+	 *   assignees: ['heitorlessa'],
+	 * });
+	 * ```
+	 * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
+	 */
+	async createOrUpdateIssue(options = {}) {
+		const { searchQuery, title, body, labels, assignees, state, milestone, github = new Github() } = options;
+		const searchResult = await this.findIssue({ searchQuery });
+
+		const reportingIssue = searchResult[0];
+
+		if (reportingIssue === undefined) {
+			return await this.createIssue({ title, body, labels, milestone, assignees });
+		}
+
+		return await this.updateIssue({
+			issueNumber: reportingIssue.number,
+			title,
+			body,
+			labels,
+			milestone,
+			assignees,
+			state,
+		});
 	}
 }

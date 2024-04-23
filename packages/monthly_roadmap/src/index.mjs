@@ -28,7 +28,7 @@ import { ISSUES_SORT_BY } from "../../github_issues/src/constants.mjs";
  *
  */
 export async function getTopFeatureRequests(options = {}) {
-	const github = options.github || new Github();
+	const { github = new Github({}) } = options;
 
 	github.core.info("Fetching most popular feature requests");
 
@@ -51,7 +51,7 @@ export async function getTopFeatureRequests(options = {}) {
  *
  */
 export async function getTopMostCommented(options = {}) {
-	const github = options.github || new Github();
+	const { github = new Github({}) } = options;
 
 	github.core.info("Fetching most commented issues");
 
@@ -72,7 +72,7 @@ export async function getTopMostCommented(options = {}) {
  * @returns {Promise<Array<TopOldest>>} A promise resolving with an array of issue objects.
  */
 export async function getTopOldestIssues(options = {}) {
-	const github = options.github || new Github();
+	const { github = new Github({}) } = options;
 
 	github.core.info("Fetching issues sorted by creation date");
 
@@ -94,7 +94,7 @@ export async function getTopOldestIssues(options = {}) {
  * @returns {Promise<Array<TopLongRunning>>} A promise resolving with an array of PR objects.
  */
 export async function getLongRunningPRs(options = {}) {
-	const github = options.github || new Github();
+	const { github = new Github({}) } = options;
 
 	github.core.info("Fetching PRs sorted by long-running");
 
@@ -113,12 +113,15 @@ export async function getLongRunningPRs(options = {}) {
  *
  * Example issue: https://github.com/heitorlessa/action-script-playground/issues/24
  *
- * @param {import('@types/github-script').AsyncFunctionArguments} AsyncFunctionArguments
+ * @param {Object} options - Config.
+ * @param {Github} options.github - A Github client instance.
  * @returns {Promise<void>} A promise resolving when the issue is created.
  *
  */
-export async function createMonthlyRoadmapReport({ github, context, core }) {
-	core.info("Fetching GitHub data concurrently");
+export async function createMonthlyRoadmapReport(options = {}) {
+	const { github = new Github({}) } = options;
+
+	github.core.info("Fetching GitHub data concurrently");
 
 	const [
 		{ value: featureRequests = DEFAULT_EMPTY_RESPONSE },
@@ -126,10 +129,10 @@ export async function createMonthlyRoadmapReport({ github, context, core }) {
 		{ value: oldestIssues = DEFAULT_EMPTY_RESPONSE },
 		{ value: mostActiveIssues = DEFAULT_EMPTY_RESPONSE },
 	] = await Promise.allSettled([
-		getTopFeatureRequests({ github, context, core }),
-		getLongRunningPRs({ github, context, core }),
-		getTopOldestIssues({ github, context, core }),
-		getTopMostCommented({ github, context, core }),
+		getTopFeatureRequests({ github }),
+		getLongRunningPRs({ github }),
+		getTopOldestIssues({ github }),
+		getTopMostCommented({ github }),
 	]);
 
 	const tables = {
@@ -168,18 +171,18 @@ ${tables.oldestIssues}
 ${isGitHubAction() ? `> workflow: ${getWorkflowRunUrl()}` : ""}
   `;
 
-	core.info("Creating issue with monthly roadmap report");
+	github.core.info("Creating issue with monthly roadmap report");
 
 	const MONTH = new Date().toLocaleString("default", { month: "long" });
 	const issueTitle = `Roadmap update reminder - ${MONTH}`;
-	const searchParams = `is:issue in:title state:open repo:${context.repo.owner}/${context.repo.repo}`;
+	const searchParams = `is:issue in:title state:open repo:${github.owner}/${github.repo}`;
 	const searchQuery = `${issueTitle} ${searchParams}`;
 
-	const ret = await createOrUpdateIssue({ github, context, core, title: issueTitle, searchQuery, body });
+	const ret = await github.createOrUpdateIssue({ github, title: issueTitle, searchQuery, body });
 
-	await core.summary
+	await github.core.summary
 		.addHeading("Monthly roadmap reminder created")
-		.addLink("View monthly report", ret.data.html_url)
+		.addLink("View monthly report", ret.html_url)
 		.write();
 
 	return ret;
