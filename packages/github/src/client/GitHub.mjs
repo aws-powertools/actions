@@ -120,7 +120,7 @@ export class GitHub {
 	 * @example List feature requests, excluding blocked issues
 	 *
 	 * ```javascript
-     * const github = new GitHub();
+	 * const github = new GitHub();
 	 * const issues = await github.listIssues({
 	 *   github: octokit,
 	 *   core,

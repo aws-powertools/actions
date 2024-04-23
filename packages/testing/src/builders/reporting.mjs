@@ -3,7 +3,7 @@ import { HighlyCommentedIssue } from "reporting/src/models/HighlyCommentedIssue.
 import { LongRunningPullRequest } from "reporting/src/models/LongRunningPullRequest.mjs";
 import { OldestIssue } from "reporting/src/models/OldestIssue.mjs";
 import { PopularFeatureRequest } from "reporting/src/models/PopularFeatureRequest.mjs";
-import { z } from "zod"
+import { z } from "zod";
 
 /**
  * Builds an array of top feature requests from GitHub issues
