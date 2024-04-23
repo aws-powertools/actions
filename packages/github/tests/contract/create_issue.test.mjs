@@ -1,23 +1,18 @@
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "../../../testing/src/builders/github_core.mjs";
-import { buildIssues, buildSearchIssues } from "../../../testing/src/builders/issues.mjs";
+import { buildGithubClient, buildGithubContext, buildGithubCore } from "testing/src/builders/github_core.mjs";
+import { buildIssues, buildSearchIssues } from "testing/src/builders/issues.mjs";
 import {
 	createIssueFailureHandler,
 	createIssueHandler,
 	findIssueHandler,
 	updateIssueHandler,
-} from "../../../testing/src/interceptors/issues_handler.mjs";
-import { createIssue, createOrUpdateIssue } from "../../src/issues.mjs";
-
-const org = "aws-powertools";
-const repo = "powertools-lambda-python";
+} from "testing/src/interceptors/issues_handler.mjs";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { Github} from "../../src/Github.mjs";
 
 describe("create issues contract", () => {
+    process.env.GITHUB_REPOSITORY = "test-org/test-repo"
 	const server = setupServer();
-	const github = buildGithubClient({ token: process.env.GITHUB_TOKEN });
-	const context = buildGithubContext({ org, repo });
-	const core = buildGithubCore();
 
 	beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 
@@ -27,14 +22,13 @@ describe("create issues contract", () => {
 
 	it("should create an issue (default parameters)", async () => {
 		// GIVEN
+        const github = new Github();
 		const createdIssue = buildIssues({ max: 1 })[0];
-		server.use(...createIssueHandler({ data: createdIssue, org, repo }));
+		server.use(...createIssueHandler({ data: createdIssue, org: github.owner, repo: github.repo }));
 
 		// WHEN
-		const ret = await createIssue({
+		const ret = await github.createIssue({
 			github,
-			context,
-			core,
 			title: "Test",
 		});
 
@@ -46,14 +40,13 @@ describe("create issues contract", () => {
 		// GIVEN
 		const createdIssue = buildIssues({ max: 1 })[0];
 		const noIssueFound = buildSearchIssues({ max: 0 });
+        const github = new Github();
 
-		server.use(...findIssueHandler({ data: noIssueFound }), ...createIssueHandler({ data: createdIssue, org, repo }));
+		server.use(...findIssueHandler({ data: noIssueFound }), ...createIssueHandler({ data: createdIssue, org: github.owner, repo: github.repo }));
 
 		// WHEN
-		const ret = await createOrUpdateIssue({
+		const ret = await github.createOrUpdateIssue({
 			github,
-			context,
-			core,
 			searchQuery: "Test issue that won't be found",
 			title: "Test",
 		});
@@ -66,19 +59,17 @@ describe("create issues contract", () => {
 		// GIVEN
 		const existingIssues = buildIssues({ max: 1 });
 		const foundIssue = buildSearchIssues({ issues: existingIssues });
-
+        const github = new Github();
 		const existingIssue = existingIssues[0];
 
 		server.use(
 			...findIssueHandler({ data: foundIssue }),
-			...updateIssueHandler({ data: existingIssue, issueNumber: existingIssue.number, org, repo }),
+			...updateIssueHandler({ data: existingIssue, issueNumber: existingIssue.number, org: github.owner, repo: github.repo }),
 		);
 
 		// WHEN
-		const ret = await createOrUpdateIssue({
+		const ret = await github.createOrUpdateIssue({
 			github,
-			context,
-			core,
 			searchQuery: existingIssue.title,
 			title: existingIssue.title,
 		});
@@ -90,14 +81,15 @@ describe("create issues contract", () => {
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
 		const err = "Unable to process request at this time";
-		server.use(...createIssueFailureHandler({ org, repo, err }));
+        const github = new Github();
+		server.use(...createIssueFailureHandler({ org: github.owner, repo: github.repo, err }));
 
 		// WHEN
 		// THEN
 		await expect(
-			createIssue({
+			github.createIssue({
 				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-				context: buildGithubContext({ org, repo }),
+				context: buildGithubContext({ org: github.owner, repo: github.repo }),
 				core: buildGithubCore(),
 				title: "Test",
 			}),
@@ -106,14 +98,11 @@ describe("create issues contract", () => {
 
 	it("should throw if issue title is missing", async () => {
 		// GIVEN
+        const github = new Github();
 		// WHEN
 		// THEN
 		await expect(
-			createIssue({
-				github: buildGithubClient({ token: process.env.GITHUB_TOKEN }),
-				context: buildGithubContext({ org, repo }),
-				core: buildGithubCore(),
-			}),
+			github.createIssue(),
 		).rejects.toThrowError("Issue title is required");
 	});
 });

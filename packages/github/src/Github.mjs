@@ -296,8 +296,12 @@ export class Github {
 	 * ```
 	 * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly updated issue
 	 */
-	async updateIssue({ issueNumber, title, body, labels, assignees, state, milestone }) {
-		if (issueNumber === undefined) {
+	async updateIssue(options = {}) {
+        const {
+         issueNumber, title, body, labels, assignees, state, milestone
+        } = options
+        
+        if (issueNumber === undefined) {
 			throw new Error("Issue number is required in UPDATE operations.");
 		}
 
