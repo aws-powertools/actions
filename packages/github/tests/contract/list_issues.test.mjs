@@ -1,5 +1,5 @@
-import { MAX_ISSUES_PER_PAGE } from "github_issues/src/constants.mjs";
 import { setupServer } from "msw/node";
+import { MAX_ISSUES_PER_PAGE } from "packages/github/src/constants.mjs";
 import { buildIssues } from "testing/src/builders/issues.mjs";
 import { listIssuesFailureHandler, listIssuesHandler } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";

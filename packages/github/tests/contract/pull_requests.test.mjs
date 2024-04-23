@@ -1,7 +1,4 @@
-import { MAX_PULL_REQUESTS_PER_PAGE } from "github_pull_requests/src/constants.mjs";
-import { listPullRequests } from "github_pull_requests/src/pull_requests.mjs";
 import { setupServer } from "msw/node";
-import { buildGithubClient, buildGithubContext, buildGithubCore } from "testing/src/builders/github_core.mjs";
 import { buildPullRequests } from "testing/src/builders/pull_requests.mjs";
 import {
 	listPullRequestsFailureHandler,
@@ -9,6 +6,7 @@ import {
 } from "testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { GitHub } from "../../src/client/GitHub.mjs";
+import {MAX_PULL_REQUESTS_PER_PAGE} from "../../src/constants.mjs";
 
 describe("list pull requests contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

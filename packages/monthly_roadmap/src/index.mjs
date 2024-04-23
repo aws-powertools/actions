@@ -1,23 +1,21 @@
-import { getWorkflowRunUrl, isGitHubAction } from "github_actions/src/functions.mjs";
-import { createOrUpdateIssue } from "../../github_issues/src/issues.mjs";
-import { buildMarkdownTable } from "../../markdown/src/builder.mjs";
-import { TopFeatureRequest } from "./TopFeatureRequests.mjs";
-import { TopLongRunning } from "./TopLongRunningPullRequest.mjs";
-import { TopMostCommented } from "./TopMostCommented.mjs";
-import { TopOldest } from "./TopOldest.mjs";
+import {getWorkflowRunUrl, isGitHubAction} from "github/src/functions.mjs";
+import {buildMarkdownTable} from "../../markdown/src/builder.mjs";
+import {TopFeatureRequest} from "./TopFeatureRequests.mjs";
+import {TopLongRunning} from "./TopLongRunningPullRequest.mjs";
+import {TopMostCommented} from "./TopMostCommented.mjs";
+import {TopOldest} from "./TopOldest.mjs";
 import {
-	BLOCKED_LABELS,
-	DEFAULT_EMPTY_RESPONSE,
-	FEATURE_REQUEST_LABEL,
-	TOP_FEATURE_REQUESTS_LIMIT,
-	TOP_LONG_RUNNING_PR_LIMIT,
-	TOP_MOST_COMMENTED_LIMIT,
-	TOP_OLDEST_LIMIT,
+    BLOCKED_LABELS,
+    DEFAULT_EMPTY_RESPONSE,
+    FEATURE_REQUEST_LABEL,
+    TOP_FEATURE_REQUESTS_LIMIT,
+    TOP_LONG_RUNNING_PR_LIMIT,
+    TOP_MOST_COMMENTED_LIMIT,
+    TOP_OLDEST_LIMIT,
 } from "./constants.mjs";
 
-import { GitHub } from "github/src/client/GitHub.mjs";
-import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
-import { ISSUES_SORT_BY } from "../../github_issues/src/constants.mjs";
+import {GitHub} from "github/src/client/GitHub.mjs";
+import {ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY} from "github/src/constants.mjs";
 
 /**
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.

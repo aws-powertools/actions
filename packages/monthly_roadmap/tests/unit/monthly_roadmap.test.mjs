@@ -1,6 +1,5 @@
 import { GitHub } from "github/src/client/GitHub.mjs";
-import { ISSUES_SORT_BY } from "github_issues/src/constants.mjs";
-import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
+import {ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY} from "github/src/constants.mjs";
 import { buildGithubCore } from "testing/src/builders/github_core.mjs";
 import { buildIssues } from "testing/src/builders/issues.mjs";
 import {
