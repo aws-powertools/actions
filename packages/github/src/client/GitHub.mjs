@@ -6,7 +6,7 @@ import { z } from "zod";
 import { issueSchema, pullRequestAsIssueSchema } from "../schemas/issues.mjs";
 import { pullRequestSchema } from "../schemas/pull_requests.js";
 
-export class Github {
+export class GitHub {
 	#debug;
 
 	/**
@@ -52,7 +52,7 @@ export class Github {
 	 * @example Listing pull requests excluding those labels with `do-not-merge`
 	 *
 	 * ```javascript
-	 * const github = new Github();
+	 * const github = new GitHub();
 	 * const pullRequests = await github.listPullRequests({ sortBy: 'created', excludeLabels: ["do-not-merge"] });
 	 * ```
 	 *
@@ -188,12 +188,12 @@ export class Github {
 	 * Searches for an issue based on query parameters.
 	 * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
 	 * @param {Object} options - Config.
-	 * @param {Github} options.github - A Github client instance.
+	 * @param {GitHub} options.github - A GitHub client instance.
 	 * @param {string} [options.searchQuery] - Search query to find issues and pull requests
 	 *
 	 * @example Finding an issue labeled as bug
 	 * ```javascript
-	 * const github = new Github();
+	 * const github = new GitHub();
 	 * const searchQuery = 'New bug is:issue label:bug in:title';
 	 * const issues = await github.findIssue({ searchQuery });
 	 * ```
@@ -230,7 +230,7 @@ export class Github {
 	 *
 	 * @example Creating an issue
 	 * ```javascript
-	 * const github = new Github();
+	 * const github = new GitHub();
 	 * const issue = await github.createIssue({
 	 *   title: 'New Issue',
 	 *   body: 'This is a new issue created using the createIssue function.',
@@ -281,7 +281,7 @@ export class Github {
 	 *
 	 * @example Updating an existing issue
 	 *```javascript
-	 * const github = new Github();
+	 * const github = new GitHub();
 	 * const issue = await github.updateIssue({
 	 *   github: octokit,
 	 *   core,
@@ -332,7 +332,7 @@ export class Github {
 	 * Update existing issue if found, or create it.
 	 *
 	 * @param {Object} options - Config.
-	 * @param {Github} options.github - A Github client instance.
+	 * @param {GitHub} options.github - A GitHub client instance.
 	 * @param {string} [options.searchQuery] - Search query to find issue to update
 	 * @param {string} [options.title] - Issue title
 	 * @param {string} [options.body] - Issue body (description)
@@ -343,7 +343,7 @@ export class Github {
 	 *
 	 * @example Update roadmap issue, or create it if not found
 	 * ```javascript
-	 * const github = new Github();
+	 * const github = new GitHub();
 	 * const issue = await createOrUpdateIssue({
 	 *   searchQuery: 'Roadmap reminder is:issue in:title label:report-roadmap',
 	 *   body: 'The new roadmap is...',
@@ -354,7 +354,7 @@ export class Github {
 	 * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
 	 */
 	async createOrUpdateIssue(options = {}) {
-		const { searchQuery, title, body, labels, assignees, state, milestone, github = new Github() } = options;
+		const { searchQuery, title, body, labels, assignees, state, milestone, github = new GitHub() } = options;
 		const searchResult = await this.findIssue({ searchQuery });
 
 		const reportingIssue = searchResult[0];

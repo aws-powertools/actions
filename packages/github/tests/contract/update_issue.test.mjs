@@ -2,7 +2,7 @@ import {setupServer} from "msw/node";
 import {buildIssues} from "testing/src/builders/issues.mjs";
 import {updateIssueFailureHandler, updateIssueHandler} from "testing/src/interceptors/issues_handler.mjs";
 import {afterAll, afterEach, beforeAll, describe, expect, it} from "vitest";
-import {Github} from "../../src/client/Github.mjs";
+import {GitHub} from "../../src/client/GitHub.mjs";
 
 describe("update issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";
@@ -16,7 +16,7 @@ describe("update issues contract", () => {
 
 	it("should update an issue (default parameters)", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const updatedIssue = buildIssues({ max: 1 })[0];
 		server.use(
 			...updateIssueHandler({
@@ -36,7 +36,7 @@ describe("update issues contract", () => {
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const issueNumber = 0;
 		const err = "Unable to process request at this time";
 		server.use(...updateIssueFailureHandler({ issueNumber, err, org: github.owner, repo: github.repo }));
@@ -48,7 +48,7 @@ describe("update issues contract", () => {
 
 	it("should throw if issue number is missing", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		// WHEN
 		// THEN
 		await expect(github.updateIssue()).rejects.toThrowError("Issue number is required");

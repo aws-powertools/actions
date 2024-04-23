@@ -1,4 +1,4 @@
-import { Github } from "github/src/client/Github.mjs";
+import { GitHub } from "github/src/client/GitHub.mjs";
 import { issueSchema, pullRequestAsIssueSchema } from "github/src/schemas/issues.mjs";
 import { z } from "zod";
 import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";
@@ -45,7 +45,7 @@ export async function findIssue({ github, core, searchQuery }) {
  * Creates a new issue.
  * API: https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28#create-an-issue
  * @param {Object} options - Config.
- * @param {Github} options.github - A Github client instance.
+ * @param {GitHub} options.github - A GitHub client instance.
  * @param {string} options.title - Issue title
  * @param {string} [options.body] - Issue body (description)
  * @param {string[]} [options.labels] - Labels to assign
@@ -65,7 +65,7 @@ export async function findIssue({ github, core, searchQuery }) {
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created issue
  */
 export async function createIssue(options = {}) {
-	const { title, body, labels, assignees, milestone, github = new Github() } = options;
+	const { title, body, labels, assignees, milestone, github = new GitHub() } = options;
 
 	if (title === undefined) {
 		throw new Error("Issue title is required in CREATE operations.");
@@ -176,7 +176,7 @@ export async function updateIssue({
  * Update existing issue if found, or create it.
  *
  * @param {Object} options - Config.
- * @param {Github} options.github - A Github client instance.
+ * @param {GitHub} options.github - A GitHub client instance.
  * @param {string} [options.searchQuery] - Search query to find issue to update
  * @param {string} [options.title] - Issue title
  * @param {string} [options.body] - Issue body (description)
@@ -202,7 +202,7 @@ export async function updateIssue({
  * @returns {Promise<z.infer<typeof issueSchema>>} Issue - Newly created or updated issue.
  */
 export async function createOrUpdateIssue(options = {}) {
-	const { searchQuery, title, body, labels, assignees, state, milestone, github = new Github() } = options;
+	const { searchQuery, title, body, labels, assignees, state, milestone, github = new GitHub() } = options;
 	const searchResult = await github.findIssue({ searchQuery });
 
 	const reportingIssue = searchResult.items[0];

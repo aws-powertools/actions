@@ -15,7 +15,7 @@ import {
 	TOP_OLDEST_LIMIT,
 } from "./constants.mjs";
 
-import { Github } from "github/src/client/Github.mjs";
+import { GitHub } from "github/src/client/GitHub.mjs";
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
 import { ISSUES_SORT_BY } from "../../github_issues/src/constants.mjs";
 
@@ -23,12 +23,12 @@ import { ISSUES_SORT_BY } from "../../github_issues/src/constants.mjs";
  * Retrieves a list of PRs from a repository sorted by `reactions-+1` keyword.
  *
  * @param {Object} options - Config.
- * @param {Github} options.github - A Github client instance.
+ * @param {GitHub} options.github - A GitHub client instance.
  * @returns {Promise<TopFeatureRequest[]>} A promise resolving with an array of issue objects.
  *
  */
 export async function getTopFeatureRequests(options = {}) {
-	const { github = new Github({}) } = options;
+	const { github = new GitHub({}) } = options;
 
 	github.core.info("Fetching most popular feature requests");
 
@@ -46,12 +46,12 @@ export async function getTopFeatureRequests(options = {}) {
  * Retrieves a list of issues from a repository sorted by `comments` keyword.
  *
  * @param {Object} options - Config.
- * @param {Github} options.github - A Github client instance.
+ * @param {GitHub} options.github - A GitHub client instance.
  * @returns {Promise<Array<TopMostCommented>>} A promise resolving with an array of issue objects.
  *
  */
 export async function getTopMostCommented(options = {}) {
-	const { github = new Github({}) } = options;
+	const { github = new GitHub({}) } = options;
 
 	github.core.info("Fetching most commented issues");
 
@@ -68,11 +68,11 @@ export async function getTopMostCommented(options = {}) {
  * Retrieves a list of oldest issues from a repository sorted by `created` keyword, excluding blocked labels.
  *
  * @param {Object} options - Config.
- * @param {Github} options.github - A Github client instance.
+ * @param {GitHub} options.github - A GitHub client instance.
  * @returns {Promise<Array<TopOldest>>} A promise resolving with an array of issue objects.
  */
 export async function getTopOldestIssues(options = {}) {
-	const { github = new Github({}) } = options;
+	const { github = new GitHub({}) } = options;
 
 	github.core.info("Fetching issues sorted by creation date");
 
@@ -90,11 +90,11 @@ export async function getTopOldestIssues(options = {}) {
  * Retrieves a list of long running pull requests from a repository, excluding blocked labels.
  *
  * @param {Object} options - Config.
- * @param {Github} options.github - A Github client instance.
+ * @param {GitHub} options.github - A GitHub client instance.
  * @returns {Promise<Array<TopLongRunning>>} A promise resolving with an array of PR objects.
  */
 export async function getLongRunningPRs(options = {}) {
-	const { github = new Github({}) } = options;
+	const { github = new GitHub({}) } = options;
 
 	github.core.info("Fetching PRs sorted by long-running");
 
@@ -114,12 +114,12 @@ export async function getLongRunningPRs(options = {}) {
  * Example issue: https://github.com/heitorlessa/action-script-playground/issues/24
  *
  * @param {Object} options - Config.
- * @param {Github} options.github - A Github client instance.
+ * @param {GitHub} options.github - A GitHub client instance.
  * @returns {Promise<void>} A promise resolving when the issue is created.
  *
  */
 export async function createMonthlyRoadmapReport(options = {}) {
-	const { github = new Github({}) } = options;
+	const { github = new GitHub({}) } = options;
 
 	github.core.info("Fetching GitHub data concurrently");
 

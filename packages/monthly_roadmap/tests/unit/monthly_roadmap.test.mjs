@@ -1,4 +1,4 @@
-import { Github } from "github/src/client/Github.mjs";
+import { GitHub } from "github/src/client/GitHub.mjs";
 import { ISSUES_SORT_BY } from "github_issues/src/constants.mjs";
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
 import { buildGithubCore } from "testing/src/builders/github_core.mjs";
@@ -33,7 +33,7 @@ describe("build monthly roadmap", () => {
 			// GIVEN
 			const existingFeatureRequests = buildIssues({ max: 2, labels: [FEATURE_REQUEST_LABEL] });
 			const expectedTopFeatureRequests = buildTopFeatureRequests(existingFeatureRequests);
-			const github = new Github();
+			const github = new GitHub();
 
 			const listIssuesSpy = vi.spyOn(github, "listIssues");
 			listIssuesSpy.mockImplementation(() => {
@@ -57,7 +57,7 @@ describe("build monthly roadmap", () => {
 			// GIVEN
 			const existingTopCommentedIssues = buildIssues({ max: 2 });
 			const expectedTopCommentedIssues = buildTopMostCommented(existingTopCommentedIssues);
-			const github = new Github();
+			const github = new GitHub();
 
 			const listIssuesSpy = vi.spyOn(github, "listIssues");
 			listIssuesSpy.mockImplementation(() => {
@@ -80,7 +80,7 @@ describe("build monthly roadmap", () => {
 			// GIVEN
 			const existingOldestIssues = buildIssues({ max: 2 });
 			const expectedTopOldestIssues = buildTopOldestIssues(existingOldestIssues);
-			const github = new Github();
+			const github = new GitHub();
 
 			const listIssuesSpy = vi.spyOn(github, "listIssues");
 			listIssuesSpy.mockImplementation(() => {
@@ -104,7 +104,7 @@ describe("build monthly roadmap", () => {
 			// GIVEN
 			const existingPullRequests = buildPullRequests({ max: 2 });
 			const expectedPullRequests = buildLongRunningPullRequests(existingPullRequests);
-			const github = new Github();
+			const github = new GitHub();
 
 			const listPullRequestsSpy = vi.spyOn(github, "listPullRequests");
 			listPullRequestsSpy.mockImplementation(() => {
@@ -127,7 +127,7 @@ describe("build monthly roadmap", () => {
 
 	it("build report issue (default params)", async () => {
 		//     GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		github.core = buildGithubCore(); // mock GH Action Summary functions
 
 		const existingIssues = buildIssues({ max: 2 });

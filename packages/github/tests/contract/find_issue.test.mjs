@@ -3,7 +3,7 @@ import {setupServer} from "msw/node";
 import {buildSearchIssues} from "testing/src/builders/issues.mjs";
 import {findIssueFailureHandler, findIssueHandler} from "testing/src/interceptors/issues_handler.mjs";
 import {afterAll, afterEach, beforeAll, describe, expect, it} from "vitest";
-import {Github} from "../../src/client/Github.mjs";
+import {GitHub} from "../../src/client/GitHub.mjs";
 
 describe("search issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";
@@ -17,7 +17,7 @@ describe("search issues contract", () => {
 
 	it("should find an issue based on search", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const issueTitle = faker.lorem.lines(1);
 		const searchQuery = `${issueTitle} is:issue in:title state:open repo:${github.owner}/${github.repo}`;
 
@@ -33,7 +33,7 @@ describe("search issues contract", () => {
 
 	it("should not fail when issue is not found", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const searchResults = buildSearchIssues({ max: 0 });
 		server.use(...findIssueHandler({ searchResults }));
 
@@ -48,7 +48,7 @@ describe("search issues contract", () => {
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const err = "Unable to process request at this time";
 		server.use(...findIssueFailureHandler({ err }));
 

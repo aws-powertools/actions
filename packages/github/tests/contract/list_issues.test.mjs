@@ -3,7 +3,7 @@ import { setupServer } from "msw/node";
 import { buildIssues } from "testing/src/builders/issues.mjs";
 import { listIssuesFailureHandler, listIssuesHandler } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { Github } from "../../src/client/Github.mjs";
+import { GitHub } from "../../src/client/GitHub.mjs";
 
 describe("list issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";
@@ -17,7 +17,7 @@ describe("list issues contract", () => {
 
 	it("should list issues (default parameters)", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const existingIssues = buildIssues({ max: 5 });
 		server.use(...listIssuesHandler({ data: existingIssues, org: github.owner, repo: github.repo }));
 
@@ -30,7 +30,7 @@ describe("list issues contract", () => {
 
 	it("should filter out pull requests from results", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const realIssues = buildIssues({ max: 2 });
 		const prAsIssues = buildIssues({ max: 2, isPr: true });
 		server.use(...listIssuesHandler({ data: [...realIssues, ...prAsIssues], org: github.owner, repo: github.repo }));
@@ -43,7 +43,7 @@ describe("list issues contract", () => {
 	});
 
 	it("should exclude results with certain labels", async () => {
-		const github = new Github();
+		const github = new GitHub();
 		const BLOCKED_LABELS = "do-not-merge";
 
 		const existingIssues = buildIssues({ max: 5, labels: [BLOCKED_LABELS] });
@@ -58,7 +58,7 @@ describe("list issues contract", () => {
 
 	it("should limit the number of issues returned", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const maxIssuesToReturn = 1;
 		const existingIssues = buildIssues({ max: 2 });
 
@@ -73,7 +73,7 @@ describe("list issues contract", () => {
 
 	it("should paginate to list all available issues when the limit is higher", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const totalCount = MAX_ISSUES_PER_PAGE + 1;
 
 		const existingIssues = buildIssues({ max: totalCount });
@@ -88,7 +88,7 @@ describe("list issues contract", () => {
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const err = "Unable to process request at this time";
 		server.use(...listIssuesFailureHandler({ org: github.owner, repo: github.repo, err }));
 

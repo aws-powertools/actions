@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { buildIssues, buildSearchIssues } from "testing/src/builders/issues.mjs";
 import { describe, expect, it, vi } from "vitest";
-import { Github } from "../../src/client/Github.mjs";
+import { GitHub } from "../../src/client/GitHub.mjs";
 
 describe("create or update issue", () => {
 
@@ -10,7 +10,7 @@ describe("create or update issue", () => {
         const existingIssue = buildIssues({ max: 1 });
         const searchQuery = faker.lorem.sentence();
 
-        const github = new Github();
+        const github = new GitHub();
         const findIssueSpy = vi.spyOn(github, "findIssue");
         findIssueSpy.mockImplementation(() => existingIssue);
 
@@ -37,7 +37,7 @@ describe("create or update issue", () => {
 			milestone: 1,
 		};
 
-		const github = new Github();
+		const github = new GitHub();
 		const findIssueSpy = vi.spyOn(github, "findIssue");
 		findIssueSpy.mockImplementation(() => searchResult);
 
@@ -65,7 +65,7 @@ describe("create or update issue", () => {
 			milestone: 1,
 		};
 
-		const github = new Github();
+		const github = new GitHub();
 		const findIssueSpy = vi.spyOn(github, "findIssue");
 		findIssueSpy.mockImplementation(() => existingIssue);
 

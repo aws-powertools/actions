@@ -8,7 +8,7 @@ import {
 	listPullRequestsHandler,
 } from "testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { Github } from "../../src/client/Github.mjs";
+import { GitHub } from "../../src/client/GitHub.mjs";
 
 describe("list pull requests contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";
@@ -22,7 +22,7 @@ describe("list pull requests contract", () => {
 
 	it("should list pull requests (default parameters)", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const data = buildPullRequests({ max: 5 });
 		server.use(...listPullRequestsHandler({ data, org: github.owner, repo: github.repo }));
 
@@ -35,7 +35,7 @@ describe("list pull requests contract", () => {
 
 	it("should exclude results with certain labels", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const BLOCKED_LABELS = "do-not-merge";
 		const data = buildPullRequests({ max: 5, labels: [BLOCKED_LABELS] });
 		server.use(...listPullRequestsHandler({ data, org: github.owner, repo: github.repo }));
@@ -49,7 +49,7 @@ describe("list pull requests contract", () => {
 
 	it("should limit the number of pull requests returned", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const data = buildPullRequests({ max: 2 });
 		server.use(...listPullRequestsHandler({ data, org: github.owner, repo: github.repo }));
 
@@ -62,7 +62,7 @@ describe("list pull requests contract", () => {
 
 	it("should paginate to list all available pull requests when the limit is higher", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const totalPRs = MAX_PULL_REQUESTS_PER_PAGE + 1;
 
 		const data = buildPullRequests({ max: totalPRs });
@@ -77,7 +77,7 @@ describe("list pull requests contract", () => {
 
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
-		const github = new Github();
+		const github = new GitHub();
 		const err = "Unable to process request at this time";
 		server.use(...listPullRequestsFailureHandler({ org: github.owner, repo: github.repo, err }));
 
