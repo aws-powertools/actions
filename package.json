@@ -3,9 +3,6 @@
     "packages/monthly_roadmap",
     "packages/markdown",
     "packages/date_utils",
-    "packages/github_issues",
-    "packages/github_pull_requests",
-    "packages/github_actions",
     "packages/testing",
     "packages/github"
   ],
@@ -21,10 +18,12 @@
     "zod": "^3.22.4"
   },
   "scripts": {
+    "dev": "npm ci",
     "test": "vitest",
     "lint": "biome lint packages --apply",
     "format": "biome format packages --write",
     "ci": "biome check packages"
   },
-  "type": "module"
+  "type": "module",
+  "private": "true"
 }
