@@ -15,8 +15,8 @@ import {
 	TOP_OLDEST_LIMIT,
 } from "./constants.mjs";
 
+import { Github } from "github/src/client/Github.mjs";
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
-import { Github } from "../../github/src/Github.mjs";
 import { ISSUES_SORT_BY } from "../../github_issues/src/constants.mjs";
 
 /**

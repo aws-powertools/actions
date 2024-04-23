@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { buildIssues, buildSearchIssues } from "testing/src/builders/issues.mjs";
 import { describe, expect, it, vi } from "vitest";
-import { Github } from "../../src/Github.mjs";
+import { Github } from "../../src/client/Github.mjs";
 
 describe("create or update issue", () => {
 

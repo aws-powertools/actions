@@ -3,8 +3,8 @@ import { Octokit } from "@octokit/rest";
 import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "github_issues/src/constants.mjs";
 import { MAX_PULL_REQUESTS_LIMIT, MAX_PULL_REQUESTS_PER_PAGE } from "github_pull_requests/src/constants.mjs";
 import { z } from "zod";
-import { issueSchema, pullRequestAsIssueSchema } from "./schemas/issues.mjs";
-import { pullRequestSchema } from "./schemas/pull_requests";
+import { issueSchema, pullRequestAsIssueSchema } from "../schemas/issues.mjs";
+import { pullRequestSchema } from "../schemas/pull_requests.js";
 
 export class Github {
 	#debug;

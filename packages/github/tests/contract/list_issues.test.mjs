@@ -3,7 +3,7 @@ import { setupServer } from "msw/node";
 import { buildIssues } from "testing/src/builders/issues.mjs";
 import { listIssuesFailureHandler, listIssuesHandler } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { Github } from "../../src/Github.mjs";
+import { Github } from "../../src/client/Github.mjs";
 
 describe("list issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

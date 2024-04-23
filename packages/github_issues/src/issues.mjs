@@ -1,4 +1,4 @@
-import { Github } from "github/src/Github.mjs";
+import { Github } from "github/src/client/Github.mjs";
 import { issueSchema, pullRequestAsIssueSchema } from "github/src/schemas/issues.mjs";
 import { z } from "zod";
 import { MAX_ISSUES_LIMIT, MAX_ISSUES_PER_PAGE } from "./constants.mjs";

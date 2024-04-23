@@ -1,4 +1,4 @@
-import { Github } from "github/src/Github.mjs";
+import { Github } from "github/src/client/Github.mjs";
 import { ISSUES_SORT_BY } from "github_issues/src/constants.mjs";
 import { PULL_REQUESTS_SORT_BY } from "github_pull_requests/src/constants.mjs";
 import { buildGithubCore } from "testing/src/builders/github_core.mjs";

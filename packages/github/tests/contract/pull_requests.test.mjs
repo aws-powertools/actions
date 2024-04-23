@@ -8,7 +8,7 @@ import {
 	listPullRequestsHandler,
 } from "testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { Github } from "../../src/Github.mjs";
+import { Github } from "../../src/client/Github.mjs";
 
 describe("list pull requests contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";
