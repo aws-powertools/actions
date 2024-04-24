@@ -1,6 +1,5 @@
 import { GitHub } from "github/src/client";
 import { getWorkflowRunUrl, isGitHubAction } from "github/src/functions.mjs";
-import { buildMarkdownTable } from "markdown/src/builder.mjs";
 import { DEFAULT_EMPTY_RESPONSE } from "./constants.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "./issues";
 import {Table} from "./markdown/index.mjs";

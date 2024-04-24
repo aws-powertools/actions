@@ -29,3 +29,7 @@ export const ISSUES_SORT_BY = {
 	COMMENTS: "comments",
 	REACTION_PLUS_1: "reactions-+1", // Official API docs are out of date but sorting works
 };
+
+export const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY; // aws-powertools/actions
+export const GITHUB_BASE_URL = process.env.GITHUB_SERVER_URL; // https://github.com
+export const GITHUB_ACTION_RUN_ID = process.env.GITHUB_RUN_ID;
