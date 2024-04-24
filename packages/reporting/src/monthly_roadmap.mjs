@@ -3,6 +3,7 @@ import { getWorkflowRunUrl, isGitHubAction } from "github/src/functions.mjs";
 import { buildMarkdownTable } from "markdown/src/builder.mjs";
 import { DEFAULT_EMPTY_RESPONSE } from "./constants.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "./issues";
+import {Table} from "./markdown/index.mjs";
 import { getLongRunningPRs } from "./pull_requests";
 
 /**
@@ -32,12 +33,10 @@ export async function createMonthlyRoadmapReport(options = {}) {
 		getTopMostCommented({ github }),
 	]);
 
-	const tables = {
-		featureRequests: buildMarkdownTable(featureRequests),
-		mostActiveIssues: buildMarkdownTable(mostActiveIssues),
-		longRunningPRs: buildMarkdownTable(longRunningPRs),
-		oldestIssues: buildMarkdownTable(oldestIssues),
-	};
+    const featureRequestsTable = Table.fromKeyValueObjects(featureRequests)
+    const mostCommentedTable = Table.fromKeyValueObjects(mostActiveIssues)
+    const longRunningPRsTable = Table.fromKeyValueObjects(longRunningPRs)
+    const oldestIssuesTable = Table.fromKeyValueObjects(oldestIssues)
 
 	const body = `
 Quick report of top 3 issues/PRs to assist in roadmap updates. Issues or PRs with the following labels are excluded:
@@ -51,32 +50,32 @@ Quick report of top 3 issues/PRs to assist in roadmap updates. Issues or PRs wit
 
 ## Top 3 Feature Requests
 
-${tables.featureRequests}
+${featureRequestsTable}
 
 ## Top 3 Most Commented Issues
 
-${tables.mostActiveIssues}
+${mostCommentedTable}
 
 ## Top 3 Long Running Pull Requests
 
-${tables.longRunningPRs}
+${longRunningPRsTable}
 
 ## Top 3 Oldest Issues
 
-${tables.oldestIssues}
+${oldestIssuesTable}
 
 ${isGitHubAction() ? `> workflow: ${getWorkflowRunUrl()}` : ""}
   `;
 
 	github.core.info("Creating issue with monthly roadmap report");
 
-	const MONTH = new Date().toLocaleString("default", { month: "long" });
+	const MONTH = new Date().toLocaleString("en-US", { month: "long" });
 	const issueTitle = `Roadmap update reminder - ${MONTH}`;
 	const searchParams = `is:issue in:title state:open repo:${github.owner}/${github.repo}`;
 	const searchQuery = `${issueTitle} ${searchParams}`;
 
 	const ret = await github.createOrUpdateIssue({ github, title: issueTitle, searchQuery, body });
-
+    
 	await github.core.summary
 		.addHeading("Monthly roadmap reminder created")
 		.addLink("View monthly report", ret.html_url)

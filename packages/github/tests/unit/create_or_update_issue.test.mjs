@@ -10,8 +10,7 @@ describe("create or update issue", () => {
 		const searchQuery = faker.lorem.sentence();
 
 		const github = new GitHub();
-		const findIssueSpy = vi.spyOn(github, "findIssue");
-		findIssueSpy.mockImplementation(() => existingIssue);
+		const findIssueSpy = vi.spyOn(github, "findIssue").mockImplementation(() => existingIssue);
 
 		// WHEN
 		const issueFound = await github.findIssue({ searchQuery });
@@ -36,11 +35,8 @@ describe("create or update issue", () => {
 		};
 
 		const github = new GitHub();
-		const findIssueSpy = vi.spyOn(github, "findIssue");
-		findIssueSpy.mockImplementation(() => searchResult);
-
-		const createIssueSpy = vi.spyOn(github, "createIssue");
-		createIssueSpy.mockImplementation(() => createdIssue);
+		const findIssueSpy = vi.spyOn(github, "findIssue").mockImplementation(() => searchResult);
+		const createIssueSpy = vi.spyOn(github, "createIssue").mockImplementation(() => createdIssue);
 
 		// WHEN
 		const newIssue = await github.createOrUpdateIssue({ github, searchQuery, ...options });
@@ -64,11 +60,8 @@ describe("create or update issue", () => {
 		};
 
 		const github = new GitHub();
-		const findIssueSpy = vi.spyOn(github, "findIssue");
-		findIssueSpy.mockImplementation(() => existingIssue);
-
-		const updateIssueSpy = vi.spyOn(github, "updateIssue");
-		updateIssueSpy.mockImplementation(() => existingIssue);
+		const findIssueSpy = vi.spyOn(github, "findIssue").mockImplementation(() => existingIssue);
+		const updateIssueSpy = vi.spyOn(github, "updateIssue").mockImplementation(() => existingIssue);
 
 		// WHEN
 		const newIssue = await github.createOrUpdateIssue({ github, searchQuery, ...options });

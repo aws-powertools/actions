@@ -1,7 +1,6 @@
 {
   "workspaces": [
     "packages/reporting",
-    "packages/markdown",
     "packages/date_utils",
     "packages/testing",
     "packages/github"
