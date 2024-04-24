@@ -1,4 +1,4 @@
-import {diffInDaysFromToday, formatISOtoLongDate} from "github/src/functions.mjs";
+import { diffInDaysFromToday, formatISOtoLongDate } from "github/src/functions.mjs";
 import { issueSchema } from "github/src/schemas/issues.mjs";
 import { z } from "zod";
 

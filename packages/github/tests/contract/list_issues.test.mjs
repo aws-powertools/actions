@@ -33,7 +33,13 @@ describe("list issues contract", () => {
 		const github = new GitHub();
 		const realIssues = buildIssues({ max: 2 });
 		const prAsIssues = buildIssues({ max: 2, isPr: true });
-		server.use(...listIssuesHandler({ data: [...realIssues, ...prAsIssues], org: github.owner, repo: github.repo }));
+		server.use(
+			...listIssuesHandler({
+				data: [...realIssues, ...prAsIssues],
+				org: github.owner,
+				repo: github.repo,
+			}),
+		);
 
 		// WHEN
 		const ret = await github.listIssues();

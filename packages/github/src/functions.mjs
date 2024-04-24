@@ -1,4 +1,4 @@
-import {GITHUB_ACTION_RUN_ID, GITHUB_BASE_URL,GITHUB_REPOSITORY } from "./constants.mjs";
+import { GITHUB_ACTION_RUN_ID, GITHUB_BASE_URL, GITHUB_REPOSITORY } from "./constants.mjs";
 
 export function getWorkflowRunUrl() {
 	if (isGitHubAction()) {
@@ -19,10 +19,10 @@ export function isGitHubAction() {
  * @returns {number} - The difference in days between the current date and the given datetime.
  */
 export function diffInDaysFromToday(datetime) {
-    const diff_in_ms = new Date() - new Date(datetime);
+	const diff_in_ms = new Date() - new Date(datetime);
 
-    // ms(1000)->seconds(60)->minutes(60)->hours(24)->days
-    return Math.floor(diff_in_ms / (1000 * 60 * 60 * 24));
+	// ms(1000)->seconds(60)->minutes(60)->hours(24)->days
+	return Math.floor(diff_in_ms / (1000 * 60 * 60 * 24));
 }
 
 /**
@@ -36,6 +36,6 @@ export function diffInDaysFromToday(datetime) {
  * console.log(formatISOtoLongDate(datetime)); // April 5, 2024
  */
 export function formatISOtoLongDate(datetime) {
-    const date = new Date(datetime);
-    return new Intl.DateTimeFormat("en-US", {dateStyle: "long"}).format(date);
+	const date = new Date(datetime);
+	return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(date);
 }

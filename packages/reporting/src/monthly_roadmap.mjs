@@ -2,7 +2,7 @@ import { GitHub } from "github/src/client";
 import { getWorkflowRunUrl, isGitHubAction } from "github/src/functions.mjs";
 import { DEFAULT_EMPTY_RESPONSE } from "./constants.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "./issues";
-import {Table} from "./markdown/index.mjs";
+import { Table } from "./markdown/index.mjs";
 import { getLongRunningPRs } from "./pull_requests";
 
 /**
@@ -32,10 +32,10 @@ export async function createMonthlyRoadmapReport(options = {}) {
 		getTopMostCommented({ github }),
 	]);
 
-    const featureRequestsTable = Table.fromKeyValueObjects(featureRequests)
-    const mostCommentedTable = Table.fromKeyValueObjects(mostActiveIssues)
-    const longRunningPRsTable = Table.fromKeyValueObjects(longRunningPRs)
-    const oldestIssuesTable = Table.fromKeyValueObjects(oldestIssues)
+	const featureRequestsTable = Table.fromKeyValueObjects(featureRequests);
+	const mostCommentedTable = Table.fromKeyValueObjects(mostActiveIssues);
+	const longRunningPRsTable = Table.fromKeyValueObjects(longRunningPRs);
+	const oldestIssuesTable = Table.fromKeyValueObjects(oldestIssues);
 
 	const body = `
 Quick report of top 3 issues/PRs to assist in roadmap updates. Issues or PRs with the following labels are excluded:
@@ -74,7 +74,7 @@ ${isGitHubAction() ? `> workflow: ${getWorkflowRunUrl()}` : ""}
 	const searchQuery = `${issueTitle} ${searchParams}`;
 
 	const ret = await github.createOrUpdateIssue({ github, title: issueTitle, searchQuery, body });
-    
+
 	await github.core.summary
 		.addHeading("Monthly roadmap reminder created")
 		.addLink("View monthly report", ret.html_url)
