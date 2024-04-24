@@ -7,9 +7,13 @@ export function getWorkflowRunUrl() {
 	return "";
 }
 
-// TODO: proper boolean
+/**
+ * Check if the current process is running in GitHub Actions.
+ *
+ * @returns {boolean} - True if the current process is running in GitHub Actions, false otherwise.
+ */
 export function isGitHubAction() {
-	return process.env.GITHUB_ACTION;
+	return Boolean(process.env.GITHUB_ACTION);
 }
 
 /**
