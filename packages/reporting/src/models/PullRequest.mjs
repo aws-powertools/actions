@@ -1,5 +1,4 @@
-import { diffInDaysFromToday } from "date_utils/src/date_diff.mjs";
-import { formatISOtoLongDate } from "date_utils/src/formatter.mjs";
+import {diffInDaysFromToday, formatISOtoLongDate} from "github/src/functions.mjs";
 import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
 
