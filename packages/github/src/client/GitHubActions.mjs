@@ -21,7 +21,7 @@ export class GitHubActions {
 		this.triggerActor = process.env.GITHUB_TRIGGERING_ACTOR || "";
 		this.workflowName = process.env.GITHUB_WORKFLOW || "";
 		this.repositoryFQDN = process.env.GITHUB_REPOSITORY || "";
-		this.#baseURL = process.env.GITHUB_SERVER_URL; // https://github.com
+		this.#baseURL = process.env.GITHUB_SERVER_URL || "https://github.com";
 		this.debug = Boolean(process.env.RUNNER_DEBUG);
 	}
 

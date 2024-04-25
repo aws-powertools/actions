@@ -2,7 +2,7 @@ import { GitHub, GitHubActions } from "github/src/client";
 import { ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY } from "github/src/constants.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "reporting/src/issues";
 import {
-	buildGithubCore,
+	buildGitHubActionsClient,
 	buildIssues,
 	buildLongRunningPullRequests,
 	buildPullRequests,
@@ -13,7 +13,8 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
-	FEATURE_REQUEST_LABEL, NO_CONTENT_AVAILABLE_DEFAULT,
+	FEATURE_REQUEST_LABEL,
+	NO_CONTENT_AVAILABLE_DEFAULT,
 	REPORT_ROADMAP_LABEL,
 	TOP_FEATURE_REQUESTS_LIMIT,
 	TOP_LONG_RUNNING_PR_LIMIT,
@@ -125,8 +126,7 @@ describe("build monthly roadmap", () => {
 	it("build report issue (default params)", async () => {
 		// GIVEN
 		const github = new GitHub();
-		const actions = new GitHubActions();
-		actions.core = buildGithubCore(); // mock GH Action Summary functions
+		const actions = buildGitHubActionsClient();
 
 		const existingIssues = buildIssues({ max: 3, labels: ["test-label"] });
 		const existingPullRequests = buildPullRequests({ max: 3, labels: ["test-label"] });
@@ -147,8 +147,7 @@ describe("build monthly roadmap", () => {
 	it("include blocked labels in report", async () => {
 		// GIVEN
 		const github = new GitHub();
-		const actions = new GitHubActions();
-		actions.core = buildGithubCore(); // mock GH Action Summary functions
+		const actions = buildGitHubActionsClient();
 
 		const existingIssues = buildIssues({ max: 3, labels: ["test-label"] });
 		const existingPullRequests = buildPullRequests({ max: 3, labels: ["test-label"] });
@@ -170,10 +169,9 @@ describe("build monthly roadmap", () => {
 	it("build report even when no data is found", async () => {
 		// GIVEN
 		const github = new GitHub();
-		const actions = new GitHubActions();
-		actions.core = buildGithubCore(); // mock GH Action Summary functions
+		const actions = buildGitHubActionsClient();
 
-		const noDataFound = Promise.resolve([])
+		const noDataFound = Promise.resolve([]);
 		const reportIssue = buildIssues({ max: 1 })[0];
 
 		vi.spyOn(github, "listPullRequests").mockImplementation(() => noDataFound);
@@ -186,6 +184,31 @@ describe("build monthly roadmap", () => {
 		// THEN
 		expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(
 			expect.objectContaining({ body: expect.stringContaining(NO_CONTENT_AVAILABLE_DEFAULT) }),
+		);
+	});
+
+	it("include GitHub workflow run link in the report", async () => {
+		// GIVEN
+		const repo = "test-org/test-repo";
+		const runId = "test";
+
+		Object.assign(process.env, { GITHUB_REPOSITORY: repo, GITHUB_RUN_ID: runId, GITHUB_ACTIONS: true });
+		const github = new GitHub();
+		const actions = buildGitHubActionsClient();
+
+		const noDataFound = Promise.resolve([]);
+		const reportIssue = buildIssues({ max: 1 })[0];
+
+		vi.spyOn(github, "listPullRequests").mockImplementation(() => noDataFound);
+		vi.spyOn(github, "listIssues").mockImplementation(() => noDataFound);
+		const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => reportIssue);
+
+		// WHEN
+		await createMonthlyRoadmapReport({ github, actions });
+
+		// THEN
+		expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ body: expect.stringContaining(actions.getWorkflowRunUrl()) }),
 		);
 	});
 });

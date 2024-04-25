@@ -1,4 +1,4 @@
-import {NO_CONTENT_AVAILABLE_DEFAULT} from "../constants.mjs";
+import { NO_CONTENT_AVAILABLE_DEFAULT } from "../constants.mjs";
 
 /**
  * A class for building a markdown table from data.

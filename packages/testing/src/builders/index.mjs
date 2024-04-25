@@ -6,7 +6,7 @@ export {
 
 export { buildPullRequests } from "./pull_requests.mjs";
 
-export { buildGithubCore } from "./github_actions.mjs";
+export { buildGitHubActionsClient } from "./github_actions.mjs";
 
 export {
 	buildLongRunningPullRequests,
