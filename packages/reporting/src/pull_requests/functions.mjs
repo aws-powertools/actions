@@ -13,7 +13,7 @@ import { LongRunningPullRequest } from "../models/LongRunningPullRequest.mjs";
 export async function getLongRunningPRs(options = {}) {
 	const { github = new GitHub({}) } = options;
 
-	github.core.info("Fetching PRs sorted by long-running");
+	github.logger.info("Fetching PRs sorted by long-running");
 
 	const prs = await github.listPullRequests({
 		limit: TOP_LONG_RUNNING_PR_LIMIT,

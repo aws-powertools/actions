@@ -1,10 +1,11 @@
-import * as core from "@actions/core";
+import { Logger } from "@aws-lambda-powertools/logger";
 import { Octokit } from "@octokit/rest";
 import {
 	MAX_ISSUES_LIMIT,
 	MAX_ISSUES_PER_PAGE,
 	MAX_PULL_REQUESTS_LIMIT,
 	MAX_PULL_REQUESTS_PER_PAGE,
+	SERVICE_NAME,
 } from "github/src/constants.mjs";
 import { issueSchema, pullRequestAsIssueSchema } from "github/src/schemas/issues.mjs";
 import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
@@ -26,7 +27,7 @@ export class GitHub {
 	 * @param {string} [options.token] - The GitHub token for authentication.
 	 * @param {boolean} [options.debug=false] - Flag indicating whether debug mode is enabled.
 	 * @param {Octokit} [options.client] - The Octokit client instance.
-	 * @param {core} [options.core] - The GitHub Actions core instance.
+	 * @param {Logger} [options.logger] - Logger to use
 	 * @property {string} owner - The owner of the GitHub repository.
 	 * @property {string} repo - The name of the GitHub repository.
 	 *
@@ -36,7 +37,7 @@ export class GitHub {
 		this.token = options.token || process.env.GITHUB_TOKEN;
 		this.#debug = options.debug || false;
 		this.client = options.client || new Octokit({ auth: this.token, ...(this.#debug && { log: console }) });
-		this.core = options.core || core;
+		this.logger = options.logger || new Logger({ serviceName: SERVICE_NAME });
 		this.#repoFQDN = process.env.GITHUB_REPOSITORY || "";
 		this.owner = this.#repoFQDN.split("/")[0];
 		this.repo = this.#repoFQDN.split("/")[1];
@@ -74,7 +75,7 @@ export class GitHub {
 		let prs = [];
 
 		try {
-			this.core.info(
+			this.logger.info(
 				`Listing pull requests. Sorted by:'${sortBy}', Excluding labels: '${excludeLabels}', Limit: ${limit}`,
 			);
 
@@ -96,11 +97,11 @@ export class GitHub {
 				}
 			}
 
-			this.core.debug(prs);
+			this.logger.debug(JSON.stringify(prs));
 
 			return prs;
 		} catch (error) {
-			this.core.error(`Unable to list pull requests. Error: ${error}`);
+			this.logger.error(`Unable to list pull requests. Error: ${error}`);
 			throw error;
 		}
 	}
@@ -144,7 +145,7 @@ export class GitHub {
 		let issues = [];
 
 		try {
-			this.core.info(
+			this.logger.info(
 				`Listing issues. Filtered by labels: '${labels}', Sorted by:'${sortBy}', Excluding labels: '${excludeLabels}', Limit: ${limit}`,
 			);
 
@@ -175,11 +176,11 @@ export class GitHub {
 				}
 			}
 
-			this.core.debug(issues);
+			this.logger.debug(issues);
 
 			return issues;
 		} catch (error) {
-			this.core.error(`Unable to list issues. Error: ${error}`);
+			this.logger.error(`Unable to list issues. Error: ${error}`);
 			throw error;
 		}
 	}
@@ -204,16 +205,16 @@ export class GitHub {
 		const { searchQuery } = options;
 
 		try {
-			this.core.info(`Searching whether issue exists. Search params: '${searchQuery}'`);
+			this.logger.info(`Searching whether issue exists. Search params: '${searchQuery}'`);
 
 			const {
 				data: { items: issues },
 			} = await this.client.rest.search.issuesAndPullRequests({ q: searchQuery });
 
-			this.core.debug(issues);
+			this.logger.debug(issues);
 			return issues;
 		} catch (error) {
-			this.core.error(`Unable to search for issues at this time. Error: ${error}`);
+			this.logger.error(`Unable to search for issues at this time. Error: ${error}`);
 			throw error;
 		}
 	}
@@ -259,10 +260,10 @@ export class GitHub {
 				milestone,
 			});
 
-			this.core.debug(issue);
+			this.logger.debug(JSON.stringify(issue));
 			return issue.data;
 		} catch (error) {
-			this.core.error(`Unable to create issue in repository '${this.owner}/${this.repo}'. Error: ${error}`);
+			this.logger.error(`Unable to create issue in repository '${this.owner}/${this.repo}'. Error: ${error}`);
 			throw error;
 		}
 	}
@@ -304,7 +305,7 @@ export class GitHub {
 		}
 
 		try {
-			this.core.info(`Updating existing issue ${issueNumber}`);
+			this.logger.info(`Updating existing issue ${issueNumber}`);
 
 			const issue = await this.client.rest.issues.update({
 				owner: this.owner,
@@ -318,10 +319,10 @@ export class GitHub {
 				milestone,
 			});
 
-			this.core.debug(issue);
+			this.logger.debug(JSON.stringify(issue));
 			return issue.data;
 		} catch (err) {
-			this.core.error(`Unable to update issue number '${issueNumber}'. Error: ${err}`);
+			this.logger.error(`Unable to update issue number '${issueNumber}'. Error: ${err}`);
 			throw err;
 		}
 	}

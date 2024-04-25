@@ -20,7 +20,7 @@ import { HighlyCommentedIssue, OldestIssue, PopularFeatureRequest } from "../mod
 export async function getTopFeatureRequests(options = {}) {
 	const { github = new GitHub({}) } = options;
 
-	github.core.info("Fetching most popular feature requests");
+	github.logger.info("Fetching most popular feature requests");
 
 	const issues = await github.listIssues({
 		limit: TOP_FEATURE_REQUESTS_LIMIT,
@@ -43,7 +43,7 @@ export async function getTopFeatureRequests(options = {}) {
 export async function getTopMostCommented(options = {}) {
 	const { github = new GitHub({}) } = options;
 
-	github.core.info("Fetching most commented issues");
+	github.logger.info("Fetching most commented issues");
 
 	const issues = await github.listIssues({
 		limit: TOP_MOST_COMMENTED_LIMIT,
@@ -64,7 +64,7 @@ export async function getTopMostCommented(options = {}) {
 export async function getTopOldestIssues(options = {}) {
 	const { github = new GitHub({}) } = options;
 
-	github.core.info("Fetching issues sorted by creation date");
+	github.logger.info("Fetching issues sorted by creation date");
 
 	const issues = await github.listIssues({
 		limit: TOP_OLDEST_LIMIT,
