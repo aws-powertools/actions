@@ -14,6 +14,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
 	FEATURE_REQUEST_LABEL,
+	REPORT_ROADMAP_LABEL,
 	TOP_FEATURE_REQUESTS_LIMIT,
 	TOP_LONG_RUNNING_PR_LIMIT,
 	TOP_MOST_COMMENTED_LIMIT,
@@ -126,16 +127,19 @@ describe("build monthly roadmap", () => {
 		const actions = new GitHubActions();
 		actions.core = buildGithubCore(); // mock GH Action Summary functions
 
-		const existingIssues = buildIssues({ max: 2 });
+		const existingIssues = buildIssues({ max: 1 });
 		const existingPullRequests = buildPullRequests({ max: 2 });
+		const existingReport = existingIssues[0];
 
 		const listPullRequestsSpy = vi.spyOn(github, "listPullRequests").mockImplementation(() => existingPullRequests);
 		const listIssuesSpy = vi.spyOn(github, "listIssues").mockImplementation(() => existingIssues);
-		const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => existingIssues[0]);
+		const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => existingReport);
 
 		//     WHEN
 		const ret = await createMonthlyRoadmapReport({ github, actions });
-		expect(ret).toBe(existingIssues[0]);
-		//     THEN
+
+		// THEN
+		expect(ret).toStrictEqual(existingReport);
+		expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(expect.objectContaining({ labels: [REPORT_ROADMAP_LABEL] }));
 	});
 });

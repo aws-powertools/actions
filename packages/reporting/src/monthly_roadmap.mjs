@@ -1,4 +1,5 @@
 import { GitHub, GitHubActions } from "github/src/client";
+import { REPORT_ROADMAP_LABEL } from "./constants.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "./issues";
 import { Table } from "./markdown/index.mjs";
 import { getLongRunningPRs } from "./pull_requests";
@@ -12,7 +13,7 @@ const DEFAULT_EMPTY_RESPONSE = [{}];
  *
  * @param {Object} options - Config.
  * @param {GitHub} options.github - A GitHub client instance.
- * @param {GitHub} options.actions - A GitHub Actions client instance.
+ * @param {GitHubActions} options.actions - A GitHub Actions client instance.
  * @returns {Promise<void>} A promise resolving when the issue is created.
  *
  */
@@ -74,7 +75,13 @@ ${oldestIssuesTable}
 	const searchParams = `is:issue in:title state:open repo:${github.owner}/${github.repo}`;
 	const searchQuery = `${issueTitle} ${searchParams}`;
 
-	const ret = await github.createOrUpdateIssue({ github, title: issueTitle, searchQuery, body });
+	const ret = await github.createOrUpdateIssue({
+		github,
+		title: issueTitle,
+		searchQuery,
+		body,
+		labels: [REPORT_ROADMAP_LABEL],
+	});
 
 	await actions.core.summary
 		.addHeading("Monthly roadmap reminder created")
