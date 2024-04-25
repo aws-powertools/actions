@@ -40,7 +40,6 @@ export class GitHub {
 		this.#repoFQDN = process.env.GITHUB_REPOSITORY || "";
 		this.owner = this.#repoFQDN.split("/")[0];
 		this.repo = this.#repoFQDN.split("/")[1];
-		// [this.owner, this.repo] = (process.env.GITHUB_REPOSITORY || "").split("/");
 	}
 
 	/**

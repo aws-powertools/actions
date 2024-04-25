@@ -1,21 +1,3 @@
-import { GITHUB_ACTION_RUN_ID, GITHUB_BASE_URL, GITHUB_REPOSITORY } from "./constants.mjs";
-
-export function getWorkflowRunUrl() {
-	if (isGitHubAction()) {
-		return `${GITHUB_BASE_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_ACTION_RUN_ID}`;
-	}
-	return "";
-}
-
-/**
- * Check if the current process is running in GitHub Actions.
- *
- * @returns {boolean} - True if the current process is running in GitHub Actions, false otherwise.
- */
-export function isGitHubAction() {
-	return Boolean(process.env.GITHUB_ACTION);
-}
-
 /**
  * Calculate the difference in days between the current date and a given datetime.
  *

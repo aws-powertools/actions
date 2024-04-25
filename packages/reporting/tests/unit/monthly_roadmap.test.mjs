@@ -1,4 +1,4 @@
-import { GitHub } from "github/src/client";
+import { GitHub, GitHubActions } from "github/src/client";
 import { ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY } from "github/src/constants.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "reporting/src/issues";
 import {
@@ -123,7 +123,8 @@ describe("build monthly roadmap", () => {
 	it("build report issue (default params)", async () => {
 		//     GIVEN
 		const github = new GitHub();
-		github.core = buildGithubCore(); // mock GH Action Summary functions
+		const actions = new GitHubActions();
+		actions.core = buildGithubCore(); // mock GH Action Summary functions
 
 		const existingIssues = buildIssues({ max: 2 });
 		const existingPullRequests = buildPullRequests({ max: 2 });
@@ -138,7 +139,7 @@ describe("build monthly roadmap", () => {
 		createOrUpdateIssueSpy.mockImplementation(() => existingIssues[0]);
 
 		//     WHEN
-		const ret = await createMonthlyRoadmapReport({ github });
+		const ret = await createMonthlyRoadmapReport({ github, actions });
 		expect(ret).toBe(existingIssues[0]);
 		//     THEN
 	});
