@@ -129,14 +129,9 @@ describe("build monthly roadmap", () => {
 		const existingIssues = buildIssues({ max: 2 });
 		const existingPullRequests = buildPullRequests({ max: 2 });
 
-		const listPullRequestsSpy = vi.spyOn(github, "listPullRequests");
-		listPullRequestsSpy.mockImplementation(() => existingPullRequests);
-
-		const listIssuesSpy = vi.spyOn(github, "listIssues");
-		listIssuesSpy.mockImplementation(() => existingIssues);
-
-		const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue");
-		createOrUpdateIssueSpy.mockImplementation(() => existingIssues[0]);
+		const listPullRequestsSpy = vi.spyOn(github, "listPullRequests").mockImplementation(() => existingPullRequests);
+		const listIssuesSpy = vi.spyOn(github, "listIssues").mockImplementation(() => existingIssues);
+		const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => existingIssues[0]);
 
 		//     WHEN
 		const ret = await createMonthlyRoadmapReport({ github, actions });
