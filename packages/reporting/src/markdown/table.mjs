@@ -1,3 +1,5 @@
+import {NO_CONTENT_AVAILABLE_DEFAULT} from "../constants.mjs";
+
 /**
  * A class for building a markdown table from data.
  */
@@ -59,7 +61,7 @@ export class Table {
 		const table = new Table();
 
 		if (data.length === 0) {
-			return "Not available";
+			return NO_CONTENT_AVAILABLE_DEFAULT;
 		}
 
 		table.addHeadings(Object.keys(data[0]));

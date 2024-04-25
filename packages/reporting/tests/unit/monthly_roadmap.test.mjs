@@ -13,7 +13,7 @@ import {
 import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
-	FEATURE_REQUEST_LABEL,
+	FEATURE_REQUEST_LABEL, NO_CONTENT_AVAILABLE_DEFAULT,
 	REPORT_ROADMAP_LABEL,
 	TOP_FEATURE_REQUESTS_LIMIT,
 	TOP_LONG_RUNNING_PR_LIMIT,
@@ -144,7 +144,7 @@ describe("build monthly roadmap", () => {
 		expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(expect.objectContaining({ labels: [REPORT_ROADMAP_LABEL] }));
 	});
 
-	it("dynamically include blocked labels in report", async () => {
+	it("include blocked labels in report", async () => {
 		// GIVEN
 		const github = new GitHub();
 		const actions = new GitHubActions();
@@ -164,6 +164,28 @@ describe("build monthly roadmap", () => {
 		// THEN
 		expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(
 			expect.objectContaining({ body: expect.stringContaining(expectedLabelsIgnored) }),
+		);
+	});
+
+	it("build report even when no data is found", async () => {
+		// GIVEN
+		const github = new GitHub();
+		const actions = new GitHubActions();
+		actions.core = buildGithubCore(); // mock GH Action Summary functions
+
+		const noDataFound = Promise.resolve([])
+		const reportIssue = buildIssues({ max: 1 })[0];
+
+		vi.spyOn(github, "listPullRequests").mockImplementation(() => noDataFound);
+		vi.spyOn(github, "listIssues").mockImplementation(() => noDataFound);
+		const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => reportIssue);
+
+		// WHEN
+		await createMonthlyRoadmapReport({ github, actions });
+
+		// THEN
+		expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(
+			expect.objectContaining({ body: expect.stringContaining(NO_CONTENT_AVAILABLE_DEFAULT) }),
 		);
 	});
 });
