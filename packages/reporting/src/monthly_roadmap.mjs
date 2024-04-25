@@ -1,8 +1,9 @@
 import { Logger } from "@aws-lambda-powertools/logger";
 import { GitHub, GitHubActions } from "github/src/client";
-import { REPORT_ROADMAP_LABEL, SERVICE_NAME } from "./constants.mjs";
+import { BLOCKED_LABELS, REPORT_ROADMAP_LABEL, SERVICE_NAME } from "./constants.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "./issues";
-import { Table } from "./markdown/index.mjs";
+import { Table, UnorderedList } from "./markdown/index.mjs";
+import { PopularFeatureRequest } from "./models/index.mjs";
 import { getLongRunningPRs } from "./pull_requests";
 
 const DEFAULT_EMPTY_RESPONSE = [{}];
@@ -57,26 +58,23 @@ export async function createMonthlyRoadmapReport(options = {}) {
 	const body = `
 Quick report of top 3 issues/PRs to assist in roadmap updates. Issues or PRs with the following labels are excluded:
 
-* \`do-not-merge\`
-* \`need-rfc\`
-* \`need-issue\`
-* \`need-customer-feedback\`
+${UnorderedList.fromArray(BLOCKED_LABELS)}
 
 > **NOTE**: It does not guarantee they will be in the roadmap. Some might already be and there might be a blocker.
 
-## Top 3 Feature Requests
+## Top Feature Requests
 
 ${featureRequestsTable}
 
-## Top 3 Most Commented Issues
+## Top Most Commented Issues
 
 ${mostCommentedTable}
 
-## Top 3 Long Running Pull Requests
+## Top Long Running Pull Requests
 
 ${longRunningPRsTable}
 
-## Top 3 Oldest Issues
+## Top Oldest Issues
 
 ${oldestIssuesTable}
 
