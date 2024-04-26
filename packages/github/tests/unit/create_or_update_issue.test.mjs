@@ -3,6 +3,7 @@ import { GitHub } from "github/src/client";
 import { buildIssues } from "testing/src/builders";
 import { describe, expect, it, vi } from "vitest";
 
+// TODO: fix test to spy on Octokit; should be on generator instead.
 describe("create or update issue", () => {
 	it("find issue using search", async () => {
 		// GIVEN
@@ -21,6 +22,7 @@ describe("create or update issue", () => {
 			searchQuery,
 		});
 	});
+
 	it("create issue if one is not found", async () => {
 		// GIVEN
 		const searchResult = [];
