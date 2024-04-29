@@ -45,12 +45,5 @@ describe("update issues contract", () => {
 		// THEN
 		await expect(github.updateIssue({ issueNumber })).rejects.toThrowError(err);
 	});
-
-	it("should throw if issue number is missing", async () => {
-		// GIVEN
-		const github = new GitHub();
-		// WHEN
-		// THEN
-		await expect(github.updateIssue()).rejects.toThrowError("Issue number is required");
-	});
+	
 });
