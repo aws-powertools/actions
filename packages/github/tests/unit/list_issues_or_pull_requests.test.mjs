@@ -1,50 +1,34 @@
-import { GitHub } from "github/src/client";
-import { buildIssues, buildPullRequests } from "testing/src/builders";
-import { describe, expect, it, vi } from "vitest";
-import { MAX_ISSUES_PER_PAGE } from "../../src/constants.mjs";
+import {GitHub} from "github/src/client";
+import {buildPullRequests} from "testing/src/builders";
+import {describe, expect, it, vi} from "vitest";
+import {MAX_PULL_REQUESTS_PER_PAGE} from "../../src/constants.mjs";
 
-describe("list issue", () => {
-	it("list issues (default params)", async () => {
-		// GIVEN
-		const existingIssues = buildIssues({ max: 2 });
-		const github = new GitHub();
-		const listIssuesOptions = {
-			owner: github.owner,
-			repo: github.repo,
-			per_page: MAX_ISSUES_PER_PAGE,
-			direction: "asc",
-			labels: undefined,
-			sort: undefined,
-		};
-
-		const paginateSpy = vi.spyOn(github.client.paginate, "iterator").mockImplementation(async function* () {
-			yield { data: existingIssues };
-		});
-
-		// WHEN
-		const issues = await github.listIssues({ github });
-
-		// THEN
-		expect(issues).toStrictEqual(existingIssues);
-		expect(paginateSpy).toHaveBeenCalledWith(
-			github.client.rest.issues.listForRepo,
-			expect.objectContaining(listIssuesOptions),
-		);
-	});
-
-	it.todo("list pull requests", async () => {
+describe("listing pull requests", () => {
+	it("should list pull requests (default params)", async () => {
 		// GIVEN
 		const existingPullRequests = buildPullRequests({ max: 2 });
 		const github = new GitHub();
-		const listPullRequestsSpy = vi.spyOn(github, "listPullRequests").mockImplementation(() => existingPullRequests);
+		const listPullRequestsOptions = {
+			owner: github.owner,
+			repo: github.repo,
+			state: "open",
+			sort: undefined,
+			direction: "asc",
+			per_page: MAX_PULL_REQUESTS_PER_PAGE,
+		};
+
+		const paginateSpy = vi.spyOn(github.client.paginate, "iterator").mockImplementation(async function* () {
+			yield {data: existingPullRequests};
+		});
 
 		// WHEN
-		const pullRequests = github.listPullRequests({ github });
+		const issues = await github.listPullRequests();
 
 		// THEN
-		expect(pullRequests).toBe(existingPullRequests);
-		expect(listPullRequestsSpy).toHaveBeenCalledWith({
-			github,
-		});
+		expect(issues).toStrictEqual(existingPullRequests);
+		expect(paginateSpy).toHaveBeenCalledWith(
+			github.client.rest.pulls.list,
+			expect.objectContaining(listPullRequestsOptions),
+		);
 	});
 });
