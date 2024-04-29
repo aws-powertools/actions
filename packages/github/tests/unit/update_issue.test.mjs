@@ -1,12 +1,12 @@
-import {faker} from "@faker-js/faker";
-import {buildIssues} from "testing/src/builders/index.mjs";
-import {describe, expect, it, vi} from "vitest";
-import {GitHub} from "../../src/client/index.mjs";
+import { faker } from "@faker-js/faker";
+import { buildIssues } from "testing/src/builders/index.mjs";
+import { describe, expect, it, vi } from "vitest";
+import { GitHub } from "../../src/client/index.mjs";
 
 describe("update issue", () => {
 	it("should update issue (default params)", async () => {
 		// GIVEN
-		const issueNumber = 1
+		const issueNumber = 1;
 		const updatedIssue = buildIssues({ max: 1 })[0];
 
 		const github = new GitHub();
@@ -27,7 +27,7 @@ describe("update issue", () => {
 		});
 
 		// WHEN
-		const issue = await github.updateIssue({issueNumber });
+		const issue = await github.updateIssue({ issueNumber });
 
 		// THEN
 		expect(issue).toStrictEqual(updatedIssue);
@@ -40,7 +40,6 @@ describe("update issue", () => {
 
 		// WHEN
 		// THEN
-		await expect(github.updateIssue()).rejects.toThrow("Issue number is required")
+		await expect(github.updateIssue()).rejects.toThrow("Issue number is required");
 	});
-
 });

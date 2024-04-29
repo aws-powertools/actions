@@ -1,7 +1,7 @@
-import {GitHub} from "github/src/client";
-import {buildPullRequests} from "testing/src/builders";
-import {describe, expect, it, vi} from "vitest";
-import {MAX_PULL_REQUESTS_PER_PAGE} from "../../src/constants.mjs";
+import { GitHub } from "github/src/client";
+import { buildPullRequests } from "testing/src/builders";
+import { describe, expect, it, vi } from "vitest";
+import { MAX_PULL_REQUESTS_PER_PAGE } from "../../src/constants.mjs";
 
 describe("listing pull requests", () => {
 	it("should list pull requests (default params)", async () => {
@@ -18,7 +18,7 @@ describe("listing pull requests", () => {
 		};
 
 		const paginateSpy = vi.spyOn(github.client.paginate, "iterator").mockImplementation(async function* () {
-			yield {data: existingPullRequests};
+			yield { data: existingPullRequests };
 		});
 
 		// WHEN

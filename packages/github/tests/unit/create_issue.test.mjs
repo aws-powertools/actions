@@ -1,7 +1,7 @@
-import {faker} from "@faker-js/faker";
-import {buildIssues} from "testing/src/builders/index.mjs";
-import {describe, expect, it, vi} from "vitest";
-import {GitHub} from "../../src/client/index.mjs";
+import { faker } from "@faker-js/faker";
+import { buildIssues } from "testing/src/builders/index.mjs";
+import { describe, expect, it, vi } from "vitest";
+import { GitHub } from "../../src/client/index.mjs";
 
 describe("create issue", () => {
 	it("should create issue (default params)", async () => {
@@ -38,7 +38,6 @@ describe("create issue", () => {
 
 		// WHEN
 		// THEN
-		await expect(github.createIssue()).rejects.toThrow("Issue title is required")
+		await expect(github.createIssue()).rejects.toThrow("Issue title is required");
 	});
-
 });

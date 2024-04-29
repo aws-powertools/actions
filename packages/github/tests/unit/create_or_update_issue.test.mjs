@@ -1,7 +1,7 @@
-import {faker} from "@faker-js/faker";
-import {GitHub} from "github/src/client";
-import {buildIssues, buildSearchIssues} from "testing/src/builders";
-import {describe, expect, it, vi} from "vitest";
+import { faker } from "@faker-js/faker";
+import { GitHub } from "github/src/client";
+import { buildIssues, buildSearchIssues } from "testing/src/builders";
+import { describe, expect, it, vi } from "vitest";
 
 describe("create or update issue", () => {
 	it("create issue if one is not found", async () => {

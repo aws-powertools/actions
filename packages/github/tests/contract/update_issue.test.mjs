@@ -45,5 +45,4 @@ describe("update issues contract", () => {
 		// THEN
 		await expect(github.updateIssue({ issueNumber })).rejects.toThrowError(err);
 	});
-	
 });
