@@ -33,8 +33,7 @@ describe("build monthly roadmap", () => {
 			const expectedTopFeatureRequests = buildTopFeatureRequests(existingFeatureRequests);
 			const github = new GitHub();
 
-			const listIssuesSpy = vi.spyOn(github, "listIssues");
-			listIssuesSpy.mockImplementation(() => {
+			const listIssuesSpy = vi.spyOn(github, "listIssues").mockImplementation(async () => {
 				return existingFeatureRequests;
 			});
 
@@ -57,8 +56,7 @@ describe("build monthly roadmap", () => {
 			const expectedTopCommentedIssues = buildTopMostCommented(existingTopCommentedIssues);
 			const github = new GitHub();
 
-			const listIssuesSpy = vi.spyOn(github, "listIssues");
-			listIssuesSpy.mockImplementation(() => {
+			const listIssuesSpy = vi.spyOn(github, "listIssues").mockImplementation(async () => {
 				return existingTopCommentedIssues;
 			});
 
@@ -80,8 +78,7 @@ describe("build monthly roadmap", () => {
 			const expectedTopOldestIssues = buildTopOldestIssues(existingOldestIssues);
 			const github = new GitHub();
 
-			const listIssuesSpy = vi.spyOn(github, "listIssues");
-			listIssuesSpy.mockImplementation(() => {
+			const listIssuesSpy = vi.spyOn(github, "listIssues").mockImplementation(async () => {
 				return existingOldestIssues;
 			});
 
@@ -104,8 +101,7 @@ describe("build monthly roadmap", () => {
 			const expectedPullRequests = buildLongRunningPullRequests(existingPullRequests);
 			const github = new GitHub();
 
-			const listPullRequestsSpy = vi.spyOn(github, "listPullRequests");
-			listPullRequestsSpy.mockImplementation(() => {
+			const listPullRequestsSpy = vi.spyOn(github, "listPullRequests").mockImplementation(async () => {
 				return existingPullRequests;
 			});
 
@@ -141,7 +137,9 @@ describe("build monthly roadmap", () => {
 
 			vi.spyOn(github, "listPullRequests").mockImplementation(async () => existingPullRequests);
 			vi.spyOn(github, "listIssues").mockImplementation(async () => existingIssues);
-			const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => createdReport);
+			const createOrUpdateIssueSpy = vi
+				.spyOn(github, "createOrUpdateIssue")
+				.mockImplementation(async () => createdReport);
 
 			// WHEN
 			const ret = await createMonthlyRoadmapReport({ github, actions });
@@ -169,7 +167,9 @@ describe("build monthly roadmap", () => {
 
 			vi.spyOn(github, "listPullRequests").mockImplementation(() => noDataFound);
 			vi.spyOn(github, "listIssues").mockImplementation(() => noDataFound);
-			const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => reportIssue);
+			const createOrUpdateIssueSpy = vi
+				.spyOn(github, "createOrUpdateIssue")
+				.mockImplementation(async () => reportIssue);
 
 			// WHEN
 			await createMonthlyRoadmapReport({ github, actions });
