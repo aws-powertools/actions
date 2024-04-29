@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker"
 import { buildSearchIssues } from "testing/src/builders/index.mjs";
 import { describe, expect, it, vi } from "vitest";
 import { GitHub } from "../../src/client/index.mjs";
@@ -27,4 +28,26 @@ describe("find issue", () => {
 			expect.objectContaining(findIssueOptions),
 		);
 	});
+
+	it("should not find an issue (default params)", async () => {
+		// GIVEN
+		const searchQuery = faker.lorem.sentence(1);
+		const notFound = buildSearchIssues({ max: 0 });
+
+		const github = new GitHub();
+		const findIssueOptions = {
+			q: searchQuery,
+		};
+
+		const searchSpy = vi.spyOn(github.client.rest.search, "issuesAndPullRequests").mockImplementation(async () => {
+			return { data: notFound };
+		});
+
+		// WHEN
+		const issue = await github.findIssue({ searchQuery });
+
+		// THEN
+		expect(issue).toStrictEqual(notFound.items);
+	});
+
 });
