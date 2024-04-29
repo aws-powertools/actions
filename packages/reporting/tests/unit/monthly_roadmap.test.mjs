@@ -10,7 +10,7 @@ import {
 	buildTopMostCommented,
 	buildTopOldestIssues,
 } from "testing/src/builders";
-import {buildMonthlyRoadmapTemplate} from "testing/src/builders/reporting.mjs";
+import { buildMonthlyRoadmapTemplate } from "testing/src/builders/reporting.mjs";
 import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
@@ -139,7 +139,6 @@ describe("build monthly roadmap", () => {
 				mostActiveIssues: existingIssues,
 			});
 
-
 			vi.spyOn(github, "listPullRequests").mockImplementation(async () => existingPullRequests);
 			vi.spyOn(github, "listIssues").mockImplementation(async () => existingIssues);
 			const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => createdReport);
@@ -157,9 +156,9 @@ describe("build monthly roadmap", () => {
 				}),
 			);
 		});
-		
+
 		// TODO: update monthly_roadmap to use template title so we can test it too from mock calls
-		
+
 		it("build report even when no data is found", async () => {
 			// GIVEN
 			const github = new GitHub();
@@ -180,6 +179,5 @@ describe("build monthly roadmap", () => {
 				expect.objectContaining({ body: expect.stringContaining(NO_CONTENT_AVAILABLE_DEFAULT) }),
 			);
 		});
-		
 	});
 });

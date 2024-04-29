@@ -3,7 +3,7 @@ import { HighlyCommentedIssue } from "reporting/src/models/HighlyCommentedIssue.
 import { LongRunningPullRequest } from "reporting/src/models/LongRunningPullRequest.mjs";
 import { OldestIssue } from "reporting/src/models/OldestIssue.mjs";
 import { PopularFeatureRequest } from "reporting/src/models/PopularFeatureRequest.mjs";
-import {MonthlyRoadmapTemplate} from "reporting/src/templates/MonthlyRoadmapTemplate.mjs";
+import { MonthlyRoadmapTemplate } from "reporting/src/templates/MonthlyRoadmapTemplate.mjs";
 import { z } from "zod";
 
 /**
@@ -51,13 +51,8 @@ export function buildLongRunningPullRequests(issues) {
  * @param {z.infer<typeof issueSchema>[]} options.mostActiveIssues - List of most active issues.
  */
 export function buildMonthlyRoadmapTemplate(options = {}) {
-	const {
-		featureRequests = [],
-		longRunningPRs= [],
-		oldestIssues= [],
-		mostActiveIssues= [],
-	} = options;
-	
+	const { featureRequests = [], longRunningPRs = [], oldestIssues = [], mostActiveIssues = [] } = options;
+
 	return new MonthlyRoadmapTemplate({
 		featureRequests: buildTopFeatureRequests(featureRequests),
 		longRunningPRs: buildLongRunningPullRequests(longRunningPRs),

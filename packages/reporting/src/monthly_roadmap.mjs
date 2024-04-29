@@ -53,7 +53,7 @@ export async function createMonthlyRoadmapReport(options = {}) {
 		oldestIssues,
 		mostActiveIssues,
 	});
-	
+
 	logger.info("Creating issue with monthly roadmap report");
 
 	const searchParams = `is:issue in:title state:open repo:${github.owner}/${github.repo}`;
@@ -67,10 +67,7 @@ export async function createMonthlyRoadmapReport(options = {}) {
 		labels: [REPORT_ROADMAP_LABEL],
 	});
 
-	await actions.core.summary
-		.addHeading(monthlyRoadmap.title)
-		.addLink("View monthly report", ret.html_url)
-		.write();
+	await actions.core.summary.addHeading(monthlyRoadmap.title).addLink("View monthly report", ret.html_url).write();
 
 	return ret;
 }

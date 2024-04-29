@@ -1,8 +1,8 @@
-import {buildGitHubActionsClient} from "testing/src/builders/index.mjs";
-import {afterEach, describe, expect, it, vi} from "vitest";
-import {BLOCKED_LABELS, NO_CONTENT_AVAILABLE_DEFAULT} from "../../src/constants.mjs";
-import {UnorderedList} from "../../src/markdown/index.mjs";
-import {MonthlyRoadmapTemplate} from "../../src/templates/MonthlyRoadmapTemplate.mjs";
+import { buildGitHubActionsClient } from "testing/src/builders/index.mjs";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { BLOCKED_LABELS, NO_CONTENT_AVAILABLE_DEFAULT } from "../../src/constants.mjs";
+import { UnorderedList } from "../../src/markdown/index.mjs";
+import { MonthlyRoadmapTemplate } from "../../src/templates/MonthlyRoadmapTemplate.mjs";
 
 describe("build reporting templates", () => {
 	afterEach(() => {
@@ -16,7 +16,7 @@ describe("build reporting templates", () => {
 			const expectedReport = new MonthlyRoadmapTemplate();
 
 			// WHEN
-			const reportBody = expectedReport.build()
+			const reportBody = expectedReport.build();
 
 			// THEN
 			expect(reportBody).contains(expectedLabelsIgnored);
@@ -27,7 +27,7 @@ describe("build reporting templates", () => {
 			const expectedReport = new MonthlyRoadmapTemplate();
 
 			// WHEN
-			const reportBody = expectedReport.build()
+			const reportBody = expectedReport.build();
 
 			// THEN
 			expect(reportBody).contains(NO_CONTENT_AVAILABLE_DEFAULT);
@@ -49,7 +49,7 @@ describe("build reporting templates", () => {
 			const reportBody = expectedReport.build();
 
 			// THEN
-			expect(reportBody).contains(actions.getWorkflowRunUrl())
+			expect(reportBody).contains(actions.getWorkflowRunUrl());
 		});
 
 		it("should not include GitHub workflow run link in the report when not running in GitHub Actions", () => {
@@ -60,10 +60,7 @@ describe("build reporting templates", () => {
 			const reportBody = expectedReport.build();
 
 			// THEN
-			expect(reportBody).not.toContain("/actions/runs")
+			expect(reportBody).not.toContain("/actions/runs");
 		});
-
-
-
-	})
-})
+	});
+});
