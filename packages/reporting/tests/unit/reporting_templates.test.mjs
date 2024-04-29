@@ -1,6 +1,14 @@
-import { buildGitHubActionsClient } from "testing/src/builders/index.mjs";
+import {
+	buildGitHubActionsClient,
+	buildIssues,
+	buildLongRunningPullRequests,
+	buildPullRequests,
+	buildTopFeatureRequests,
+	buildTopMostCommented,
+	buildTopOldestIssues,
+} from "testing/src/builders/index.mjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { BLOCKED_LABELS, NO_CONTENT_AVAILABLE_DEFAULT } from "../../src/constants.mjs";
+import { BLOCKED_LABELS, FEATURE_REQUEST_LABEL, NO_CONTENT_AVAILABLE_DEFAULT } from "../../src/constants.mjs";
 import { UnorderedList } from "../../src/markdown/index.mjs";
 import { MonthlyRoadmapTemplate } from "../../src/templates/MonthlyRoadmapTemplate.mjs";
 
@@ -61,6 +69,66 @@ describe("build reporting templates", () => {
 
 			// THEN
 			expect(reportBody).not.toContain("/actions/runs");
+		});
+
+		it("should include top feature requests", () => {
+			// GIVEN
+			const existingFeatureRequests = buildIssues({ max: 2, labels: [FEATURE_REQUEST_LABEL] });
+			const expectedTopFeatureRequests = buildTopFeatureRequests(existingFeatureRequests);
+			const expectedReport = new MonthlyRoadmapTemplate({ featureRequests: expectedTopFeatureRequests });
+
+			// WHEN
+			const reportBody = expectedReport.build();
+
+			// THEN
+			for (const featureRequest of expectedTopFeatureRequests) {
+				expect(reportBody).contains(featureRequest.title);
+			}
+		});
+
+		it("should include top oldest issues", () => {
+			// GIVEN
+			const existingIssues = buildIssues({ max: 2 });
+			const expectedOldestIssues = buildTopOldestIssues(existingIssues);
+			const expectedReport = new MonthlyRoadmapTemplate({ oldestIssues: expectedOldestIssues });
+
+			// WHEN
+			const reportBody = expectedReport.build();
+
+			// THEN
+			for (const oldIssue of expectedOldestIssues) {
+				expect(reportBody).contains(oldIssue.title);
+			}
+		});
+
+		it("should include most commented issues", () => {
+			// GIVEN
+			const existingIssues = buildIssues({ max: 2 });
+			const expectedMostCommentedIssues = buildTopMostCommented(existingIssues);
+			const expectedReport = new MonthlyRoadmapTemplate({ mostActiveIssues: expectedMostCommentedIssues });
+
+			// WHEN
+			const reportBody = expectedReport.build();
+
+			// THEN
+			for (const activeIssue of expectedMostCommentedIssues) {
+				expect(reportBody).contains(activeIssue.title);
+			}
+		});
+
+		it("should include long running pull requests", () => {
+			// GIVEN
+			const existingPullRequests = buildPullRequests({ max: 2 });
+			const expectedLongRunningPRs = buildLongRunningPullRequests(existingPullRequests);
+			const expectedReport = new MonthlyRoadmapTemplate({ longRunningPRs: expectedLongRunningPRs });
+
+			// WHEN
+			const reportBody = expectedReport.build();
+
+			// THEN
+			for (const longRunningPR of expectedLongRunningPRs) {
+				expect(reportBody).contains(longRunningPR.title);
+			}
 		});
 	});
 });
