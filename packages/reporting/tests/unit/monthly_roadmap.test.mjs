@@ -11,7 +11,7 @@ import {
 	buildTopOldestIssues,
 } from "testing/src/builders";
 import {buildMonthlyRoadmapTemplate} from "testing/src/builders/reporting.mjs";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
 	FEATURE_REQUEST_LABEL,
@@ -22,16 +22,10 @@ import {
 	TOP_MOST_COMMENTED_LIMIT,
 	TOP_OLDEST_LIMIT,
 } from "../../src/constants.mjs";
-import { UnorderedList } from "../../src/markdown/index.mjs";
 import { createMonthlyRoadmapReport } from "../../src/monthly_roadmap.mjs";
 import { getLongRunningPRs } from "../../src/pull_requests";
-import { MonthlyRoadmapTemplate } from "../../src/templates/MonthlyRoadmapTemplate.mjs";
 
 describe("build monthly roadmap", () => {
-	afterEach(() => {
-		vi.unstubAllEnvs();
-	});
-
 	describe("data fetching", () => {
 		it("get top feature requests (default params)", async () => {
 			// GIVEN
@@ -163,20 +157,7 @@ describe("build monthly roadmap", () => {
 				}),
 			);
 		});
-
-		it("should include blocked labels in report", async () => {
-			// GIVEN
-			const expectedLabelsIgnored = UnorderedList.fromArray(BLOCKED_LABELS);
-			const expectedReport = buildMonthlyRoadmapTemplate();
-
-			// WHEN
-			const reportBody = expectedReport.build()
-
-			// THEN
-			expect(reportBody).contains(expectedLabelsIgnored);
-		});
-
-		// TODO: move these tests to test template only
+		
 		// TODO: update monthly_roadmap to use template title so we can test it too from mock calls
 		
 		it("build report even when no data is found", async () => {
@@ -199,54 +180,6 @@ describe("build monthly roadmap", () => {
 				expect.objectContaining({ body: expect.stringContaining(NO_CONTENT_AVAILABLE_DEFAULT) }),
 			);
 		});
-
-		it("include GitHub workflow run link in the report", async () => {
-			// GIVEN
-			const repo = "test-org/test-repo";
-			const runId = "test";
-
-			vi.stubEnv("GITHUB_REPOSITORY", repo);
-			vi.stubEnv("GITHUB_RUN_ID", runId);
-			vi.stubEnv("GITHUB_ACTIONS", "true");
-
-			const github = new GitHub();
-			const actions = buildGitHubActionsClient();
-
-			const noDataFound = Promise.resolve([]);
-			const reportIssue = buildIssues({ max: 1 })[0];
-
-			vi.spyOn(github, "listPullRequests").mockImplementation(() => noDataFound);
-			vi.spyOn(github, "listIssues").mockImplementation(() => noDataFound);
-			const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => reportIssue);
-
-			// WHEN
-			await createMonthlyRoadmapReport({ github, actions });
-
-			// THEN
-			expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(
-				expect.objectContaining({ body: expect.stringContaining(actions.getWorkflowRunUrl()) }),
-			);
-		});
-
-		it("do not include GitHub workflow run in the report if it was not generated in GH Actions", async () => {
-			// GIVEN
-			const github = new GitHub();
-			const actions = buildGitHubActionsClient();
-
-			const noDataFound = Promise.resolve([]);
-			const reportIssue = buildIssues({ max: 1 })[0];
-
-			vi.spyOn(github, "listPullRequests").mockImplementation(() => noDataFound);
-			vi.spyOn(github, "listIssues").mockImplementation(() => noDataFound);
-			const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => reportIssue);
-
-			// WHEN
-			await createMonthlyRoadmapReport({ github, actions });
-
-			// THEN
-			expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(
-				expect.objectContaining({ body: expect.not.stringContaining("/actions/runs") }),
-			);
-		});
+		
 	});
 });

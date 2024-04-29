@@ -45,11 +45,10 @@ export function buildLongRunningPullRequests(issues) {
 /**
  * Builds a monthly roadmap template with top feature requests, long-running pull requests, oldest issues, and most active issues.
  *
- * @param {Object} [options] - Config.
+ * @param {Object} options - Config.
  * @param {z.infer<typeof pullRequestSchema>[]} options.longRunningPRs - List of long-running pull requests.
  * @param {z.infer<typeof issueSchema>[]} options.oldestIssues - List of oldest issues.
  * @param {z.infer<typeof issueSchema>[]} options.mostActiveIssues - List of most active issues.
- * @returns {MonthlyRoadmapTemplate} MonthlyRoadmapTemplate - New instance with the built template.
  */
 export function buildMonthlyRoadmapTemplate(options = {}) {
 	const {

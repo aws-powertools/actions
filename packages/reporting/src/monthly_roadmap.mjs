@@ -68,7 +68,7 @@ export async function createMonthlyRoadmapReport(options = {}) {
 	});
 
 	await actions.core.summary
-		.addHeading("Monthly roadmap reminder created")
+		.addHeading(monthlyRoadmap.title)
 		.addLink("View monthly report", ret.html_url)
 		.write();
 
