@@ -10,6 +10,7 @@ import {
 	buildTopMostCommented,
 	buildTopOldestIssues,
 } from "testing/src/builders";
+import {buildMonthlyRoadmapTemplate} from "testing/src/builders/reporting.mjs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
@@ -24,6 +25,7 @@ import {
 import { UnorderedList } from "../../src/markdown/index.mjs";
 import { createMonthlyRoadmapReport } from "../../src/monthly_roadmap.mjs";
 import { getLongRunningPRs } from "../../src/pull_requests";
+import { MonthlyRoadmapTemplate } from "../../src/templates/MonthlyRoadmapTemplate.mjs";
 
 describe("build monthly roadmap", () => {
 	afterEach(() => {
@@ -128,51 +130,55 @@ describe("build monthly roadmap", () => {
 	});
 
 	describe("build report", () => {
-		it("build report issue (default params)", async () => {
+		it("should build report issue (default params)", async () => {
 			// GIVEN
 			const github = new GitHub();
 			const actions = buildGitHubActionsClient();
 
 			const existingIssues = buildIssues({ max: 3, labels: ["test-label"] });
 			const existingPullRequests = buildPullRequests({ max: 3, labels: ["test-label"] });
-			const existingReport = existingIssues[0];
+			const createdReport = existingIssues[0];
+			const expectedReport = buildMonthlyRoadmapTemplate({
+				featureRequests: existingIssues,
+				longRunningPRs: existingPullRequests,
+				oldestIssues: existingIssues,
+				mostActiveIssues: existingIssues,
+			});
 
-			vi.spyOn(github, "listPullRequests").mockImplementation(() => existingPullRequests);
-			vi.spyOn(github, "listIssues").mockImplementation(() => existingIssues);
-			const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => existingReport);
+
+			vi.spyOn(github, "listPullRequests").mockImplementation(async () => existingPullRequests);
+			vi.spyOn(github, "listIssues").mockImplementation(async () => existingIssues);
+			const createOrUpdateIssueSpy = vi.spyOn(github, "createOrUpdateIssue").mockImplementation(() => createdReport);
 
 			// WHEN
 			const ret = await createMonthlyRoadmapReport({ github, actions });
 
 			// THEN
-			expect(ret).toStrictEqual(existingReport);
-			expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(expect.objectContaining({ labels: [REPORT_ROADMAP_LABEL] }));
-		});
-
-		it("include blocked labels in report", async () => {
-			// GIVEN
-			const github = new GitHub();
-			const actions = buildGitHubActionsClient();
-
-			const existingIssues = buildIssues({ max: 3, labels: ["test-label"] });
-			const existingPullRequests = buildPullRequests({ max: 3, labels: ["test-label"] });
-			const expectedLabelsIgnored = UnorderedList.fromArray(BLOCKED_LABELS);
-
-			vi.spyOn(github, "listPullRequests").mockImplementation(() => existingPullRequests);
-			vi.spyOn(github, "listIssues").mockImplementation(() => existingIssues);
-			const createOrUpdateIssueSpy = vi
-				.spyOn(github, "createOrUpdateIssue")
-				.mockImplementation(() => existingIssues[0]);
-
-			// WHEN
-			await createMonthlyRoadmapReport({ github, actions });
-
-			// THEN
+			expect(ret).toStrictEqual(createdReport);
 			expect(createOrUpdateIssueSpy).toHaveBeenCalledWith(
-				expect.objectContaining({ body: expect.stringContaining(expectedLabelsIgnored) }),
+				expect.objectContaining({
+					title: expectedReport.title,
+					body: expectedReport.build(),
+					labels: [REPORT_ROADMAP_LABEL],
+				}),
 			);
 		});
 
+		it("should include blocked labels in report", async () => {
+			// GIVEN
+			const expectedLabelsIgnored = UnorderedList.fromArray(BLOCKED_LABELS);
+			const expectedReport = buildMonthlyRoadmapTemplate();
+
+			// WHEN
+			const reportBody = expectedReport.build()
+
+			// THEN
+			expect(reportBody).contains(expectedLabelsIgnored);
+		});
+
+		// TODO: move these tests to test template only
+		// TODO: update monthly_roadmap to use template title so we can test it too from mock calls
+		
 		it("build report even when no data is found", async () => {
 			// GIVEN
 			const github = new GitHub();
