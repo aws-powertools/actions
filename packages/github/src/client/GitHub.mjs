@@ -31,7 +31,6 @@ export class GitHub {
 	 * @property {string} owner - The owner of the GitHub repository.
 	 * @property {string} repo - The name of the GitHub repository.
 	 *
-	 * @returns {Promise<z.infer<typeof pullRequestSchema>[]>}
 	 */
 	constructor(options = {}) {
 		this.token = options.token || process.env.GITHUB_TOKEN;
