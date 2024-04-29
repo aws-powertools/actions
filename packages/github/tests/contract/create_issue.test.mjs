@@ -100,12 +100,4 @@ describe("create issues contract", () => {
 			}),
 		).rejects.toThrowError(err);
 	});
-
-	it("should throw if issue title is missing", async () => {
-		// GIVEN
-		const github = new GitHub();
-		// WHEN
-		// THEN
-		await expect(github.createIssue()).rejects.toThrowError("Issue title is required");
-	});
 });

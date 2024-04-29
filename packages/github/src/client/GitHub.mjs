@@ -223,7 +223,7 @@ export class GitHub {
 	 * @param {string} options.title - Issue title
 	 * @param {string} [options.body] - Issue body (description)
 	 * @param {string[]} [options.labels] - Labels to assign
-	 * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+	 * @param {string[]} [options.assignees] - GitHub usernames to assign this issue to
 	 * @param {number} [options.milestone] - Milestone number to assign this issue to
 	 *
 	 * @example Creating an issue
@@ -273,7 +273,7 @@ export class GitHub {
 	 * @param {string} [options.title] - Issue title
 	 * @param {string} [options.body] - Issue body (description)
 	 * @param {string[]} [options.labels] - Labels to assign
-	 * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+	 * @param {string[]} [options.assignees] - GitHub usernames to assign this issue to
 	 * @param {("open"|"closed")} [options.state] - Issue state to update to
 	 * @param {number} [options.milestone] - Milestone number
 	 *
@@ -332,7 +332,7 @@ export class GitHub {
 	 * @param {string} [options.title] - Issue title
 	 * @param {string} [options.body] - Issue body (description)
 	 * @param {string[]} [options.labels] - Labels to assign
-	 * @param {string[]} [options.assignees] - GitHub logins to assign this issue to
+	 * @param {string[]} [options.assignees] - GitHub usernames to assign this issue to
 	 * @param {("open" | "closed")} [options.state] - Issue state to update to
 	 * @param {number} [options.milestone] - Milestone number
 	 *
