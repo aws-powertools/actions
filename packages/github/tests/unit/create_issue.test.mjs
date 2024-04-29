@@ -7,7 +7,7 @@ describe("create issue", () => {
 	it("should create issue (default params)", async () => {
 		// GIVEN
 		const issueTitle = faker.lorem.sentence(5);
-		const createdIssue = buildIssues({ max: 1, overrides: { title: issueTitle } });
+		const createdIssue = buildIssues({ max: 1, overrides: { title: issueTitle } })[0];
 
 		const github = new GitHub();
 		const createIssueOptions = {
