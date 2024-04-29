@@ -66,7 +66,7 @@ const milestoneSchema = z.object({
 	number: z.number().int(),
 	state: z.enum(["open", "closed"]),
 	title: z.string(),
-	description: z.union([z.string(), z.null()]),
+	description: z.string().nullable(),
 	creator: userSchema,
 	open_issues: z.number().int(),
 	closed_issues: z.number().int(),
@@ -132,7 +132,7 @@ export const pullRequestAsIssueSchema = issueSchema.extend({
 });
 
 export const issueSearchSchema = z.object({
-	items: z.array(issueSchema),
+	items: z.union([z.array(issueSchema), z.array(pullRequestAsIssueSchema)]),
 	total_count: z.number().int(),
 	incomplete_results: z.boolean(),
 });

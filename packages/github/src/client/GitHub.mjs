@@ -7,7 +7,7 @@ import {
 	MAX_PULL_REQUESTS_PER_PAGE,
 	SERVICE_NAME,
 } from "github/src/constants.mjs";
-import { issueSchema, pullRequestAsIssueSchema } from "github/src/schemas/issues.mjs";
+import { issueSchema, issueSearchSchema } from "github/src/schemas/issues.mjs";
 import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
 
@@ -187,7 +187,6 @@ export class GitHub {
 	 * Searches for an issue based on query parameters.
 	 * GitHub Search qualifiers: https://docs.github.com/en/search-github/searching-on-github
 	 * @param {Object} options - Config.
-	 * @param {GitHub} options.github - A GitHub client instance.
 	 * @param {string} [options.searchQuery] - Search query to find issues and pull requests
 	 *
 	 * @example Finding an issue labeled as bug
@@ -196,7 +195,7 @@ export class GitHub {
 	 * const searchQuery = 'New bug is:issue label:bug in:title';
 	 * const issues = await github.findIssue({ searchQuery });
 	 * ```
-	 * @typedef {(z.infer<typeof issueSchema>[] | z.infer<typeof pullRequestAsIssueSchema>[])} SearchResult
+	 * @typedef {z.infer<typeof issueSearchSchema>} SearchResult
 	 * @returns {Promise<SearchResult>} Response - Search containing results
 	 */
 	async findIssue(options = {}) {
@@ -209,7 +208,7 @@ export class GitHub {
 				data: { items: issues },
 			} = await this.client.rest.search.issuesAndPullRequests({ q: searchQuery });
 
-			this.logger.debug(issues);
+			this.logger.debug(JSON.stringify(issues));
 			return issues;
 		} catch (error) {
 			this.logger.error(`Unable to search for issues at this time. Error: ${error}`);
