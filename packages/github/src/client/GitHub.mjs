@@ -122,8 +122,6 @@ export class GitHub {
 	 * ```javascript
 	 * const github = new GitHub();
 	 * const issues = await github.listIssues({
-	 *   github: octokit,
-	 *   core,
 	 *   labels: ['feature-request'],
 	 *   sortBy: 'created',
 	 *   limit: 15,
@@ -176,7 +174,7 @@ export class GitHub {
 				}
 			}
 
-			this.logger.debug(issues);
+			this.logger.debug(JSON.stringify(issues));
 
 			return issues;
 		} catch (error) {
