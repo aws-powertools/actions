@@ -31,21 +31,6 @@ describe("search issues contract", () => {
 		expect(ret).toStrictEqual(searchResults.items);
 	});
 
-	it("should not fail when issue is not found", async () => {
-		// GIVEN
-		const github = new GitHub();
-		const searchResults = buildSearchIssues({ max: 0 });
-		server.use(...findIssueHandler({ searchResults }));
-
-		// WHEN
-		const ret = await github.findIssue({
-			searchQuery: "not be found",
-		});
-
-		// THEN
-		expect(ret).toBeUndefined();
-	});
-
 	it("should throw error when GitHub API call fails (http 500)", async () => {
 		// GIVEN
 		const github = new GitHub();

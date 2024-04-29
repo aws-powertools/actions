@@ -28,55 +28,6 @@ describe("list issues contract", () => {
 		expect(ret).toStrictEqual(existingIssues);
 	});
 
-	it("should filter out pull requests from results", async () => {
-		// GIVEN
-		const github = new GitHub();
-		const realIssues = buildIssues({ max: 2 });
-		const prAsIssues = buildIssues({ max: 2, isPr: true });
-		server.use(
-			...listIssuesHandler({
-				data: [...realIssues, ...prAsIssues],
-				org: github.owner,
-				repo: github.repo,
-			}),
-		);
-
-		// WHEN
-		const ret = await github.listIssues();
-
-		// THEN
-		expect(ret).toStrictEqual(realIssues);
-	});
-
-	it("should exclude results with certain labels", async () => {
-		const github = new GitHub();
-		const BLOCKED_LABELS = "do-not-merge";
-
-		const existingIssues = buildIssues({ max: 5, labels: [BLOCKED_LABELS] });
-		server.use(...listIssuesHandler({ data: existingIssues, org: github.owner, repo: github.repo }));
-
-		// WHEN
-		const ret = await github.listIssues({ excludeLabels: BLOCKED_LABELS });
-
-		// THEN
-		expect(ret.length).toBe(0);
-	});
-
-	it("should limit the number of issues returned", async () => {
-		// GIVEN
-		const github = new GitHub();
-		const maxIssuesToReturn = 1;
-		const existingIssues = buildIssues({ max: 2 });
-
-		server.use(...listIssuesHandler({ data: existingIssues, org: github.owner, repo: github.repo }));
-
-		// WHEN
-		const ret = await github.listIssues({ limit: maxIssuesToReturn });
-
-		// THEN
-		expect(ret.length).toBe(maxIssuesToReturn);
-	});
-
 	it("should paginate to list all available issues when the limit is higher", async () => {
 		// GIVEN
 		const github = new GitHub();

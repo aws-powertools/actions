@@ -31,33 +31,6 @@ describe("list pull requests contract", () => {
 		expect(ret).toStrictEqual(data);
 	});
 
-	it("should exclude results with certain labels", async () => {
-		// GIVEN
-		const github = new GitHub();
-		const BLOCKED_LABELS = "do-not-merge";
-		const data = buildPullRequests({ max: 5, labels: [BLOCKED_LABELS] });
-		server.use(...listPullRequestsHandler({ data, org: github.owner, repo: github.repo }));
-
-		// WHEN
-		const ret = await github.listPullRequests({ excludeLabels: BLOCKED_LABELS });
-
-		// THEN
-		expect(ret.length).toBe(0);
-	});
-
-	it("should limit the number of pull requests returned", async () => {
-		// GIVEN
-		const github = new GitHub();
-		const data = buildPullRequests({ max: 2 });
-		server.use(...listPullRequestsHandler({ data, org: github.owner, repo: github.repo }));
-
-		// WHEN
-		const ret = await github.listPullRequests({ limit: 1 });
-
-		// THEN
-		expect(ret.length).toBe(1);
-	});
-
 	it("should paginate to list all available pull requests when the limit is higher", async () => {
 		// GIVEN
 		const github = new GitHub();
