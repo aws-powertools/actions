@@ -36,28 +36,29 @@ export class MonthlyRoadmapTemplate {
 	build() {
 		let template;
 
+		// biome-ignore format: GitHub Markdown sensitive to indentation
 		template = `
-	Quick report of top 3 issues/PRs to assist in roadmap updates. Issues or PRs with the following labels are excluded:
-	
-	${UnorderedList.fromArray(BLOCKED_LABELS)}
-	
-	> **NOTE**: It does not guarantee they will be in the roadmap. Some might already be and there might be a blocker.
-	
-	## Top Feature Requests
-	
-	${Table.fromKeyValueObjects(this.featureRequests)}
-	
-	## Top Most Commented Issues
-	
-	${Table.fromKeyValueObjects(this.mostActiveIssues)}
-	
-	## Top Long Running Pull Requests
-	
-	${Table.fromKeyValueObjects(this.longRunningPRs)}
-	
-	## Top Oldest Issues
-	
-	${Table.fromKeyValueObjects(this.oldestIssues)}
+Quick report of top 3 issues/PRs to assist in roadmap updates. Issues or PRs with the following labels are excluded:
+
+${UnorderedList.fromArray(BLOCKED_LABELS)}
+
+> **NOTE**: It does not guarantee they will be in the roadmap. Some might already be and there might be a blocker.
+
+## Top Feature Requests
+
+${Table.fromKeyValueObjects(this.featureRequests)}
+
+## Top Most Commented Issues
+
+${Table.fromKeyValueObjects(this.mostActiveIssues)}
+
+## Top Long Running Pull Requests
+
+${Table.fromKeyValueObjects(this.longRunningPRs)}
+
+## Top Oldest Issues
+
+${Table.fromKeyValueObjects(this.oldestIssues)}
 	
 `;
 

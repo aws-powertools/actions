@@ -28,6 +28,7 @@ export class GitHub {
 	 * @param {boolean} [options.debug=false] - Flag indicating whether debug mode is enabled.
 	 * @param {Octokit} [options.client] - The Octokit client instance.
 	 * @param {Logger} [options.logger] - Logger to use
+	 * @param {string} [options.repository] - Full GitHub repository name to use, e.g., `aws-powertools/actions`
 	 * @property {string} owner - The owner of the GitHub repository.
 	 * @property {string} repo - The name of the GitHub repository.
 	 *
@@ -37,7 +38,7 @@ export class GitHub {
 		this.#debug = options.debug || false;
 		this.client = options.client || new Octokit({ auth: this.token, ...(this.#debug && { log: console }) });
 		this.logger = options.logger || new Logger({ serviceName: SERVICE_NAME });
-		this.#repoFQDN = process.env.GITHUB_REPOSITORY || "";
+		this.#repoFQDN = options.repository || process.env.GITHUB_REPOSITORY || "";
 		this.owner = this.#repoFQDN.split("/")[0];
 		this.repo = this.#repoFQDN.split("/")[1];
 	}
