@@ -154,9 +154,7 @@ describe("build monthly roadmap", () => {
 				}),
 			);
 		});
-
-		// TODO: update monthly_roadmap to use template title so we can test it too from mock calls
-
+		
 		it("build report even when no data is found", async () => {
 			// GIVEN
 			const github = new GitHub();
