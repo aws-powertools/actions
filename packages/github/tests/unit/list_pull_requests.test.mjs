@@ -3,6 +3,8 @@ import { BLOCKED_LABELS } from "reporting/src/constants.mjs";
 import { buildPullRequests } from "testing/src/builders";
 import { describe, expect, it, vi } from "vitest";
 import { MAX_PULL_REQUESTS_PER_PAGE } from "../../src/constants.mjs";
+import { filterByMinDaysWithoutUpdate } from "../../src/filters/issues.mjs";
+import { getDateWithDaysDelta } from "../../src/functions.mjs";
 
 describe("listing pull requests", () => {
 	it("should list pull requests (default params)", async () => {
@@ -64,5 +66,65 @@ describe("listing pull requests", () => {
 
 		// THEN
 		expect(prs.length).toBe(0);
+	});
+
+	it("should exclude pull requests not created a week ago", async () => {
+		// GIVEN
+		const todayPullRequests = buildPullRequests({
+			max: 2,
+			overrides: {
+				created_at: getDateWithDaysDelta(0).toISOString(),
+			},
+		});
+
+		const lastWeekPullRequests = buildPullRequests({
+			max: 2,
+			overrides: {
+				created_at: getDateWithDaysDelta(-7).toISOString(),
+			},
+		});
+
+		const github = new GitHub();
+		vi.spyOn(github.client.paginate, "iterator").mockImplementation(async function* () {
+			yield { data: [...todayPullRequests, ...lastWeekPullRequests] };
+		});
+
+		// WHEN
+		const prs = await github.listPullRequests({ minDaysOld: 7 });
+
+		// THEN
+		expect(prs.length).toBe(lastWeekPullRequests.length);
+	});
+
+	it("should exclude pull requests updated in the last 7 days ", async () => {
+		// GIVEN
+		const minDaysWithoutUpdate = 7;
+		const todayPullRequests = buildPullRequests({
+			max: 2,
+			overrides: {
+				updated_at: getDateWithDaysDelta(0).toISOString(),
+			},
+		});
+
+		const lastWeekPullRequests = buildPullRequests({
+			max: 2,
+			overrides: {
+				updated_at: getDateWithDaysDelta(-minDaysWithoutUpdate).toISOString(),
+			},
+		});
+
+		const pullRequests = [...todayPullRequests, ...lastWeekPullRequests];
+		const expectedPullRequests = filterByMinDaysWithoutUpdate(pullRequests, minDaysWithoutUpdate);
+
+		const github = new GitHub();
+		vi.spyOn(github.client.paginate, "iterator").mockImplementation(async function* () {
+			yield { data: pullRequests };
+		});
+
+		// WHEN
+		const ret = await github.listPullRequests({ minDaysWithoutUpdate: minDaysWithoutUpdate });
+
+		// THEN
+		expect(ret).toStrictEqual(expectedPullRequests);
 	});
 });

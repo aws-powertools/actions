@@ -1,5 +1,6 @@
 import { GitHub } from "github/src/client";
-import { ISSUES_SORT_BY, PULL_REQUESTS_SORT_BY } from "github/src/constants.mjs";
+import { ISSUES_SORT_BY, LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD, PULL_REQUESTS_SORT_BY } from "github/src/constants.mjs";
+import { getDateWithDaysDelta } from "github/src/functions.mjs";
 import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "reporting/src/issues";
 import {
 	buildGitHubActionsClient,
@@ -96,7 +97,13 @@ describe("build monthly roadmap", () => {
 
 		it("get top long running PRs", async () => {
 			// GIVEN
-			const existingPullRequests = buildPullRequests({ max: 2 });
+			const existingPullRequests = buildPullRequests({
+				max: 2,
+				overrides: {
+					updated_at: getDateWithDaysDelta(-LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD).toISOString(),
+				},
+			});
+
 			const expectedPullRequests = buildLongRunningPullRequests(existingPullRequests);
 			const github = new GitHub();
 
@@ -114,6 +121,7 @@ describe("build monthly roadmap", () => {
 				sortBy: PULL_REQUESTS_SORT_BY.LONG_RUNNING,
 				direction: "desc",
 				excludeLabels: BLOCKED_LABELS,
+				minDaysWithoutUpdate: LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD,
 			});
 		});
 	});

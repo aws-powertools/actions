@@ -4,6 +4,8 @@ export const MAX_PULL_REQUESTS_LIMIT = 10;
 export const MAX_PULL_REQUESTS_PER_PAGE = 30;
 export const SERVICE_NAME = "powertools-github";
 
+export const LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD = 7;
+
 /** Sorting options for Pull Requests.
  * API: https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28
  */

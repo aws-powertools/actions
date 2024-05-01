@@ -1,7 +1,8 @@
+import {LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD} from "github/src/constants.mjs";
 import { BLOCKED_LABELS } from "../constants.mjs";
 import { Table, UnorderedList } from "../markdown/index.mjs";
 import { HighlyCommentedIssue, LongRunningPullRequest, OldestIssue, PopularFeatureRequest } from "../models/index.mjs";
-import {BaseTemplate} from "./base.mjs";
+import { BaseTemplate } from "./base.mjs";
 
 export class MonthlyRoadmapTemplate extends BaseTemplate {
 	/**
@@ -46,6 +47,8 @@ ${Table.fromKeyValueObjects(this.featureRequests)}
 ${Table.fromKeyValueObjects(this.mostActiveIssues)}
 
 ## Top Long Running Pull Requests
+
+Pull Requests updated in the last ${LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD} days are excluded.
 
 ${Table.fromKeyValueObjects(this.longRunningPRs)}
 

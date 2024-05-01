@@ -1,4 +1,5 @@
 import { generateMock } from "@anatine/zod-mock";
+import { LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD } from "github/src/constants.mjs";
 import { labelSchema, pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
 
@@ -9,6 +10,7 @@ import { z } from "zod";
  * @param {string[]} [options.labels=[]] - The labels to include in the mock pull requests.
  * @param {string} [options.org="aws-powertools"] - The organization name for the pull requests.
  * @param {string} [options.repo="powertools-lambda-python"] - The repository name for the pull requests.
+ * @param {z.infer<typeof pullRequestSchema>} [options.overrides] - Object to override from schema
  * @returns {z.infer<typeof pullRequestSchema>[]} PullRequest - An array of mocked pull requests.
  */
 export function buildPullRequests({
@@ -16,13 +18,15 @@ export function buildPullRequests({
 	labels = [],
 	org = "aws-powertools",
 	repo = "powertools-lambda-python",
+	overrides,
 }) {
 	const prs = [];
 
 	for (let i = 1; i < max + 1; i++) {
 		prs.push({
-			...mockPullRequest({ org, repo, prNumber: i }),
+			...mockPullRequest({ org, repo, prNumber: i, overrides }),
 			...mockLabels(labels),
+			...overrides,
 		});
 	}
 

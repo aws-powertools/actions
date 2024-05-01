@@ -25,3 +25,24 @@ export function formatISOtoLongDate(datetime) {
 	const date = new Date(datetime);
 	return new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(date);
 }
+
+/**
+ * Builds a Date object with the specified number of days ahead or behind from the current date.
+ *
+ * @param {number} days - The number of days to add or subtract from the current date.
+ * @returns {Date} A new Date object with the specified number of days added or subtracted.
+ *
+ * @example
+ * // Get a date 14 days in the future
+ * const futureDateAhead = getDateWithDays(14);
+ * console.log(futureDateAhead); // Output: Wed May 15 2024 16:09:00 GMT+0000 (Coordinated Universal Time)
+ *
+ * @example
+ * // Get a date 7 days in the past
+ * const pastDateBehind = getDateWithDays(-7);
+ * console.log(pastDateBehind); // Output: Wed Apr 24 2024 16:09:00 GMT+0000 (Coordinated Universal Time)
+ */
+export function getDateWithDaysDelta(days) {
+	const today = new Date();
+	return new Date(today.getTime() + days * 24 * 60 * 60 * 1000);
+}

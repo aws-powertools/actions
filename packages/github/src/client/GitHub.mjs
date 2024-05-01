@@ -10,6 +10,11 @@ import {
 import { issueSchema, issueSearchSchema } from "github/src/schemas/issues.mjs";
 import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
+import {
+	filterByMinDaysOld,
+	filterByMinDaysWithoutUpdate,
+	filterPullRequestsByExcludedLabels,
+} from "../filters/issues.mjs";
 
 export class GitHub {
 	#debug;
@@ -52,6 +57,8 @@ export class GitHub {
 	 * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
 	 * @param {string[]} [options.excludeLabels] - Exclude pull requests containing these labels
 	 * @param {("open" | "closed" | "all")} [options.state="open"] - Limit listing to pull requests in these state
+	 * @param {number} [options.minDaysOld] - The minimum number of days since the pull request was created.
+	 * @param {number} [options.minDaysWithoutUpdate] - The minimum number of days since the pull request was last updated.
 	 *
 	 * @example Listing pull requests excluding those labels with `do-not-merge`
 	 *
@@ -70,6 +77,8 @@ export class GitHub {
 			direction = "asc",
 			excludeLabels = [],
 			state = "open",
+			minDaysOld,
+			minDaysWithoutUpdate,
 		} = options;
 
 		let prs = [];
@@ -85,9 +94,13 @@ export class GitHub {
 				direction,
 				per_page: pageSize,
 			})) {
-				const pullRequestOnly = ret.filter((pr) => pr.labels.every((label) => !excludeLabels.includes(label.name)));
+				let filteredPullRequests = ret;
 
-				prs.push(...pullRequestOnly);
+				filteredPullRequests = filterByMinDaysOld(filteredPullRequests, minDaysOld);
+				filteredPullRequests = filterByMinDaysWithoutUpdate(filteredPullRequests, minDaysWithoutUpdate);
+				filteredPullRequests = filterPullRequestsByExcludedLabels(filteredPullRequests, excludeLabels);
+
+				prs.push(...filteredPullRequests);
 
 				if (prs.length >= limit) {
 					prs = prs.slice(0, limit);
