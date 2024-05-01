@@ -84,10 +84,26 @@ export function filterByMinDaysWithoutUpdate(issues, minDaysWithoutUpdate) {
  * //   { id: 2, labels: [{ name: 'enhancement' }, { name: 'help-wanted' }] },
  * // ]
  */
-export function filterPullRequestsByExcludedLabels(issues, excludeLabels) {
+export function filterByExcludedLabels(issues, excludeLabels) {
 	if (!Array.isArray(excludeLabels)) {
 		return issues;
 	}
 
 	return issues.filter((issue) => issue.labels.every((label) => !excludeLabels.includes(label.name)));
+}
+
+/**
+ * Filters out pull requests from a list of issues.
+ *
+ * @param {Array} issues - The list of issues to filter.
+ * @returns {Array} The filtered list of issues without pull requests.
+ */
+export function filterPullRequestsAsIssues(issues) {
+	return issues.filter((issue) => {
+		if (Object.hasOwn(issue, "pull_request")) {
+			return false;
+		}
+
+		return true;
+	});
 }

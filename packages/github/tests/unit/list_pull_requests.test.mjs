@@ -122,7 +122,7 @@ describe("listing pull requests", () => {
 		});
 
 		// WHEN
-		const ret = await github.listPullRequests({ minDaysWithoutUpdate: minDaysWithoutUpdate });
+		const ret = await github.listPullRequests({ minDaysWithoutUpdate });
 
 		// THEN
 		expect(ret).toStrictEqual(expectedPullRequests);

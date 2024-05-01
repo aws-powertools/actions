@@ -3,6 +3,8 @@ import { buildIssues } from "testing/src/builders/index.mjs";
 import { describe, expect, it, vi } from "vitest";
 import { GitHub } from "../../src/client/index.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../../src/constants.mjs";
+import {filterByMinDaysWithoutUpdate} from "../../src/filters/issues.mjs";
+import { getDateWithDaysDelta } from "../../src/functions.mjs";
 
 describe("list issues", () => {
 	it("should list issues (default params)", async () => {
@@ -80,5 +82,64 @@ describe("list issues", () => {
 
 		// THEN
 		expect(issues.length).not.toBe(existingIssues.length);
+	});
+
+	it("should exclude issues this week", async () => {
+		// GIVEN
+		const todayIssues = buildIssues({
+			max: 2,
+			overrides: {
+				created_at: getDateWithDaysDelta(0).toISOString(),
+			},
+		});
+		const lastWeekIssues = buildIssues({
+			max: 2,
+			overrides: {
+				created_at: getDateWithDaysDelta(-7).toISOString(),
+			},
+		});
+
+		const github = new GitHub();
+		vi.spyOn(github.client.paginate, "iterator").mockImplementation(async function* () {
+			yield { data: [...todayIssues, lastWeekIssues] };
+		});
+
+		// WHEN
+		const issues = await github.listIssues({ minDaysOld: 7 });
+
+		// THEN
+		expect(issues.length).not.toBe(lastWeekIssues.length);
+	});
+
+	it("should exclude issues updated in the last 7 days", async () => {
+		// GIVEN
+		const minDaysWithoutUpdate = 7;
+
+		const todayIssues = buildIssues({
+			max: 3,
+			overrides: {
+				updated_at: getDateWithDaysDelta(0).toISOString(),
+			},
+		});
+
+		const lastWeekIssues = buildIssues({
+			max: 2,
+			overrides: {
+				updated_at: getDateWithDaysDelta(-minDaysWithoutUpdate).toISOString(),
+			},
+		});
+
+		const expectedIssues = filterByMinDaysWithoutUpdate([...todayIssues, ...lastWeekIssues], minDaysWithoutUpdate);
+
+		const github = new GitHub();
+		vi.spyOn(github.client.paginate, "iterator").mockImplementation(async function* () {
+			yield { data: [...todayIssues, ...lastWeekIssues] };
+		});
+
+		// WHEN
+		const issues = await github.listIssues({ minDaysWithoutUpdate });
+
+		// THEN
+		expect(issues).toStrictEqual(expectedIssues);
 	});
 });

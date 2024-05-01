@@ -11,9 +11,10 @@ import { issueSchema, issueSearchSchema } from "github/src/schemas/issues.mjs";
 import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
 import {
+	filterByExcludedLabels,
 	filterByMinDaysOld,
 	filterByMinDaysWithoutUpdate,
-	filterPullRequestsByExcludedLabels,
+	filterPullRequestsAsIssues,
 } from "../filters/issues.mjs";
 
 export class GitHub {
@@ -98,7 +99,7 @@ export class GitHub {
 
 				filteredPullRequests = filterByMinDaysOld(filteredPullRequests, minDaysOld);
 				filteredPullRequests = filterByMinDaysWithoutUpdate(filteredPullRequests, minDaysWithoutUpdate);
-				filteredPullRequests = filterPullRequestsByExcludedLabels(filteredPullRequests, excludeLabels);
+				filteredPullRequests = filterByExcludedLabels(filteredPullRequests, excludeLabels);
 
 				prs.push(...filteredPullRequests);
 
@@ -126,6 +127,8 @@ export class GitHub {
 	 * @param {number} [options.limit] - Max number of issues to return (default 10)
 	 * @param {number} [options.pageSize] - Pagination size for each List Issues API call (max 100)
 	 * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
+	 * @param {number} [options.minDaysOld] - The minimum number of days since the issue was created.
+	 * @param {number} [options.minDaysWithoutUpdate] - The minimum number of days since the issue was last updated.
 	 * @param {string[]} [options.excludeLabels] - Exclude issues containing these labels
 	 *
 	 * @example List feature requests, excluding blocked issues
@@ -149,6 +152,8 @@ export class GitHub {
 			pageSize = MAX_ISSUES_PER_PAGE,
 			direction = "asc",
 			excludeLabels = [],
+			minDaysOld,
+			minDaysWithoutUpdate,
 		} = options;
 
 		let issues = [];
@@ -171,16 +176,14 @@ export class GitHub {
 				direction,
 				per_page: pageSize,
 			})) {
-				const issuesOnly = ret.filter((issue) => {
-					// ignore PRs
-					if (Object.hasOwn(issue, "pull_request")) {
-						return false;
-					}
+				let filteredIssues = ret;
 
-					return issue.labels.every((label) => !excludeLabels.includes(label.name));
-				});
+				filteredIssues = filterPullRequestsAsIssues(filteredIssues);
+				filteredIssues = filterByMinDaysOld(filteredIssues, minDaysOld);
+				filteredIssues = filterByMinDaysWithoutUpdate(filteredIssues, minDaysWithoutUpdate);
+				filteredIssues = filterByExcludedLabels(filteredIssues, excludeLabels);
 
-				issues.push(...issuesOnly);
+				issues.push(...filteredIssues);
 
 				if (issues.length >= limit) {
 					issues = issues.slice(0, limit);
