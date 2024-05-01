@@ -1,9 +1,30 @@
 {
+  "workspaces": [
+    "packages/reporting",
+    "packages/testing",
+    "packages/github"
+  ],
   "devDependencies": {
+    "@anatine/zod-mock": "^3.13.4",
+    "@biomejs/biome": "1.6.4",
+    "@faker-js/faker": "^8.4.1",
+    "@types/github-script": "github:actions/github-script",
+    "msw": "^2.2.13",
     "vitest": "^1.4.0"
   },
   "scripts": {
-    "test": "vitest"
+    "dev": "npm ci",
+    "test": "vitest",
+    "lint": "npm run format && biome lint packages --apply",
+    "format": "biome format packages --write",
+    "ci": "biome check packages"
   },
-  "type": "module"
+  "type": "module",
+  "private": "true",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@aws-lambda-powertools/logger": "^2.1.0",
+    "@octokit/rest": "^20.1.0",
+    "zod": "^3.23.4"
+  }
 }
