@@ -3,7 +3,6 @@ import { HighlyCommentedIssue } from "reporting/src/models/HighlyCommentedIssue.
 import { LongRunningPullRequest } from "reporting/src/models/LongRunningPullRequest.mjs";
 import { OldestIssue } from "reporting/src/models/OldestIssue.mjs";
 import { PopularFeatureRequest } from "reporting/src/models/PopularFeatureRequest.mjs";
-import { MonthlyRoadmapTemplate } from "reporting/src/templates/MonthlyRoadmapTemplate.mjs";
 import { z } from "zod";
 
 /**
@@ -40,23 +39,4 @@ export function buildTopOldestIssues(issues) {
  */
 export function buildLongRunningPullRequests(issues) {
 	return issues.map((issue) => new LongRunningPullRequest(issue));
-}
-
-/**
- * Builds a monthly roadmap template with top feature requests, long-running pull requests, oldest issues, and most active issues.
- *
- * @param {Object} options - Config.
- * @param {z.infer<typeof pullRequestSchema>[]} options.longRunningPRs - List of long-running pull requests.
- * @param {z.infer<typeof issueSchema>[]} options.oldestIssues - List of oldest issues.
- * @param {z.infer<typeof issueSchema>[]} options.mostActiveIssues - List of most active issues.
- */
-export function buildMonthlyRoadmapTemplate(options = {}) {
-	const { featureRequests = [], longRunningPRs = [], oldestIssues = [], mostActiveIssues = [] } = options;
-
-	return new MonthlyRoadmapTemplate({
-		featureRequests: buildTopFeatureRequests(featureRequests),
-		longRunningPRs: buildLongRunningPullRequests(longRunningPRs),
-		oldestIssues: buildTopOldestIssues(oldestIssues),
-		mostActiveIssues: buildTopMostCommented(mostActiveIssues),
-	});
 }
