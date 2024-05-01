@@ -1,7 +1,7 @@
-import {GitHubActions} from "github/src/client/index.mjs";
+import { GitHubActions } from "github/src/client/index.mjs";
 
 export class BaseTemplate {
-	#actions
+	#actions;
 	constructor(options = {}) {
 		this.#actions = new GitHubActions();
 	}
@@ -20,6 +20,6 @@ export class BaseTemplate {
 	}
 
 	build() {
-		return ""
+		return "";
 	}
 }

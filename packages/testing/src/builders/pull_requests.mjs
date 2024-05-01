@@ -1,5 +1,4 @@
 import { generateMock } from "@anatine/zod-mock";
-import { LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD } from "github/src/constants.mjs";
 import { labelSchema, pullRequestSchema } from "github/src/schemas/pull_requests.js";
 import { z } from "zod";
 

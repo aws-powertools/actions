@@ -100,10 +100,6 @@ export function filterByExcludedLabels(issues, excludeLabels) {
  */
 export function filterPullRequestsAsIssues(issues) {
 	return issues.filter((issue) => {
-		if (Object.hasOwn(issue, "pull_request")) {
-			return false;
-		}
-
-		return true;
+		return !Object.hasOwn(issue, "pull_request");
 	});
 }

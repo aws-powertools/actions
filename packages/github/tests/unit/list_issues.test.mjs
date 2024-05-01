@@ -3,7 +3,7 @@ import { buildIssues } from "testing/src/builders/index.mjs";
 import { describe, expect, it, vi } from "vitest";
 import { GitHub } from "../../src/client/index.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../../src/constants.mjs";
-import {filterByMinDaysWithoutUpdate} from "../../src/filters/issues.mjs";
+import { filterByMinDaysWithoutUpdate } from "../../src/filters/issues.mjs";
 import { getDateWithDaysDelta } from "../../src/functions.mjs";
 
 describe("list issues", () => {
