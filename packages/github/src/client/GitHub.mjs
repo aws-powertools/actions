@@ -75,9 +75,7 @@ export class GitHub {
 		let prs = [];
 
 		try {
-			this.logger.info(
-				`Listing pull requests. Sorted by:'${sortBy}', Excluding labels: '${excludeLabels}', Limit: ${limit}`,
-			);
+			this.logger.info("Listing pull requests", { sortBy: sortBy, excludeLabels: excludeLabels, limit: limit });
 
 			for await (const { data: ret } of this.client.paginate.iterator(this.client.rest.pulls.list, {
 				owner: this.owner,
@@ -143,9 +141,12 @@ export class GitHub {
 		let issues = [];
 
 		try {
-			this.logger.info(
-				`Listing issues. Filtered by labels: '${labels}', Sorted by:'${sortBy}', Excluding labels: '${excludeLabels}', Limit: ${limit}`,
-			);
+			this.logger.info("Listing issues. Filtered by labels", {
+				sortBy: sortBy,
+				labels: labels,
+				excludeLabels: excludeLabels,
+				limit: limit,
+			});
 
 			// fetch as many issues as possible (`pageSize`), filter out PRs and issues labelled with any of our `excludeLabels`
 			// cap the results (`limit`)
@@ -202,7 +203,7 @@ export class GitHub {
 		const { searchQuery } = options;
 
 		try {
-			this.logger.info(`Searching whether issue exists. Search params: '${searchQuery}'`);
+			this.logger.info("Searching whether issue exists", { query: searchQuery });
 
 			const {
 				data: { items: issues },
@@ -302,7 +303,7 @@ export class GitHub {
 		}
 
 		try {
-			this.logger.info(`Updating existing issue ${issueNumber}`);
+			this.logger.info("Updating existing issue", { issueNumber: issueNumber });
 
 			const issue = await this.client.rest.issues.update({
 				owner: this.owner,

@@ -47,7 +47,8 @@ export class MonthlyRoadmapReport extends BaseReport {
 			getTopMostCommented({ github: this.github }),
 		]);
 
-		this.logger.info("Building monthly roadmap");
+		// noinspection JSCheckFunctionSignatures
+		this.logger.info("Building monthly roadmap", { title: this.title });
 
 		const template = new MonthlyRoadmapTemplate({
 			featureRequests,
@@ -68,7 +69,8 @@ export class MonthlyRoadmapReport extends BaseReport {
 	async create(options = {}) {
 		const report = options.report || (await this.build());
 
-		this.logger.info("Creating issue with monthly roadmap report", {title: this.title});
+		// noinspection JSCheckFunctionSignatures
+		this.logger.info("Creating issue with monthly roadmap report", { title: this.title });
 		const issue = await this.github.createOrUpdateIssue({
 			searchQuery: this.searchQuery,
 			title: this.title,
