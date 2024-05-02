@@ -97,6 +97,10 @@ export class GitHub {
 			})) {
 				let filteredPullRequests = ret;
 
+				// TODO: Check with Andrea whether there's a perf concern on this being accidentally quadratic
+				// single filter w/ conditions (1 loop) over multiple filters (N loops)
+
+
 				filteredPullRequests = filterByMinDaysOld(filteredPullRequests, minDaysOld);
 				filteredPullRequests = filterByMinDaysWithoutUpdate(filteredPullRequests, minDaysWithoutUpdate);
 				filteredPullRequests = filterByExcludedLabels(filteredPullRequests, excludeLabels);
@@ -177,6 +181,9 @@ export class GitHub {
 				per_page: pageSize,
 			})) {
 				let filteredIssues = ret;
+
+				// TODO: Check with Andrea whether there's a perf concern on this being accidentally quadratic
+				// single filter w/ conditions (1 loop) over multiple filters (N loops)
 
 				filteredIssues = filterPullRequestsAsIssues(filteredIssues);
 				filteredIssues = filterByMinDaysOld(filteredIssues, minDaysOld);
