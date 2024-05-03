@@ -4,6 +4,7 @@
     "packages/testing",
     "packages/github"
   ],
+  "license": "MIT-0",
   "devDependencies": {
     "@anatine/zod-mock": "^3.13.4",
     "@biomejs/biome": "1.6.4",
