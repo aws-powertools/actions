@@ -1,0 +1,66 @@
+name: Code quality
+
+# PROCESS
+#
+# 1. Install all dependencies and spin off containers for all supported Python versions
+# 2. Run code formatters and linters (various checks) for code standard
+# 3. Run static typing checker for potential bugs
+# 4. Run entire test suite for regressions except end-to-end (unit, functional, performance)
+# 5. Run static analysis (in addition to CodeQL) for common insecure code practices
+# 6. Run complexity baseline to avoid error-prone bugs and keep maintenance lower
+# 7. Collect and report on test coverage
+
+# USAGE
+#
+# Always triggered on new PRs, PR changes and PR merge.
+
+
+on:
+  pull_request:
+    paths:
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vitest.config.mjs"
+    branches:
+      - main
+  push:
+    paths:
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vitest.config.mjs"
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  quality_check:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: dev
+    strategy:
+      matrix:
+        version: [20]
+      fail-fast: false
+    permissions:
+      contents: read  # checkout code only
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b  # v4.1.4
+      - name: Setup NodeJS
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: ${{ matrix.version }}
+          cache: "npm"
+      - name: Setup dependencies
+        uses: ./.github/actions/cached-node-modules
+        with:
+          nodeVersion: ${{ matrix.version }}
+          build: false
+      - name: Formatting and Linting
+        run: npm run ci
+      - name: Test with vitest
+        run: npm test -- -t unit,contract
