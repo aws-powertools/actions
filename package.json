@@ -11,7 +11,7 @@
     "@faker-js/faker": "^8.4.1",
     "@types/github-script": "github:actions/github-script",
     "msw": "^2.2.13",
-    "vitest": "^1.4.0"
+    "vitest": "^1.6.0"
   },
   "scripts": {
     "dev": "npm ci",
