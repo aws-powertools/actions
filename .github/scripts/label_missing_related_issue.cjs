@@ -7,7 +7,7 @@ const {
 	LABEL_BLOCK,
 	LABEL_BLOCK_REASON,
 	RELATED_ISSUE_REGEX,
-} = require("./constants");
+} = require("./constants.cjs");
 
 module.exports = async ({ github, context, core }) => {
 	if (IGNORE_AUTHORS.includes(PR_AUTHOR)) {

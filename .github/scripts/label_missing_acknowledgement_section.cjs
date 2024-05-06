@@ -6,7 +6,7 @@ const {
 	IGNORE_AUTHORS,
 	LABEL_BLOCK,
 	LABEL_BLOCK_MISSING_LICENSE_AGREEMENT,
-} = require("./constants");
+} = require("./constants.cjs");
 
 module.exports = async ({ github, context, core }) => {
 	if (IGNORE_AUTHORS.includes(PR_AUTHOR)) {
