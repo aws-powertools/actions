@@ -100,7 +100,6 @@ export class GitHub {
 				// TODO: Check with Andrea whether there's a perf concern on this being accidentally quadratic
 				// single filter w/ conditions (1 loop) over multiple filters (N loops)
 
-
 				filteredPullRequests = filterByMinDaysOld(filteredPullRequests, minDaysOld);
 				filteredPullRequests = filterByMinDaysWithoutUpdate(filteredPullRequests, minDaysWithoutUpdate);
 				filteredPullRequests = filterByExcludedLabels(filteredPullRequests, excludeLabels);
