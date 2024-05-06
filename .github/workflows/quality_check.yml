@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: dev
+      POWERTOOLS_DEV: true
     strategy:
       matrix:
         version: [20]
@@ -60,4 +61,4 @@ jobs:
         run: npm run ci
       - name: Test with vitest
         # Run only unit and contract tests
-        run: npm test -- --run unit contract
+        run: npm test -- --silent --run unit contract
