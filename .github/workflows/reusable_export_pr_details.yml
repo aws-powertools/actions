@@ -84,7 +84,7 @@ jobs:
         with:
           github-token: ${{ secrets.token }}
           script: |
-            const script = require('.github/scripts/download_pr_artifact.js')
+            const script = require('.github/scripts/download_pr_artifact.cjs')
             await script({github, context, core})
       # NodeJS standard library doesn't provide ZIP capabilities; use system `unzip` command instead
       - name: "Unzip PR artifact"
