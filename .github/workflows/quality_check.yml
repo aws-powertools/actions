@@ -59,4 +59,5 @@ jobs:
       - name: Formatting and Linting
         run: npm run ci
       - name: Test with vitest
-        run: npm test -- -t unit,contract
+        # Run only unit and contract tests
+        run: npm test -- --run unit contract
