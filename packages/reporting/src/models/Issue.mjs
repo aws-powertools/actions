@@ -30,7 +30,7 @@ export class Issue {
 		this.last_update = `${diffInDaysFromToday(issue.updated_at)} days`;
 
 		/**
-		 * The labels associated with the feature request, formatted as a string with each label enclosed in backticks (`bug`).
+		 * The labels associated with the issue, formatted as a string with each label enclosed in backticks (`bug`).
 		 * @type {string}
 		 */
 		this.labels = `${issue.labels.map((label) => `\`${label.name}\``).join("<br>")}`;
