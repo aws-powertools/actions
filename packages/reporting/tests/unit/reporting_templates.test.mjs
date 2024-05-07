@@ -62,6 +62,8 @@ describe("build reporting templates", () => {
 
 		it("should not include GitHub workflow run link in the report when not running in GitHub Actions", () => {
 			// GIVEN
+			vi.stubEnv("GITHUB_ACTIONS", "");
+
 			const expectedReport = new MonthlyRoadmapTemplate();
 
 			// WHEN
