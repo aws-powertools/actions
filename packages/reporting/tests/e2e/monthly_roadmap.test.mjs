@@ -5,8 +5,8 @@ import { REPORT_ROADMAP_LABEL } from "../../src/constants.mjs";
 import { MonthlyRoadmapReport } from "../../src/reports/MonthlyRoadmapReport.mjs";
 
 describe("monthly roadmap end-to-end test", () => {
-	const SOURCE_REPOSITORY = "aws-powertools/powertools-lambda-python";
-	const DESTINATION_REPOSITORY = "aws-powertools/actions";
+	const SOURCE_REPOSITORY = process.env.E2E_SOURCE_REPOSITORY || "aws-powertools/powertools-lambda-python";
+	const DESTINATION_REPOSITORY = process.env.E2E_DESTINATION_REPOSITORY || "aws-powertools/actions";
 
 	it("should create a monthly report", async () => {
 		// GIVEN
