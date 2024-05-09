@@ -1,9 +1,9 @@
-import { GitHub } from "github/src/client";
-import { MAX_ISSUES_PER_PAGE } from "github/src/constants.mjs";
+import { buildIssues } from "@aws-powertools-actions/testing/builders";
+import { listIssuesFailureHandler, listIssuesHandler } from "@aws-powertools-actions/testing/interceptors";
 import { setupServer } from "msw/node";
-import { buildIssues } from "testing/src/builders";
-import { listIssuesFailureHandler, listIssuesHandler } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { MAX_ISSUES_PER_PAGE } from "../../src/constants.mjs";
+import { GitHub } from "../../src/index.mjs";
 
 describe("list issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

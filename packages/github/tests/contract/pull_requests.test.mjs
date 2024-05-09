@@ -1,12 +1,9 @@
-import { GitHub } from "github/src/client";
-import { MAX_PULL_REQUESTS_PER_PAGE } from "github/src/constants.mjs";
+import { buildPullRequests } from "@aws-powertools-actions/testing/builders";
+import { listPullRequestsFailureHandler, listPullRequestsHandler } from "@aws-powertools-actions/testing/interceptors";
 import { setupServer } from "msw/node";
-import { buildPullRequests } from "testing/src/builders";
-import {
-	listPullRequestsFailureHandler,
-	listPullRequestsHandler,
-} from "testing/src/interceptors/pull_requests_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { MAX_PULL_REQUESTS_PER_PAGE } from "../../src/constants.mjs";
+import { GitHub } from "../../src/index.mjs";
 
 describe("list pull requests contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

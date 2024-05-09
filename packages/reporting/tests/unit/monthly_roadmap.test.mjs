@@ -1,7 +1,10 @@
-import { GitHub } from "github/src/client";
-import { ISSUES_SORT_BY, LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD, PULL_REQUESTS_SORT_BY } from "github/src/constants.mjs";
-import { getDateWithDaysDelta } from "github/src/functions.mjs";
-import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "reporting/src/issues";
+import { GitHub } from "@aws-powertools-actions/github";
+import {
+	ISSUES_SORT_BY,
+	LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD,
+	PULL_REQUESTS_SORT_BY,
+} from "@aws-powertools-actions/github/constants";
+import { getDateWithDaysDelta } from "@aws-powertools-actions/github/functions";
 import {
 	buildGitHubActionsClient,
 	buildIssues,
@@ -10,7 +13,7 @@ import {
 	buildTopFeatureRequests,
 	buildTopMostCommented,
 	buildTopOldestIssues,
-} from "testing/src/builders";
+} from "@aws-powertools-actions/testing/builders";
 import { describe, expect, it, vi } from "vitest";
 import {
 	BLOCKED_LABELS,
@@ -22,7 +25,8 @@ import {
 	TOP_MOST_COMMENTED_LIMIT,
 	TOP_OLDEST_LIMIT,
 } from "../../src/constants.mjs";
-import { getLongRunningPRs } from "../../src/pull_requests";
+import { getTopFeatureRequests, getTopMostCommented, getTopOldestIssues } from "../../src/issues/index.mjs";
+import { getLongRunningPRs } from "../../src/pull_requests/index.mjs";
 import { MonthlyRoadmapReport } from "../../src/reports/MonthlyRoadmapReport.mjs";
 
 describe("build monthly roadmap", () => {

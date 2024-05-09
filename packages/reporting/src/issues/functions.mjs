@@ -1,5 +1,5 @@
-import { GitHub } from "github/src/client";
-import { ISSUES_SORT_BY } from "github/src/constants.mjs";
+import { GitHub } from "@aws-powertools-actions/github";
+import { ISSUES_SORT_BY } from "@aws-powertools-actions/github/constants";
 import {
 	BLOCKED_LABELS,
 	FEATURE_REQUEST_LABEL,

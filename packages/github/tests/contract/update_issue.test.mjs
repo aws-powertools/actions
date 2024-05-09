@@ -1,8 +1,8 @@
-import { GitHub } from "github/src/client";
+import { buildIssues } from "@aws-powertools-actions/testing/builders";
+import { updateIssueFailureHandler, updateIssueHandler } from "@aws-powertools-actions/testing/interceptors";
 import { setupServer } from "msw/node";
-import { buildIssues } from "testing/src/builders";
-import { updateIssueFailureHandler, updateIssueHandler } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { GitHub } from "../../src/index.mjs";
 
 describe("update issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

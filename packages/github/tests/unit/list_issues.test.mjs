@@ -1,10 +1,10 @@
-import { BLOCKED_LABELS } from "reporting/src/constants.mjs";
-import { buildIssues } from "testing/src/builders/index.mjs";
+import { BLOCKED_LABELS } from "@aws-powertools-actions/reporting/constants";
+import { buildIssues } from "@aws-powertools-actions/testing/builders";
 import { describe, expect, it, vi } from "vitest";
-import { GitHub } from "../../src/client/index.mjs";
 import { MAX_ISSUES_PER_PAGE } from "../../src/constants.mjs";
 import { filterByMinDaysWithoutUpdate } from "../../src/filters/issues.mjs";
 import { getDateWithDaysDelta } from "../../src/functions.mjs";
+import { GitHub } from "../../src/index.mjs";
 
 describe("list issues", () => {
 	it("should list issues (default params)", async () => {

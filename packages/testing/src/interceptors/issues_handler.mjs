@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 
-import { issueSchema, issueSearchSchema } from "github/src/schemas/issues.mjs";
+import { issueSchema, issueSearchSchema } from "@aws-powertools-actions/github/schemas/issues";
 
 /**
  * Interceptor for GitHub Search issues and pull requests

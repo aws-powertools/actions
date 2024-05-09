@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 const commentSchema = z.object({
 	id: z.string().uuid(),

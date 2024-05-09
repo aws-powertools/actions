@@ -1,4 +1,4 @@
-import { issueSchema } from "github/src/schemas/issues.mjs";
+import { issueSchema } from "@aws-powertools-actions/github/schemas/issues";
 import { z } from "zod";
 import { Issue } from "./Issue.mjs";
 
