@@ -22,7 +22,7 @@
     "setup-local": "husky"
   },
   "lint-staged": {
-    "packages/**/*.{mjs}": [
+    "packages/**/*.mjs": [
       "biome check --apply"
     ]
   },

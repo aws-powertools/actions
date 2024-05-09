@@ -1,2 +1,2 @@
 npx lint-staged
-npm run build -ws
+npm run build -ws && git add packages/*/types
