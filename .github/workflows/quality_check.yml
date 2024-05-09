@@ -38,7 +38,7 @@ jobs:
     env:
       NODE_ENV: dev
       POWERTOOLS_DEV: true
-      GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_BOT_USER }}
+      CI: true
     strategy:
       matrix:
         version: [20]
@@ -62,4 +62,6 @@ jobs:
       - name: Formatting and Linting
         run: npm run ci
       - name: Test with vitest
-        run: npm test -- --silent --run
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_BOT_USER }}
+        run: npm test -- --silent
