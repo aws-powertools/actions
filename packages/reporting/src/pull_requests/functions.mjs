@@ -1,5 +1,5 @@
-import { GitHub } from "github/src/client/GitHub.mjs";
-import { LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD, PULL_REQUESTS_SORT_BY } from "github/src/constants.mjs";
+import { GitHub } from "@aws-powertools-actions/github";
+import { LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD, PULL_REQUESTS_SORT_BY } from "@aws-powertools-actions/github/constants";
 import { BLOCKED_LABELS, TOP_LONG_RUNNING_PR_LIMIT } from "../constants.mjs";
 import { LongRunningPullRequest } from "../models";
 

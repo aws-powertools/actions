@@ -6,7 +6,7 @@ import {
 	buildTopFeatureRequests,
 	buildTopMostCommented,
 	buildTopOldestIssues,
-} from "testing/src/builders/index.mjs";
+} from "@aws-powertools-actions/testing/builders";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BLOCKED_LABELS, FEATURE_REQUEST_LABEL, NO_CONTENT_AVAILABLE_DEFAULT } from "../../src/constants.mjs";
 import { UnorderedList } from "../../src/markdown/index.mjs";

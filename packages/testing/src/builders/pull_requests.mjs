@@ -1,5 +1,5 @@
 import { generateMock } from "@anatine/zod-mock";
-import { labelSchema, pullRequestSchema } from "github/src/schemas/pull_requests.js";
+import { labelSchema, pullRequestSchema } from "@aws-powertools-actions/github/schemas/pull-requests";
 import { z } from "zod";
 
 /**

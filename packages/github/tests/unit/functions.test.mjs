@@ -1,5 +1,5 @@
-import { diffInDaysFromToday, formatISOtoLongDate } from "github/src/functions.mjs";
 import { afterEach, beforeEach, describe, expect, it, test, vi } from "vitest";
+import { diffInDaysFromToday, formatISOtoLongDate } from "../../src/functions.mjs";
 
 describe("utility functions", () => {
 	describe("datetime functions", () => {

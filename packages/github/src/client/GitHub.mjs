@@ -1,21 +1,21 @@
 import { Logger } from "@aws-lambda-powertools/logger";
 import { Octokit } from "@octokit/rest";
+import { z } from "zod";
 import {
 	MAX_ISSUES_LIMIT,
 	MAX_ISSUES_PER_PAGE,
 	MAX_PULL_REQUESTS_LIMIT,
 	MAX_PULL_REQUESTS_PER_PAGE,
 	SERVICE_NAME,
-} from "github/src/constants.mjs";
-import { issueSchema, issueSearchSchema } from "github/src/schemas/issues.mjs";
-import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
-import { z } from "zod";
+} from "../constants.mjs";
 import {
 	filterByExcludedLabels,
 	filterByMinDaysOld,
 	filterByMinDaysWithoutUpdate,
 	filterPullRequestsAsIssues,
 } from "../filters/issues.mjs";
+import { issueSchema, issueSearchSchema } from "../schemas/issues.mjs";
+import { pullRequestSchema } from "../schemas/pull_requests.mjs";
 
 export class GitHub {
 	#debug;

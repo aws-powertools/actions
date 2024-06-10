@@ -1,5 +1,5 @@
-import { GitHub } from "github/src/client";
-import { buildGitHubActionsClient } from "testing/src/builders/index.mjs";
+import { GitHub } from "@aws-powertools-actions/github";
+import { buildGitHubActionsClient } from "@aws-powertools-actions/testing/builders";
 import { describe, expect, it } from "vitest";
 import { REPORT_ROADMAP_LABEL } from "../../src/constants.mjs";
 import { MonthlyRoadmapReport } from "../../src/reports/MonthlyRoadmapReport.mjs";

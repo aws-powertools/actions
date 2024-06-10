@@ -1,10 +1,10 @@
-import { GitHub } from "github/src/client";
-import { BLOCKED_LABELS } from "reporting/src/constants.mjs";
-import { buildPullRequests } from "testing/src/builders";
+import { BLOCKED_LABELS } from "@aws-powertools-actions/reporting/constants";
+import { buildPullRequests } from "@aws-powertools-actions/testing/builders";
 import { describe, expect, it, vi } from "vitest";
 import { MAX_PULL_REQUESTS_PER_PAGE } from "../../src/constants.mjs";
 import { filterByMinDaysWithoutUpdate } from "../../src/filters/issues.mjs";
 import { getDateWithDaysDelta } from "../../src/functions.mjs";
+import { GitHub } from "../../src/index.mjs";
 
 describe("listing pull requests", () => {
 	it("should list pull requests (default params)", async () => {

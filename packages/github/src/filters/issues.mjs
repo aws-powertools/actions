@@ -1,6 +1,6 @@
-import { issueSchema } from "github/src/schemas/issues.mjs";
 import { z } from "zod";
 import { getDateWithDaysDelta } from "../functions.mjs";
+import { issueSchema } from "../schemas/issues.mjs";
 
 /**
  * Filters issues based on the minimum number of days since the issue was created.

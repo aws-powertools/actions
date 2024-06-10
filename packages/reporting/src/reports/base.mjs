@@ -1,6 +1,6 @@
 import { Logger } from "@aws-lambda-powertools/logger";
-import { GitHub, GitHubActions } from "github/src/client";
-import { issueSchema } from "github/src/schemas/issues.mjs";
+import { GitHub, GitHubActions } from "@aws-powertools-actions/github";
+import { issueSchema } from "@aws-powertools-actions/github/schemas/issues";
 import { z } from "zod";
 import { SERVICE_NAME } from "../constants.mjs";
 
