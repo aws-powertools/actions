@@ -1,4 +1,4 @@
-import { LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD } from "github/src/constants.mjs";
+import { LONG_RUNNING_WITHOUT_UPDATE_THRESHOLD } from "@aws-powertools-actions/github/constants";
 import { BLOCKED_LABELS } from "../constants.mjs";
 import { Table, UnorderedList } from "../markdown/index.mjs";
 import { HighlyCommentedIssue, LongRunningPullRequest, OldestIssue, PopularFeatureRequest } from "../models/index.mjs";

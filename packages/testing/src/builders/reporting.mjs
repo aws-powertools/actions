@@ -1,8 +1,10 @@
-import { issueSchema } from "github/src/schemas/issues.mjs";
-import { HighlyCommentedIssue } from "reporting/src/models/HighlyCommentedIssue.mjs";
-import { LongRunningPullRequest } from "reporting/src/models/LongRunningPullRequest.mjs";
-import { OldestIssue } from "reporting/src/models/OldestIssue.mjs";
-import { PopularFeatureRequest } from "reporting/src/models/PopularFeatureRequest.mjs";
+import { issueSchema } from "@aws-powertools-actions/github/schemas/issues";
+import {
+	HighlyCommentedIssue,
+	LongRunningPullRequest,
+	OldestIssue,
+	PopularFeatureRequest,
+} from "@aws-powertools-actions/reporting/models";
 import { z } from "zod";
 
 /**

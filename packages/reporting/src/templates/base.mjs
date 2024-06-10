@@ -1,4 +1,4 @@
-import { GitHubActions } from "github/src/client/index.mjs";
+import { GitHubActions } from "@aws-powertools-actions/github";
 
 export class BaseTemplate {
 	#actions;

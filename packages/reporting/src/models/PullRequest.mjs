@@ -1,5 +1,5 @@
-import { diffInDaysFromToday, formatISOtoLongDate } from "github/src/functions.mjs";
-import { pullRequestSchema } from "github/src/schemas/pull_requests.js";
+import { diffInDaysFromToday, formatISOtoLongDate } from "@aws-powertools-actions/github/functions";
+import { pullRequestSchema } from "@aws-powertools-actions/github/schemas/pull-requests";
 import { z } from "zod";
 
 /**

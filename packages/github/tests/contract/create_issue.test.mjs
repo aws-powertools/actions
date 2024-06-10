@@ -1,13 +1,13 @@
-import { GitHub } from "github/src/client";
-import { setupServer } from "msw/node";
-import { buildIssues, buildSearchIssues } from "testing/src/builders";
+import { buildIssues, buildSearchIssues } from "@aws-powertools-actions/testing/builders";
 import {
 	createIssueFailureHandler,
 	createIssueHandler,
 	findIssueHandler,
 	updateIssueHandler,
-} from "testing/src/interceptors/issues_handler.mjs";
+} from "@aws-powertools-actions/testing/interceptors";
+import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { GitHub } from "../../src/index.mjs";
 
 describe("create issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

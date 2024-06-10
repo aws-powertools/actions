@@ -1,9 +1,9 @@
+import { buildSearchIssues } from "@aws-powertools-actions/testing/builders";
+import { findIssueFailureHandler, findIssueHandler } from "@aws-powertools-actions/testing/interceptors";
 import { faker } from "@faker-js/faker";
-import { GitHub } from "github/src/client";
 import { setupServer } from "msw/node";
-import { buildSearchIssues } from "testing/src/builders";
-import { findIssueFailureHandler, findIssueHandler } from "testing/src/interceptors/issues_handler.mjs";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { GitHub } from "../../src/index.mjs";
 
 describe("search issues contract", () => {
 	process.env.GITHUB_REPOSITORY = "test-org/test-repo";

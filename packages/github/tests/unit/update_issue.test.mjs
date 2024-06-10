@@ -1,7 +1,6 @@
-import { faker } from "@faker-js/faker";
-import { buildIssues } from "testing/src/builders/index.mjs";
+import { buildIssues } from "@aws-powertools-actions/testing/builders";
 import { describe, expect, it, vi } from "vitest";
-import { GitHub } from "../../src/client/index.mjs";
+import { GitHub } from "../../src/index.mjs";
 
 describe("update issue", () => {
 	it("should update issue (default params)", async () => {
