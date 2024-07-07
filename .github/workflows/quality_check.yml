@@ -38,12 +38,14 @@ jobs:
     env:
       NODE_ENV: dev
       POWERTOOLS_DEV: true
+      CI: true
     strategy:
       matrix:
         version: [20]
       fail-fast: false
     permissions:
       contents: read  # checkout code only
+    environment: e2e-test
     steps:
       - name: Checkout code
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
@@ -60,5 +62,6 @@ jobs:
       - name: Formatting and Linting
         run: npm run ci
       - name: Test with vitest
-        # Run only unit and contract tests
-        run: npm test -- --silent --run unit contract
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_BOT_USER }}
+        run: npm test -- --silent
