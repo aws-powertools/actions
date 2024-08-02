@@ -1,15 +1,18 @@
 name: 'Cached Node Modules'
 description: 'A simple action to cache node_modules or install them if they are not cached'
 inputs:
-  nodeVersion: # id of input
+  nodeVersion:
     description: 'Node.js version to use in the cache key'
     default: '20'
   build:
     description: 'Whether to build the packages or not'
     default: 'true'
+  cacheKey:
+    description: 'Cache key to use'
+    default: 'node-modules'
 outputs:
   cache-hit:
-    description: 'Whether the cache was hit or not'
+    description: "Whether the cache was hit or not"
     value: ${{ steps.cache-node-modules.outputs.cache-hit }}
 runs:
   using: "composite"
@@ -21,15 +24,20 @@ runs:
         path: '**/node_modules'
         # Use the combo between node version, name, and SHA-256 hash of the lock file as cache key so that
         # if one of them changes the cache is invalidated/discarded
-        key: ${{ inputs.nodeVersion }}-cache-node-modules-${{ hashFiles('./package-lock.json') }}
+        key: ${{ inputs.nodeVersion }}-${{ inputs.cacheKey }}-${{ hashFiles('./package-lock.json') }}
     - name: Install dependencies
       # We can skip the installation if there was a cache hit
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       run: npm ci
       shell: bash
     - name: Build packages
-      # Regardless of whether the cache was hit or not, we need to build the packages, unless the caller says otherwise
+      # By default we build the packages, but we can skip this step if the caller wants to
       if: inputs.build == 'true'
+      # We check if the build script exists in the package.json file, if it does we run it
       run: |
-        echo "No build script defined for this project. Skipping..."
+        if [[ $(jq -r '.scripts.build' package.json) != "null" ]]; then
+          npm run build
+        else
+          echo "No build script found in package.json"
+        fi
       shell: bash
