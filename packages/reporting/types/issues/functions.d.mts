@@ -30,5 +30,15 @@ export function getTopMostCommented(options?: {
 export function getTopOldestIssues(options?: {
     github: GitHub;
 }): Promise<Array<OldestIssue>>;
+export function getIssuesToTriage(options?: {
+    github: GitHub;
+}): Promise<Array<UntriagedIssue>>;
+export function getBugIssues(options?: {
+    github: GitHub;
+}): Promise<Array<BugIssue>>;
+export function getPendingReleaseIssues(options?: {
+    github: GitHub;
+}): Promise<Array<PendingReleaseIssue>>;
+export function getIssuesInPrioritaryMilestone(options?: {}): Promise<any>;
 import { GitHub } from "@aws-powertools-actions/github";
 //# sourceMappingURL=functions.d.mts.map

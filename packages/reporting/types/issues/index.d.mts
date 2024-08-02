@@ -1,2 +1,2 @@
-export { getTopOldestIssues, getTopMostCommented, getTopFeatureRequests } from "./functions.mjs";
+export { getTopOldestIssues, getTopMostCommented, getTopFeatureRequests, getIssuesToTriage, getBugIssues, getPendingReleaseIssues, getIssuesInPrioritaryMilestone } from "./functions.mjs";
 //# sourceMappingURL=index.d.mts.map

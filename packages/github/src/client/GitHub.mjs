@@ -15,6 +15,7 @@ import {
 	filterPullRequestsAsIssues,
 } from "../filters/issues.mjs";
 import { issueSchema, issueSearchSchema } from "../schemas/issues.mjs";
+import { milestoneSchema } from "../schemas/milestones.mjs";
 import { pullRequestSchema } from "../schemas/pull_requests.mjs";
 
 export class GitHub {
@@ -133,6 +134,8 @@ export class GitHub {
 	 * @param {number} [options.minDaysOld] - The minimum number of days since the issue was created.
 	 * @param {number} [options.minDaysWithoutUpdate] - The minimum number of days since the issue was last updated.
 	 * @param {string[]} [options.excludeLabels] - Exclude issues containing these labels
+	 * @param {number} [options.milestone] - Milestone number to filter issues by
+	 * @param {("open" | "closed" | "all")} [options.state="open"] - Limit listing to issues in these state
 	 *
 	 * @example List feature requests, excluding blocked issues
 	 *
@@ -157,6 +160,8 @@ export class GitHub {
 			excludeLabels = [],
 			minDaysOld,
 			minDaysWithoutUpdate,
+			milestone,
+			state = "open",
 		} = options;
 
 		let issues = [];
@@ -178,6 +183,8 @@ export class GitHub {
 				sort: sortBy,
 				direction,
 				per_page: pageSize,
+				milestone,
+				state,
 			})) {
 				let filteredIssues = ret;
 
@@ -390,5 +397,70 @@ export class GitHub {
 			assignees,
 			state,
 		});
+	}
+
+	/**
+	 * List milestones
+	 *
+	 * @param {Object} options - Config.
+	 * @param {("open" | "closed" | "all")} [options.state] - Include milestones in these states
+	 * @param {("due_on" | "completeness")} [options.sortBy] - Sort results by
+	 * @param {number} [options.limit] - Max number of issues to return (default 10)
+	 * @param {number} [options.pageSize] - Pagination size for each List Issues API call (max 100)
+	 * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
+	 *
+	 * @example List open milestones
+	 *
+	 * ```javascript
+	 * const github = new GitHub();
+	 * const issues = await github.listIssues({
+	 *   state: 'open',
+	 *   sortBy: 'due_on',
+	 * });
+	 * ```
+	 * @returns {Promise<z.infer<typeof milestoneSchema>[]>} Milestone
+	 */
+	async listMilestones(options = {}) {
+		const {
+			sortBy,
+			limit = MAX_ISSUES_LIMIT,
+			pageSize = MAX_ISSUES_PER_PAGE,
+			direction = "asc",
+			state = "all",
+		} = options;
+
+		let milestones = [];
+
+		try {
+			this.logger.info("Listing issues. Filtered by state", {
+				sortBy: sortBy,
+				state,
+				limit: limit,
+			});
+
+			// fetch as many milestones as possible (`pageSize`), cap the results (`limit`)
+			for await (const { data: ret } of this.client.paginate.iterator(this.client.rest.issues.listMilestones, {
+				owner: this.owner,
+				repo: this.repo,
+				state,
+				sort: sortBy,
+				direction,
+				per_page: pageSize,
+			})) {
+				milestones.push(...ret);
+
+				if (milestones.length >= limit) {
+					milestones = milestones.slice(0, limit);
+					break;
+				}
+			}
+
+			this.logger.debug("Milestones", { milestones });
+
+			return milestones;
+		} catch (error) {
+			this.logger.error("Unable to list milestones", error);
+			throw error;
+		}
 	}
 }
