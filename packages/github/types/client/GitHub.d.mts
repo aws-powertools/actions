@@ -69,6 +69,8 @@ export class GitHub {
      * @param {number} [options.minDaysOld] - The minimum number of days since the issue was created.
      * @param {number} [options.minDaysWithoutUpdate] - The minimum number of days since the issue was last updated.
      * @param {string[]} [options.excludeLabels] - Exclude issues containing these labels
+     * @param {number} [options.milestone] - Milestone number to filter issues by
+     * @param {("open" | "closed" | "all")} [options.state="open"] - Limit listing to issues in these state
      *
      * @example List feature requests, excluding blocked issues
      *
@@ -92,6 +94,8 @@ export class GitHub {
         minDaysOld?: number;
         minDaysWithoutUpdate?: number;
         excludeLabels?: string[];
+        milestone?: number;
+        state?: ("open" | "closed" | "all");
     }): Promise<z.infer<typeof issueSchema>[]>;
     /**
      * Searches for an issue based on query parameters.
@@ -545,11 +549,40 @@ export class GitHub {
         state?: ("open" | "closed");
         milestone?: number;
     }): Promise<z.infer<typeof issueSchema>>;
+    /**
+     * List milestones
+     *
+     * @param {Object} options - Config.
+     * @param {("open" | "closed" | "all")} [options.state] - Include milestones in these states
+     * @param {("due_on" | "completeness")} [options.sortBy] - Sort results by
+     * @param {number} [options.limit] - Max number of issues to return (default 10)
+     * @param {number} [options.pageSize] - Pagination size for each List Issues API call (max 100)
+     * @param {("asc" | "desc")} [options.direction] - Results direction (default ascending)
+     *
+     * @example List open milestones
+     *
+     * ```javascript
+     * const github = new GitHub();
+     * const issues = await github.listIssues({
+     *   state: 'open',
+     *   sortBy: 'due_on',
+     * });
+     * ```
+     * @returns {Promise<z.infer<typeof milestoneSchema>[]>} Milestone
+     */
+    listMilestones(options?: {
+        state?: ("open" | "closed" | "all");
+        sortBy?: ("due_on" | "completeness");
+        limit?: number;
+        pageSize?: number;
+        direction?: ("asc" | "desc");
+    }): Promise<z.infer<typeof milestoneSchema>[]>;
     #private;
 }
 import { Logger } from "@aws-lambda-powertools/logger";
 import { z } from "zod";
 import { pullRequestSchema } from "../schemas/pull_requests.mjs";
 import { issueSchema } from "../schemas/issues.mjs";
+import { milestoneSchema } from "../schemas/milestones.mjs";
 import { Octokit } from "@octokit/rest";
 //# sourceMappingURL=GitHub.d.mts.map
