@@ -1,4 +1,4 @@
-module github.com/aws-powertools/powertools-lambda-layers
+module github.com/aws-powertools/actions/layer-balancer
 
 go 1.22.2
 

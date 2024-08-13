@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/aws-powertools/powertools-lambda-layers/config"
-	"github.com/aws-powertools/powertools-lambda-layers/layers"
+	"github.com/aws-powertools/actions/layer-balancer/config"
+	"github.com/aws-powertools/actions/layer-balancer/layers"
 )
 
 var (

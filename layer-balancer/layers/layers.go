@@ -10,8 +10,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/aws-powertools/powertools-lambda-layers/aws"
-	"github.com/aws-powertools/powertools-lambda-layers/config"
+	"github.com/aws-powertools/actions/layer-balancer/aws"
+	"github.com/aws-powertools/actions/layer-balancer/config"
 
 	awsSDK "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/lambda"

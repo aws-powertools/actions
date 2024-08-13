@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/aws-powertools/powertools-lambda-layers/aws"
+	"github.com/aws-powertools/actions/layer-balancer/aws"
 
 	awsSDK "github.com/aws/aws-sdk-go-v2/aws"
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
