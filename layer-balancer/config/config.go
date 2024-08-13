@@ -5,6 +5,8 @@ type Config struct {
 	ReadRegion  string
 	WriteRole   string
 
+	StartAt int64
+
 	DryRun bool
 }
 
@@ -37,5 +39,11 @@ func WithReadRegion(region string) Option {
 func WithWriteRole(role string) Option {
 	return func(c *Config) {
 		c.WriteRole = role
+	}
+}
+
+func WithStartAt(startAt int64) Option {
+	return func(c *Config) {
+		c.StartAt = startAt
 	}
 }

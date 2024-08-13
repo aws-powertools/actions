@@ -17,6 +17,8 @@ var (
 	writeRegion = flag.String("write-region", "", "region the new layer will exist in, this doesn't have to be the same account")
 	writeRole   = flag.String("write-role", "", "role ARN for write operation, it has to be assumable by your environment role")
 	layerName   = flag.String("layer-name", "", "layer name to copy to another region")
+
+	startAt = flag.Int64("start-at", 1, "Layer version to start backfilling from")
 )
 
 func main() {
@@ -33,6 +35,7 @@ func main() {
 		config.WithReadRegion(*readRegion),
 		config.WithWriteRegion(*writeRegion),
 		config.WithWriteRole(*writeRole),
+		config.WithStartAt(*startAt),
 	)
 
 	cfg.DryRun = *dryRun

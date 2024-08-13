@@ -39,7 +39,7 @@ func Balance(ctx context.Context, cfg *config.Config, layerName string) error {
 		return err
 	}
 
-	if len(newVersions) > 0 {
+	if len(newVersions) > 0 && cfg.StartAt == 1 {
 		return fmt.Errorf("the new layer shouldn't exist, found %d versions for %s", len(newVersions), layerName)
 	}
 
@@ -52,6 +52,11 @@ func Balance(ctx context.Context, cfg *config.Config, layerName string) error {
 
 	for _, v := range enrichedVersions {
 		log.Printf("Processing: %s", *v.LayerVersionArn)
+
+		if v.Version < cfg.StartAt {
+			log.Printf("Skipping layer version: %d", v.Version)
+			continue
+		}
 
 		if err := Copy(ctx, writeClient, layerName, v, cfg.DryRun); err != nil {
 			return err
