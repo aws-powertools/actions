@@ -57,6 +57,9 @@ jobs:
     name: Copy (East)
     needs: stash
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     strategy:
       matrix:
         layer:
