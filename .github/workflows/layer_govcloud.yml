@@ -48,8 +48,8 @@ jobs:
       - name: Store Zip
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.layer }}_{{ matrix.arch }}.zip
-          path: ${{ matrix.layer }}_{{ matrix.arch }}.zip
+          name: ${{ matrix.layer }}_${{ matrix.arch }}.zip
+          path: ${{ matrix.layer }}_${{ matrix.arch }}.zip
           retention-days: 1
           if-no-files-found: error
 
