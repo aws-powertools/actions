@@ -53,24 +53,43 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-    # copy:
-    #   runs-on: ubuntu-latest
-    #   strategy:
-    #     matrix:
-    #       regions: 
-    #         - us-gov-east-1
-    #         - us-gov-west-2
-    #       layer:
-    #         - AWSLambdaPowertoolsPythonV3-python38
-    #         - AWSLambdaPowertoolsPythonV3-python39
-    #         - AWSLambdaPowertoolsPythonV3-python310
-    #         - AWSLambdaPowertoolsPythonV3-python311
-    #         - AWSLambdaPowertoolsPythonV3-python312
-    #       arch:
-    #         - arm64
-    #         - x86_64
-    #   steps:
-    #     - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
-    #       with:
-
-          
+  copy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        region: 
+          - us-gov-east-1
+          - us-gov-west-2
+        layer:
+          - AWSLambdaPowertoolsPythonV3-python38
+          - AWSLambdaPowertoolsPythonV3-python39
+          - AWSLambdaPowertoolsPythonV3-python310
+          - AWSLambdaPowertoolsPythonV3-python311
+          - AWSLambdaPowertoolsPythonV3-python312
+        arch:
+          - arm64
+          - x86
+    steps:
+      - name: Download Zip
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.layer }}_${{ matrix.arch }}.zip
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          aws-region: ${{ matrix.region }}
+          mask-aws-account-id: true
+      - name: Create Layer
+        run: |
+          aws  lambda publish-layer-version --name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} --zip-file 
+          aws --region ${{ matrix.region }} lambda publish-layer-version \
+            --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
+            --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
+            --query 'Version' | \
+            xargs aws --region ${{ matrix.region }} lambda add-layer-version-permission \
+              --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
+              --statement-id 'PublicLayer' \
+              --action lambda:GetLayerVersion \
+              --principal '*' \
+              --version-number 
