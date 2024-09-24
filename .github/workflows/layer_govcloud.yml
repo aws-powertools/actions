@@ -33,7 +33,7 @@ jobs:
           - AWSLambdaPowertoolsPythonV3-python312
         arch:
           - arm64
-          - x86_64
+          - x86
     environment: Prod (Readonly)
     steps:
       - name: Configure AWS Credentials
