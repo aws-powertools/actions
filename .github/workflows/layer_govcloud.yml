@@ -45,7 +45,8 @@ jobs:
       - name: Grab Zip
         run: |
           URL=$(aws --region us-east-1 lambda get-layer-version-by-arn --arn arn:aws:lambda:us-east-1:017000801446:layer:${{ matrix.layer }}-${{ matrix.arch }}:${{ inputs.version }} --query 'Content.Location')
-          curl -L -o ${{ matrix.layer }}_${{ matrix.arch }}.zip $URL
+          echo "Downloading ${URL}"
+          curl -L -o ${{ matrix.layer }}_${{ matrix.arch }}.zip "${URL}"
       - name: Store Zip
         uses: actions/upload-artifact@v4
         with:
