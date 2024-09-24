@@ -1,0 +1,77 @@
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployment environment
+        type: choice
+        options:
+          - Gamma
+          - Prod
+        default: Gamma
+        required: true
+      version:
+        description: Layer version to duplicate
+        type: number
+        required: true
+
+name: Layer Deployment (GovCloud)
+run-name: Layer Deployment (GovCloud) - ${{ inputs.environment }}
+
+jobs:
+  stash:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        layer:
+          - AWSLambdaPowertoolsPythonV3-python38
+          - AWSLambdaPowertoolsPythonV3-python39
+          - AWSLambdaPowertoolsPythonV3-python310
+          - AWSLambdaPowertoolsPythonV3-python311
+          - AWSLambdaPowertoolsPythonV3-python312
+        arch:
+          - arm64
+          - x86_64
+    environment: Prod (Readonly)
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          region: us-east-1
+          mask-aws-account-id: true
+      - name: Grab Zip
+        run: |
+          URL=$(aws --region us-east-1 lambda get-layer-version-by-arn --arn arn:aws:lambda:us-east-1:017000801446:layer:${{ matrix.layer }}-${{ matrix.arch }}:${{ inputs.version }} --query 'Content.Location')
+          curl -L -o ${{ matrix.layer }}_{{ matrix.version }}.zip $URL
+      - name: Store Zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.layer }}_{{ matrix.version }}.zip
+          path: ${{ matrix.layer }}_{{ matrix.version }}.zip
+          retention-days: 1
+          if-no-files-found: error
+
+    # copy:
+    #   runs-on: ubuntu-latest
+    #   strategy:
+    #     matrix:
+    #       regions: 
+    #         - us-gov-east-1
+    #         - us-gov-west-2
+    #       layer:
+    #         - AWSLambdaPowertoolsPythonV3-python38
+    #         - AWSLambdaPowertoolsPythonV3-python39
+    #         - AWSLambdaPowertoolsPythonV3-python310
+    #         - AWSLambdaPowertoolsPythonV3-python311
+    #         - AWSLambdaPowertoolsPythonV3-python312
+    #       arch:
+    #         - arm64
+    #         - x86_64
+    #   steps:
+    #     - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+    #       with:
+
+          
