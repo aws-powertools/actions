@@ -85,7 +85,6 @@ jobs:
           mask-aws-account-id: true
       - name: Create Layer
         run: |
-          aws  lambda publish-layer-version --name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} --zip-file 
           aws --region us-gov-east-1 lambda publish-layer-version \
             --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
             --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
