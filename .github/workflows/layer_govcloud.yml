@@ -95,7 +95,7 @@ jobs:
   #             --action lambda:GetLayerVersion \
   #             --principal '*' \
   #             --version-number 
-  
+
   copy_west:
     name: Copy (West)
     needs: stash
@@ -114,7 +114,10 @@ jobs:
         arch:
           - arm64
           - x86
-    environment: GovCloud ${{ inputs.environment }} (West)
+    environment: |-
+      ${{
+         inputs.environment == 'Gamma' && 'GovCloud Gamma (West)' || 'GovCloud Prod (West)'
+      }}
     steps:
       - name: Download Zip
         uses: actions/download-artifact@v4
