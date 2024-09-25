@@ -35,6 +35,9 @@ jobs:
           - arm64
           - x86
     environment: Prod (Readonly)
+    outputs:
+      east_env: ${{ steps.generate_envs.outputs.east_env }}
+      west_env: ${{ steps.generate_envs.outputs.west_env }}
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
@@ -52,6 +55,11 @@ jobs:
           path: ${{ matrix.layer }}_${{ matrix.arch }}.zip
           retention-days: 1
           if-no-files-found: error
+      - name: Generate Environments
+        id: generate_envs
+        run: |
+          echo "east_env=GovCloud ${{ inputs.environment }} (East)" >> $GITHUB_OUTPUT
+          echo "west_env=GovCloud ${{ inputs.environment }} (West)" >> $GITHUB_OUTPUT
 
   # copy_east:
   #   name: Copy (East)
@@ -115,7 +123,8 @@ jobs:
           - arm64
           - x86
     environment:
-      name: ${{ inputs.environment == 'Gamma' && 'GovCloud Gamma (West)' || 'GovCloud Prod (West)' }}
+      #name: ${{ needs.stash.generate_envs. }}
+      name: GovCloud ${{ inputs.environment }} (West)
     steps:
       - name: Download Zip
         uses: actions/download-artifact@v4
