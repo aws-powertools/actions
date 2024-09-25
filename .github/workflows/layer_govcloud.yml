@@ -114,10 +114,8 @@ jobs:
         arch:
           - arm64
           - x86
-    environment: |-
-      ${{
-         inputs.environment == 'Gamma' && 'GovCloud Gamma (West)' || 'GovCloud Prod (West)'
-      }}
+    environment:
+      name: ${{ inputs.environment == 'Gamma' && 'GovCloud Gamma (West)' || 'GovCloud Prod (West)' }}
     steps:
       - name: Download Zip
         uses: actions/download-artifact@v4
