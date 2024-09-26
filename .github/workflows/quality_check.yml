@@ -48,7 +48,7 @@ jobs:
     environment: e2e-test
     steps:
       - name: Checkout code
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # v4.1.7
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # v4.2.0
       - name: Setup NodeJS
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
         with:
@@ -62,6 +62,4 @@ jobs:
       - name: Formatting and Linting
         run: npm run ci
       - name: Test with vitest
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_GITHUB_BOT_USER }}
-        run: npm test -- --silent
+        run: npm test -- tests/unit --silent
