@@ -124,8 +124,8 @@ jobs:
           aws --region us-gov-east-1 lambda publish-layer-version \
             --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
             --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
-            --compatible-runtimes $(jq ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-            --compatible-architectures $(jq ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --compatible-runtimes $(jq -r ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --compatible-architectures $(jq -r ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
             --license-info "MIT-0" \
             --description "$(jq -r \".Description\" ${{ matrix.layer }}_${{ matrix.arch }}.json)" \
             --query 'Version' | \
@@ -180,8 +180,8 @@ jobs:
           aws --region us-gov-west-1 lambda publish-layer-version \
             --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
             --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
-            --compatible-runtimes $(jq ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-            --compatible-architectures $(jq ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --compatible-runtimes $(jq -r ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --compatible-architectures $(jq  -r ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
             --license-info "MIT-0" \
             --description "$(jq -r \".Description\" ${{ matrix.layer }}_${{ matrix.arch }}.json)" \
             --query 'Version' | \
