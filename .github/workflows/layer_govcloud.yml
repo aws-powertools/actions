@@ -111,84 +111,87 @@ jobs:
           name: ${{ matrix.layer }}_${{ matrix.arch }}.json
       - name: Verify Layer Signature
         run: |
+<<<<<<< HEAD
+          SHA=$(jq -r '.Content.CodeSha256' ${{ matrix.layer }}_${{ matrix.arch }}.json)
+=======
           SHA=$(jq -r ".Content.CodeSha256" ${{ matrix.layer }}_${{ matrix.arch }}.json)
+>>>>>>> 3eb848947df006782af7ee2086a7c00fd4e21f58
           test $(openssl dgst -sha256 -binary ${{ matrix.layer }}_${{ matrix.arch }}.zip | openssl enc -base64) == $SHA && echo "SHA OK: ${SHA}" || exit 1 
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
-      #   with:
-      #     role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-      #     aws-region: us-gov-east-1
-      #     mask-aws-account-id: true
-      # - name: Create Layer
-      #   run: |
-      #     aws --region us-gov-east-1 lambda publish-layer-version \
-      #       --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
-      #       --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
-      #       --compatible-runtimes $(jq ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-      #       --compatible-architectures $(jq ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-      #       --license-info "MIT-0" \
-      #       --description $(jq ".Description" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-      #       --query 'Version' | \
-      #       xargs aws --region us-gov-east-1 lambda add-layer-version-permission \
-      #         --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
-      #         --statement-id 'PublicLayer' \
-      #         --action lambda:GetLayerVersion \
-      #         --principal '*' \
-      #         --version-number 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          aws-region: us-gov-east-1
+          mask-aws-account-id: true
+      - name: Create Layer
+        run: |
+          aws --region us-gov-east-1 lambda publish-layer-version \
+            --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
+            --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
+            --compatible-runtimes $(jq ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --compatible-architectures $(jq ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --license-info "MIT-0" \
+            --description $(jq ".Description" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --query 'Version' | \
+            xargs aws --region us-gov-east-1 lambda add-layer-version-permission \
+              --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
+              --statement-id 'PublicLayer' \
+              --action lambda:GetLayerVersion \
+              --principal '*' \
+              --version-number 
 
-  # copy_west:
-  #   name: Copy (West)
-  #   needs: download
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   strategy:
-  #     matrix:
-  #       layer:
-  #         - AWSLambdaPowertoolsPythonV3-python38
-  #         - AWSLambdaPowertoolsPythonV3-python39
-  #         - AWSLambdaPowertoolsPythonV3-python310
-  #         - AWSLambdaPowertoolsPythonV3-python311
-  #         - AWSLambdaPowertoolsPythonV3-python312
-  #       arch:
-  #         - arm64
-  #         - x86
-  #   environment:
-  #     name: GovCloud ${{ inputs.environment }} (West)
-  #   steps:
-  #     - name: Download Zip
-  #       uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-  #       with:
-  #         name: ${{ matrix.layer }}_${{ matrix.arch }}.zip
-  #     - name: Download Metadata
-  #       uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-  #       with:
-  #         name: ${{ matrix.layer }}_${{ matrix.arch }}.json
-  #     - name: Verify Layer Signature
-  #       run: |
-  #         # SHA=$(jq '.Content.CodeSha256' ${{ matrix.layer }}_${{ matrix.arch }}.json)
-  #         # test $(openssl dgst -sha256 -binary ${{ matrix.layer }}_${{ matrix.arch }}.zip | openssl enc -base64) == $SHA && echo "SHA OK: ${SHA}" || echo ""
-  #         test "a" == "a" && echo "OK" || echo "FAIL"
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
-      #   with:
-      #     role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-      #     aws-region: us-gov-west-1
-      #     mask-aws-account-id: true
-      # - name: Create Layer
-      #   run: |
-      #     aws --region us-gov-west-1 lambda publish-layer-version \
-      #       --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
-      #       --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
-      #       --compatible-runtimes $(jq ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-      #       --compatible-architectures $(jq ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-      #       --license-info "MIT-0" \
-      #       --description $(jq ".Description" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
-      #       --query 'Version' | \
-      #       xargs aws --region us-gov-west-1 lambda add-layer-version-permission \
-      #         --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
-      #         --statement-id 'PublicLayer' \
-      #         --action lambda:GetLayerVersion \
-      #         --principal '*' \
-      #         --version-number 
+  copy_west:
+    name: Copy (West)
+    needs: download
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        layer:
+          - AWSLambdaPowertoolsPythonV3-python38
+          - AWSLambdaPowertoolsPythonV3-python39
+          - AWSLambdaPowertoolsPythonV3-python310
+          - AWSLambdaPowertoolsPythonV3-python311
+          - AWSLambdaPowertoolsPythonV3-python312
+        arch:
+          - arm64
+          - x86
+    environment:
+      name: GovCloud ${{ inputs.environment }} (West)
+    steps:
+      - name: Download Zip
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: ${{ matrix.layer }}_${{ matrix.arch }}.zip
+      - name: Download Metadata
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: ${{ matrix.layer }}_${{ matrix.arch }}.json
+      - name: Verify Layer Signature
+        run: |
+          SHA=$(jq -r '.Content.CodeSha256' ${{ matrix.layer }}_${{ matrix.arch }}.json)
+          test $(openssl dgst -sha256 -binary ${{ matrix.layer }}_${{ matrix.arch }}.zip | openssl enc -base64) == $SHA && echo "SHA OK: ${SHA}" || exit 1 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          aws-region: us-gov-west-1
+          mask-aws-account-id: true
+      - name: Create Layer
+        run: |
+          aws --region us-gov-west-1 lambda publish-layer-version \
+            --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
+            --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
+            --compatible-runtimes $(jq ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --compatible-architectures $(jq ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --license-info "MIT-0" \
+            --description $(jq ".Description" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
+            --query 'Version' | \
+            xargs aws --region us-gov-west-1 lambda add-layer-version-permission \
+              --layer-name ${{ inputs.environment }}-${{ matrix.layer }}-${{ matrix.arch }} \
+              --statement-id 'PublicLayer' \
+              --action lambda:GetLayerVersion \
+              --principal '*' \
+              --version-number 
