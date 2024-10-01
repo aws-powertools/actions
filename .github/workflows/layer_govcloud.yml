@@ -111,11 +111,7 @@ jobs:
           name: ${{ matrix.layer }}_${{ matrix.arch }}.json
       - name: Verify Layer Signature
         run: |
-<<<<<<< HEAD
           SHA=$(jq -r '.Content.CodeSha256' ${{ matrix.layer }}_${{ matrix.arch }}.json)
-=======
-          SHA=$(jq -r ".Content.CodeSha256" ${{ matrix.layer }}_${{ matrix.arch }}.json)
->>>>>>> 3eb848947df006782af7ee2086a7c00fd4e21f58
           test $(openssl dgst -sha256 -binary ${{ matrix.layer }}_${{ matrix.arch }}.zip | openssl enc -base64) == $SHA && echo "SHA OK: ${SHA}" || exit 1 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
