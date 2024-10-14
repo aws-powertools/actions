@@ -131,7 +131,7 @@ jobs:
             --description "$(jq -r '.Description' ${{ matrix.layer }}_${{ matrix.arch }}.json)" \
             --query 'Version' \
             --output text | \
-            xargs -I {} export LAYER_VERSION={}
+            xargs export LAYER_VERSION=
 
           echo "LAYER_VERSION=$LAYER_VERSION" >> "$GITHUB_OUTPUT"
 
@@ -200,7 +200,7 @@ jobs:
             --description "$(jq -r '.Description' ${{ matrix.layer }}_${{ matrix.arch }}.json)" \
             --query 'Version' \
             --output text | \
-            xargs -I {} export LAYER_VERSION={}
+            xargs export LAYER_VERSION=
 
           echo "LAYER_VERSION=$LAYER_VERSION" >> "$GITHUB_OUTPUT"
 
