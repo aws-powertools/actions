@@ -122,7 +122,7 @@ jobs:
       - name: Create Layer
         id: create-layer
         run: |
-          aws --region us-gov-east-1 lambda publish-layer-version \
+          LAYER_VERSION=$(aws --region us-gov-east-1 lambda publish-layer-version \
             --layer-name ${{ matrix.layer }}-${{ matrix.arch }} \
             --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
             --compatible-runtimes $(jq -r ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
@@ -130,9 +130,7 @@ jobs:
             --license-info "MIT-0" \
             --description "$(jq -r '.Description' ${{ matrix.layer }}_${{ matrix.arch }}.json)" \
             --query 'Version' \
-            --output text | \
-            xargs export LAYER_VERSION=
-
+            --output text)
           echo "LAYER_VERSION=$LAYER_VERSION" >> "$GITHUB_OUTPUT"
 
           aws --region us-gov-east-1 lambda add-layer-version-permission \
@@ -191,7 +189,7 @@ jobs:
       - name: Create Layer
         id: create-layer
         run: |
-          aws --region us-gov-west-1 lambda publish-layer-version \
+          LAYER_VERSION=$(aws --region us-gov-west-1 lambda publish-layer-version \
             --layer-name ${{ matrix.layer }}-${{ matrix.arch }} \
             --zip-file fileb://./${{ matrix.layer }}_${{ matrix.arch }}.zip \
             --compatible-runtimes $(jq -r ".CompatibleRuntimes[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
@@ -199,8 +197,7 @@ jobs:
             --license-info "MIT-0" \
             --description "$(jq -r '.Description' ${{ matrix.layer }}_${{ matrix.arch }}.json)" \
             --query 'Version' \
-            --output text | \
-            xargs export LAYER_VERSION=
+            --output text)
 
           echo "LAYER_VERSION=$LAYER_VERSION" >> "$GITHUB_OUTPUT"
 
