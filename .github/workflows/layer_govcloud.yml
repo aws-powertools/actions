@@ -129,7 +129,7 @@ jobs:
             --compatible-architectures $(jq -r ".CompatibleArchitectures[0]" ${{ matrix.layer }}_${{ matrix.arch }}.json) \
             --license-info "MIT-0" \
             --description "$(jq -r '.Description' ${{ matrix.layer }}_${{ matrix.arch }}.json)" \
-            --query 'Version' | \
+            --query 'Version' \
             --output text | \
             xargs -I {} export LAYER_VERSION={}
 
