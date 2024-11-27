@@ -1,0 +1,53 @@
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options:
+          - beta
+          - prod
+        description: Deployment environment
+      region:
+        type: string
+        required: true
+        description: AWS region to partition (i.e. eu-west-1)
+
+name: Region Bootstrap
+run-name: Region Bootstrap ${{ inputs.region }}
+
+permissions:
+  contents: read
+
+jobs:
+  # who knows?
+  cdk:
+    name: Install CDK
+    runs-on: ubuntu-latest
+    environment: layer-${{ inputs.environment }}
+    steps:
+      - name: Create Workdir
+        id: workdir
+        run: |
+          mkdir -p build/project
+      - name: Install CDK
+        id: cdk-install
+        working-directory: build
+        run: |
+          npm i aws-cdk
+      - name: CDK Project
+        id: cdk-project
+        working-directory: build/project
+        run: |
+          npx cdk init app --language=typescript
+          AWS_REGION="${{ inputs.region }}" npx cdk bootstrap
+  copy_layers:
+    name: Copy Layers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+      - name: Go Env
+        run: go env
+      - name: Install
+        run: go install go install github.com/aws-powertools/actions/layer-balancer/cmd/balance@latest
+      
