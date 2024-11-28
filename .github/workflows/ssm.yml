@@ -84,7 +84,7 @@ jobs:
           aws-access-key-id: ${{ needs.credentials.outputs.aws-access-key-id }}
           aws-secret-access-key: ${{ needs.credentials.outputs.aws-secret-access-key }}
           aws-session-token: ${{ needs.credentials.outputs.aws-session-token }}
-          role-to-assume: ${{ secrets[format('AWS_IAM_ROLE_SSM_{0}', steps.region.CONVERTED_REGION)] }}
+          # role-to-assume: ${{ secrets[format('AWS_IAM_ROLE_SSM_{0}', steps.region.CONVERTED_REGION)] }}
           mask-aws-account-id: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with:
