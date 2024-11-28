@@ -70,6 +70,7 @@ jobs:
         region: [
           "eu-west-1"
         ]
+    
     permissions:
       contents: write
       id-token: write
@@ -77,7 +78,7 @@ jobs:
       - id: region
         run: |
           echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
-          echo 'AWS_ACCESS_KEY_ID: ${{ needs.credentials.outputs.foo }}'
+          echo 'AWS_ACCESS_KEY_ID: ${{ needs.credentials.secrets.aws-access-key-id }}'
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with: 
           aws-access-key-id: ${{ needs.credentials.outputs.aws-access-key-id }}
