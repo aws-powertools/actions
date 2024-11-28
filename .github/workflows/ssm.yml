@@ -48,6 +48,7 @@ jobs:
       - run: |
           echo 'KEY: ${{ steps.creds.outputs.aws-access-key-id }}'
     outputs:
+      foo: 'teapot'
       aws-access-key-id: ${{ steps.creds.outputs.aws-access-key-id }}
       aws-secret-access-key: ${{ steps.creds.outputs.aws-secret-access-key }}
       aws-session-token: ${{ steps.creds.outputs.aws-session-token }}
@@ -76,7 +77,7 @@ jobs:
       - id: region
         run: |
           echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
-          echo 'AWS_ACCESS_KEY_ID: ${{ needs.credentials.outputs.aws-access-key-id }}'
+          echo 'AWS_ACCESS_KEY_ID: ${{ needs.credentials.outputs.foo }}'
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with: 
           aws-access-key-id: ${{ needs.credentials.outputs.aws-access-key-id }}
