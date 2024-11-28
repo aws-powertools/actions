@@ -1,0 +1,89 @@
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: Project language
+        type: choice
+        options:
+          - Python
+          - TypeScript
+        required: true
+
+      write_latest:
+        description: Write to the latest path
+        type: boolean
+        required: false
+
+      package_version:
+        description: Semantic Version of published layer
+        type: string
+        required: true
+
+      layer_version:
+        description: Layer version
+        type: string
+        required: true
+
+env:
+  TS_PATH: /aws/service/powertools/typescript/generic/all/${{ inputs.package_version }}
+  PY_PATH: /aws/service/powertools/python/<arch>/<pyver>/${{ inputs.package_version }}
+
+name: SSM Parameters
+run-name: SSM Parameters - ${{ inputs.language }}
+
+permissions:
+  contents: read
+
+jobs:
+  credentials:
+    runs-on: ubuntu-latest
+    environment: layer-prod
+    permissions:
+      contents: write
+    steps:
+      - id: credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with: 
+          aws-region: eu-west-1
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          mask-aws-account-id: true
+          output-credentials: true
+    outputs:
+      AWS_ACCESS_KEY_ID: ${{ steps.credentials.outputs.aws-access-key-id }}
+      AWS_SECRET_ACCESS_KEY: ${{ steps.credentials.outputs.aws-secret-access-key }}
+      AWS_SESSION_TOKEN: ${{ steps.credentials.outputs.aws-session-token }}
+
+  write_python:
+    runs-on: ubuntu-latest
+    needs: credentials
+    if: inputs.language == 'Python'
+    environment: layer-Prod
+    strategy:
+      matrix:
+        region: ["af-south-1", "ap-east-1", "ap-northeast-1", "ap-northeast-2", "ap-northeast-3",
+            "ap-south-1", "ap-south-2", "ap-southeast-1", "ap-southeast-2", "ap-southeast-3",
+            "ap-southeast-4", "ca-central-1", "ca-west-1", "eu-central-1", "eu-central-2",
+            "eu-north-1", "eu-south-1", "eu-south-2", "eu-west-1", "eu-west-2", "eu-west-3",
+            "il-central-1", "me-central-1", "me-south-1", "sa-east-1", "us-east-1",
+            "us-east-2", "us-west-1", "us-west-2", "ap-southeast-5"
+          ]
+    permissions:
+      contents: write
+    steps:
+      - id: region
+        run: |
+          echo '${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with: 
+          aws-region: ${{ matrix.region }}
+          aws-access-key-id: ${{ needs.credentials.outputs.aws-access-key-id }}
+          aws-secret-access-key: ${{ needs.credentials.outputs.aws-secret-access-key }}
+          aws-session-token: ${{ needs.credentials.outputs.aws-session-token }}
+          role-to-assume: ${{ secrets[format('AWS_IAM_ROLE_SSM_{0}', steps.region.CONVERTED_REGION)] }}
+          mask-aws-account-id: true
+      - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          aws-region: ${{ matrix.region }}
+      - run: |
+          aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/ --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-x86_64:${{ inputs.package_version }}" --type String
+          aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/ --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-arm64:${{ inputs.package_version }}" --type String
