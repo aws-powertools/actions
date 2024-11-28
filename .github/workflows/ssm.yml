@@ -42,7 +42,7 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - id: credentials
+      - id: creds
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with: 
           aws-region: eu-west-1
@@ -50,9 +50,9 @@ jobs:
           mask-aws-account-id: true
           output-credentials: true
     outputs:
-      AWS_ACCESS_KEY_ID: ${{ steps.credentials.outputs.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ steps.credentials.outputs.AWS_SECRET_ACCESS_KEY }}
-      AWS_SESSION_TOKEN: ${{ steps.credentials.outputs.AWS_SESSION_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
+      AWS_SECRET_ACCESS_KEY: ${{ steps.creds.outputs.aws-secret-access-key }}
+      AWS_SESSION_TOKEN: ${{ steps.creds.outputs.aws-session-token }}
 
   write_python:
     runs-on: ubuntu-latest
@@ -69,8 +69,8 @@ jobs:
         #     "us-east-2", "us-west-1", "us-west-2", "ap-southeast-5"
         #   ]
         region: [
-            "eu-west-1", "us-east-1"
-          ]
+          "eu-west-1"
+        ]
     permissions:
       contents: write
       id-token: write
@@ -80,11 +80,10 @@ jobs:
           echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
           echo 'AWS_ACCESS_KEY_ID: ${{ needs.credentials.outputs.AWS_ACCESS_KEY_ID }}'
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
-        env:
-          AWS_ACCESS_KEY_ID: ${{ needs.credentials.outputs.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ needs.credentials.outputs.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ needs.credentials.outputs.AWS_SESSION_TOKEN }}
         with: 
+          aws-access-key-id: ${{ needs.credentials.outputs.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ needs.credentials.outputs.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ needs.credentials.outputs.AWS_SESSION_TOKEN }}
           aws-region: ${{ matrix.region }}
           role-chaining: true
           role-to-assume: ${{ secrets[format('AWS_IAM_ROLE_SSM_{0}', 'EU_WEST_1')] }}
@@ -93,5 +92,5 @@ jobs:
         with:
           aws-region: ${{ matrix.region }}
       - run: |
-          aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/ --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-x86_64:${{ inputs.package_version }}" --type String
-          aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/ --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-arm64:${{ inputs.package_version }}" --type String
+          aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/release/x86_64 --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-x86_64:${{ inputs.package_version }}" --type String
+          aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/release/arm64 --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-arm64:${{ inputs.package_version }}" --type String
