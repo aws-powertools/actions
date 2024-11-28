@@ -45,13 +45,16 @@ jobs:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
           mask-aws-account-id: true
           output-credentials: true
-      - run: |
-          echo 'KEY: ${{ steps.creds.outputs.aws-access-key-id }}'
+      - id: parsed
+        run: |
+          echo 'aws-access-key-id=${{ steps.creds.outputs.aws-access-key-id }}' >> "$GITHUB_OUTPUT"
+          echo 'aws-secret-access-key=${{ steps.creds.outputs.aws-secret-access-key }}' >> "$GITHUB_OUTPUT"
+          echo 'aws-session-token=${{ steps.creds.outputs.aws-session-token }}' >> "$GITHUB_OUTPUT"
     outputs:
       foo: 'teapot'
-      aws-access-key-id: ${{ steps.creds.outputs.aws-access-key-id }}
-      aws-secret-access-key: ${{ steps.creds.outputs.aws-secret-access-key }}
-      aws-session-token: ${{ steps.creds.outputs.aws-session-token }}
+      aws-access-key-id: ${{ steps.parsed.outputs.aws-access-key-id }}
+      aws-secret-access-key: ${{ steps.parsed.outputs.aws-secret-access-key }}
+      aws-session-token: ${{ steps.parsed.outputs.aws-session-token }}
 
   write_python:
     runs-on: ubuntu-latest
