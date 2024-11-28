@@ -31,34 +31,8 @@ permissions:
   contents: read
 
 jobs:
-  credentials:
-    runs-on: ubuntu-latest
-    environment: layer-prod
-    permissions:
-      contents: write
-      id-token: write
-    steps:
-      - id: creds
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
-        with: 
-          aws-region: eu-west-1
-          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
-          mask-aws-account-id: true
-          output-credentials: true
-      - id: parsed
-        run: |
-          echo 'aws-access-key-id=${{ steps.creds.outputs.aws-access-key-id }}' >> "$GITHUB_OUTPUT"
-          echo 'aws-secret-access-key=${{ steps.creds.outputs.aws-secret-access-key }}' >> "$GITHUB_OUTPUT"
-          echo 'aws-session-token=${{ steps.creds.outputs.aws-session-token }}' >> "$GITHUB_OUTPUT"
-    outputs:
-      foo: 'teapot'
-      aws-access-key-id: ${{ steps.parsed.outputs.aws-access-key-id }}
-      aws-secret-access-key: ${{ steps.parsed.outputs.aws-secret-access-key }}
-      aws-session-token: ${{ steps.parsed.outputs.aws-session-token }}
-
   write_python:
     runs-on: ubuntu-latest
-    needs: credentials
     if: inputs.language == 'Python'
     environment: layer-prod
     strategy:
@@ -78,15 +52,18 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - id: region
-        run: |
-          echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
-          echo 'AWS_ACCESS_KEY_ID: ${{ needs.credentials.secrets.aws-access-key-id }}'
+      - id: creds
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with: 
+          aws-region: eu-west-1
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          mask-aws-account-id: true
+          output-credentials: true
       - uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with: 
-          aws-access-key-id: ${{ needs.credentials.outputs.aws-access-key-id }}
-          aws-secret-access-key: ${{ needs.credentials.outputs.aws-secret-access-key }}
-          aws-session-token: ${{ needs.credentials.outputs.aws-session-token }}
+          aws-access-key-id: ${{ steps.creds.outputs.aws-access-key-id }}
+          aws-secret-access-key: ${{ steps.creds.outputs.aws-secret-access-key }}
+          aws-session-token: ${{ steps.creds.outputs.aws-session-token }}
           aws-region: ${{ matrix.region }}
           role-chaining: true
           role-to-assume: ${{ secrets[format('AWS_IAM_ROLE_SSM_{0}', 'EU_WEST_1')] }}
