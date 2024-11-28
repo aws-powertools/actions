@@ -24,10 +24,6 @@ on:
         type: string
         required: true
 
-env:
-  TS_PATH: /aws/service/powertools/typescript/generic/all/${{ inputs.package_version }}
-  PY_PATH: /aws/service/powertools/python/<arch>/<pyver>/${{ inputs.package_version }}
-
 name: SSM Parameters
 run-name: SSM Parameters - ${{ inputs.language }}
 
@@ -49,6 +45,9 @@ jobs:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
           mask-aws-account-id: true
           output-credentials: true
+      - run: |
+          echo 'KEY: ${{ steps.creds.outputs.aws-access-key-id }}'
+          echo 'KEY: ${{ steps.creds.outputs.AWS_ACCESS_KEY_ID }}'
     outputs:
       AWS_ACCESS_KEY_ID: ${{ steps.creds.outputs.aws-access-key-id }}
       AWS_SECRET_ACCESS_KEY: ${{ steps.creds.outputs.aws-secret-access-key }}
