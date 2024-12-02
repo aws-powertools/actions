@@ -55,7 +55,7 @@ jobs:
       - id: transform
         run: |
           echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
-          echo "Role: ${{ secrets[format('{0}', steps.transform.CONVERTED_REGION)] }}"
+          echo "Role: ${{ secrets[format('{0}', 'EU_WEST_1')] }}"
       - id: creds
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with: 
