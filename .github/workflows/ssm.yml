@@ -60,7 +60,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with: 
           aws-region: ${{ matrix.region }}
-          role-to-assume: ${{ secrets[format('{0}', steps.transform.CONVERTED_REGION)] }}
+          role-to-assume: ${{ secrets[format('{0}', 'EU_WEST_1')] }}
           mask-aws-account-id: true
       - run: |
           aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/release/x86_64 --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-x86_64:${{ inputs.package_version }}" --type String
