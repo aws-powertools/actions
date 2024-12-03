@@ -9,6 +9,14 @@ on:
           - TypeScript
         required: true
 
+      environment:
+        description: Environment to deploy to
+        type: choice
+        options:
+          - Beta
+          - Prod
+        required: true
+
       write_latest:
         description: Write to the latest path
         type: boolean
@@ -31,7 +39,7 @@ permissions:
   contents: read
 
 jobs:
-  write_python:
+  python:
     runs-on: ubuntu-latest
     if: inputs.language == 'Python'
     environment: SSM
@@ -55,16 +63,90 @@ jobs:
       - id: transform
         run: |
           echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
-          echo "Role: ${{ secrets[format('{0}', 'EU_WEST_1')] }}"
-      - id: secret
-        run: |
-          echo '${{ steps.transform.outputs.CONVERTED_REGION }}'
       - id: creds
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
         with: 
           aws-region: ${{ matrix.region }}
           role-to-assume: ${{ secrets[format('{0}', steps.transform.outputs.CONVERTED_REGION)] }}
           mask-aws-account-id: true
-      # - run: |
-      #     aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/release/x86_64 --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-x86_64:${{ inputs.package_version }}" --type String
-      #     aws ssm put-parameter --name /aws/service/powertools/sthulb-beta/release/arm64 --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-arm64:${{ inputs.package_version }}" --type String
+      - id: write-version
+        env:
+          prefix: ${{ inputs.environment == 'beta' && '/aws/service/powertools/sthulb/beta' || '/aws-service/powertools/sthulb/' }}
+        run: |
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.8/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.9/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python39-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.10/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python310-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.11/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python311-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.12/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python312-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.13/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-arm64:${{ inputs.layer_version }}" --type String
+
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.8/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.9/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python39-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.10/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python310-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.11/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python311-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.12/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python312-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.13/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:${{ inputs.layer_version }}" --type String
+
+      - id: write-latest
+        if: inputs.write_latest == true 
+        env:
+          prefix: ${{ inputs.environment == 'beta' && '/aws/service/powertools/sthulb/beta' || '/aws-service/powertools/sthulb/' }} 
+        run: |
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.8/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.9/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python39-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.10/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python310-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.11/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python311-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.12/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python312-arm64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/arm64/python3.13/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-arm64:${{ inputs.layer_version }}" --type String
+
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.8/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python38-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.9/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python39-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.10/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python310-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.11/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python311-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.12/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python312-x86_64:${{ inputs.layer_version }}" --type String
+          aws ssm put-parameter --name ${{ env.prefix }}/python/x86_64/python3.13/latest --value "arn:aws:lambda:${{ matrix.region }}:017000801446:layer:AWSLambdaPowertoolsPythonV3-python313-x86_64:${{ inputs.layer_version }}" --type String
+
+
+  typescript:
+    runs-on: ubuntu-latest
+    if: inputs.language == 'TypeScript'
+    environment: SSM
+    strategy:
+      matrix:
+        # region: ["af-south-1", "ap-east-1", "ap-northeast-1", "ap-northeast-2", "ap-northeast-3",
+        #     "ap-south-1", "ap-south-2", "ap-southeast-1", "ap-southeast-2", "ap-southeast-3",
+        #     "ap-southeast-4", "ca-central-1", "ca-west-1", "eu-central-1", "eu-central-2",
+        #     "eu-north-1", "eu-south-1", "eu-south-2", "eu-west-1", "eu-west-2", "eu-west-3",
+        #     "il-central-1", "me-central-1", "me-south-1", "sa-east-1", "us-east-1",
+        #     "us-east-2", "us-west-1", "us-west-2", "ap-southeast-5"
+        #   ]
+        region: [
+          "eu-west-1"
+        ]
+    
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - id: transform
+        run: |
+          echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
+      - id: creds
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with: 
+          aws-region: ${{ matrix.region }}
+          role-to-assume: ${{ secrets[format('{0}', steps.transform.outputs.CONVERTED_REGION)] }}
+          mask-aws-account-id: true
+      - id: write-version
+        if: inputs.write_latest == true 
+        env:
+          prefix: ${{ inputs.environment == 'beta' && '/aws/service/powertools/sthulb/beta' || '/aws-service/powertools/sthulb/' }} 
+        run: |
+          aws ssm put-parameter --name ${{ env.prefix }}/typescript/generic/all/${{ inputs.package_version }} --value "arn:aws:lambda:${{ matrix.region }}:094274105915:layer:AWSLambdaPowertoolsTypeScriptV2:${{ inputs.layer_version }}" --type String
+
+      - id: write-latest
+        if: inputs.write_latest == true 
+        env:
+          prefix: ${{ inputs.environment == 'beta' && '/aws/service/powertools/sthulb/beta' || '/aws-service/powertools/sthulb/' }} 
+        run: |
+          aws ssm put-parameter --name ${{ env.prefix }}/typescript/generic/all/latest --value "arn:aws:lambda:${{ matrix.region }}:094274105915:layer:AWSLambdaPowertoolsTypeScriptV2:${{ inputs.layer_version }}" --type String
