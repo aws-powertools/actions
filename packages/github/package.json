@@ -10,7 +10,7 @@
 	},
 	"devDependencies": {
 		"@aws-powertools-actions/testing": "^1.0.0",
-		"@faker-js/faker": "^9.2.0"
+		"@faker-js/faker": "^9.3.0"
 	},
 	"dependencies": {
 		"@actions/core": "^1.11.1",
