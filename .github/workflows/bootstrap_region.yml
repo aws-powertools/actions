@@ -76,5 +76,6 @@ jobs:
         run: go install github.com/aws-powertools/actions/layer-balancer/cmd/balance@latest
       - id: run-balance
         name: Run Balance
-        run: balance -read-region us-east-1 -write-region ${{ inputs.region }} -write-role ${{ secrets.BALANCE_ROLE_ARN }} -layer-name AWSLambdaPowertoolsPythonV3-python313-arm64
+        run: balance -read-region us-east-1 -write-region ${{ inputs.region }} -write-role ${{ secrets.BALANCE_ROLE_ARN }} -layer-name generic-sandbox
+
       
