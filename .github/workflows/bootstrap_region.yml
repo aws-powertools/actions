@@ -1,0 +1,66 @@
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options:
+          - beta
+          - prod
+        description: Deployment environment
+      region:
+        type: string
+        required: true
+        description: AWS region to partition (i.e. eu-west-1)
+
+name: Region Bootstrap
+run-name: Region Bootstrap ${{ inputs.region }}
+
+permissions:
+  contents: read
+
+jobs:
+  cdk:
+    name: Install CDK
+    runs-on: ubuntu-latest
+    environment: layer-${{ inputs.environment }}
+    steps:
+      - id: credentials
+        name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with: 
+          aws-region: ${{ matrix.region }}
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE }}
+          mask-aws-account-id: true
+      - id: workdir
+        name: Create Workdir
+        run: |
+          mkdir -p build/project
+      - id: cdk-install
+        name: Install CDK
+        working-directory: build
+        run: |
+          npm i aws-cdk
+      - id: cdk-project
+        name: CDK Project
+        working-directory: build/project
+        run: |
+          npx cdk init app --language=typescript
+          AWS_REGION="${{ inputs.region }}" npx cdk bootstrap
+
+  copy_layers:
+    name: Copy Layers
+    runs-on: ubuntu-latest
+    steps:
+      - id: go-setup
+        name: Setup Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+      - id: go-env
+        name: Go Env
+        run: go env
+      - id: go-install-pkg
+        name: Install
+        run: go install github.com/aws-powertools/actions/layer-balancer/cmd/balance@latest
+      - id: run-balance
+        name: Run Balance
+        run: balance -read-region us-east-1 -write-region ${{ inputs.region }} -write-role ${{ secrets.BALANCE_ROLE_ARN }} -layer-name AWSLambdaPowertoolsPythonV3-python313-arm64
+      
