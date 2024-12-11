@@ -56,6 +56,21 @@ jobs:
     permissions:
       contents: write
       id-token: write
+    strategy:
+      matrix:
+        layer:
+          - AWSLambdaPowertoolsPythonV3-python38-arm64
+          - AWSLambdaPowertoolsPythonV3-python39-arm64
+          - AWSLambdaPowertoolsPythonV3-python310-arm64
+          - AWSLambdaPowertoolsPythonV3-python311-arm64
+          - AWSLambdaPowertoolsPythonV3-python312-arm64
+          - AWSLambdaPowertoolsPythonV3-python313-arm64
+          - AWSLambdaPowertoolsPythonV3-python38-x86_64
+          - AWSLambdaPowertoolsPythonV3-python39-x86_64
+          - AWSLambdaPowertoolsPythonV3-python310-x86_64
+          - AWSLambdaPowertoolsPythonV3-python311-x86_64
+          - AWSLambdaPowertoolsPythonV3-python312-x86_64
+          - AWSLambdaPowertoolsPythonV3-python313-x86_64
     environment: layer-${{ inputs.environment }}
     steps:
       - id: credentials
@@ -76,6 +91,4 @@ jobs:
         run: go install github.com/aws-powertools/actions/layer-balancer/cmd/balance@latest
       - id: run-balance
         name: Run Balance
-        run: balance -read-region us-east-1 -write-region ${{ inputs.region }} -write-role ${{ secrets.BALANCE_ROLE_ARN }} -layer-name generic-sandbox -dry-run false
-
-      
+        run: balance -read-region us-east-1 -write-region ${{ inputs.region }} -write-role ${{ secrets.BALANCE_ROLE_ARN }} -layer-name ${{ matrix.layer }} -dry-run false
