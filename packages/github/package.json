@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"@actions/core": "^1.11.1",
-		"@aws-lambda-powertools/logger": "^2.13.1",
+		"@aws-lambda-powertools/logger": "^2.14.0",
 		"@octokit/rest": "^21.1.0",
 		"zod": "^3.24.1"
 	},
