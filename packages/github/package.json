@@ -16,7 +16,7 @@
 		"@actions/core": "^1.11.1",
 		"@aws-lambda-powertools/logger": "^2.13.1",
 		"@octokit/rest": "^21.1.0",
-		"zod": "^3.24.1"
+		"zod": "^3.24.2"
 	},
 	"exports": {
 		".": {
