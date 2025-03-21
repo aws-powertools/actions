@@ -10,7 +10,7 @@
 	},
 	"devDependencies": {},
 	"dependencies": {
-		"@anatine/zod-mock": "^3.13.4",
+		"@anatine/zod-mock": "^3.13.5",
 		"@aws-powertools-actions/github": "^1.0.0"
 	},
 	"exports": {
