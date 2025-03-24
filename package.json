@@ -10,7 +10,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "msw": "^2.7.3",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "vitest": "^3.0.9"
   },
   "scripts": {
