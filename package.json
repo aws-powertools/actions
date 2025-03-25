@@ -1,31 +1,9 @@
 {
   "workspaces": [
-    "packages/github",
-    "packages/reporting",
-    "packages/testing"
+    "packages/*"
   ],
   "license": "MIT-0",
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.0",
-    "msw": "^2.7.3",
-    "typescript": "^5.8.2",
-    "vitest": "^3.0.9"
-  },
-  "scripts": {
-    "dev": "npm ci",
-    "test": "vitest",
-    "lint": "npm run format && biome lint packages --apply",
-    "format": "biome check packages --apply",
-    "ci": "biome check packages",
-    "setup-local": "husky"
-  },
-  "lint-staged": {
-    "packages/**/*.mjs": [
-      "biome check --apply"
-    ]
-  },
+  "scripts": {},
   "type": "module",
   "private": "true"
 }

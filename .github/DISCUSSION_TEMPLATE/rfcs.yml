@@ -104,8 +104,9 @@ body:
         * RFC PR:
         * Approved by: ''
         * Reviewed by: ''
-
-        ---
-
-        > [!Note]
-        > Please react with 👍 and consider describing your use case to help us understand customer demand.
+  - type: input
+    id: notes
+    attributes:
+      label: Future readers
+      description: Please not edit this field
+      value: "Please react with 👍 and your use case to help us understand customer demand."
