@@ -1,28 +1,24 @@
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    commit-message:
-      prefix: chore
-      include: scope
-
-  - package-ecosystem: npm
-    directory: /
+  - package-ecosystem: github-actions
+    directories:
+      - "/"
     labels: [ ]
     schedule:
-      interval: daily
+      interval: weekly
+    commit-message:
+      prefix: "chore"
+        
+  - package-ecosystem: npm
+    directory: /.github/actions/version-n-changelog
+    labels: [ ]
+    schedule:
+      interval: weekly
     versioning-strategy: increase
+    commit-message:
+      prefix: "chore"
     groups:
-      aws-sdk:
+      bundle-tools:
         patterns:
-        - "@aws-sdk/**"
-        - "@smithy/**"
-        - "aws-sdk-client-mock"
-        - "aws-sdk-client-mock-jest"
-      aws-cdk:
-        patterns:
-        - "@aws-cdk/**"
-        - "aws-cdk-lib"
-        - "aws-cdk"
+        - "bump-n-go"
+        - "@vercel/ncc"
