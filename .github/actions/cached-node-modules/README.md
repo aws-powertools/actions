@@ -52,7 +52,7 @@ jobs:
 
 ## How It Works
 
-1. Attempts to restore node_modules from cache using a key based on Node.js version and package-lock.json hash
+1. Attempts to restore `node_modules` from cache using a key based on Node.js version and `package-lock.json` hash
 2. If cache miss, runs `npm ci` to install dependencies
 3. If `build` is set to true (default), runs `npm run build` if the script exists in package.json
 4. Saves the node_modules to cache for future workflow runs
