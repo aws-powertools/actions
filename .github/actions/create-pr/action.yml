@@ -55,7 +55,7 @@ outputs:
     description: "Pull request ID created"
     value: ${{ steps.create-pr.outputs.pull_request_id }}
   temp_branch:
-    description: "Temporary branch created with staged changed"
+    description: "Temporary branch created with staged changes"
     value: ${{ steps.create-pr.outputs.temp_branch }}
 
 runs:
