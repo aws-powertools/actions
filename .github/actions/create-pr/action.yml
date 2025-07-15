@@ -7,7 +7,7 @@ description: "Create a PR and a temporary branch, close duplicates"
 # 2. Pushes staged files to a temporary branch
 # 3. Creates a PR from temporary branch against a target branch (typically trunk: develop, main, etc.)
 # 4. Searches for duplicate PRs with the same title
-# 5. If duplicates are found, link to the most recent one, close and delete their branches so we keep a single PR
+# 5. If duplicates are found, links to the most recent one, closes and deletes their branches so we keep a single PR
 # 6. In the event of failure, we delete the now orphaned branch (if any), and propagate the failure
 
 # REQUIREMENTS
