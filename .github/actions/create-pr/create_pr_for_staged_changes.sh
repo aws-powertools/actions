@@ -70,7 +70,7 @@ function has_anything_changed() {
     start_span "Validating git staged files"
     HAS_ANY_SOURCE_CODE_CHANGED="$(git status --porcelain)"
 
-    test -z "${HAS_ANY_SOURCE_CODE_CHANGED}" && debug "Nothing to update; exitting early" && exit 0
+    test -z "${HAS_ANY_SOURCE_CODE_CHANGED}" && debug "Nothing to update; exiting early" && exit 0
     end_span
 }
 
