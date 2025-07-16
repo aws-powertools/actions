@@ -21,7 +21,7 @@ runs:
         node-version: "24"
         cache: "npm"
     - name: Setup dependencies
-      uses: ./.github/actions/cached-node-modules@29979bc5339bf54f76a11ac36ff67701986bb0f0 # replace this
+      uses: ./.github/actions/cached-node-modules
       with:
         node-version: "24"
         build: "false"
