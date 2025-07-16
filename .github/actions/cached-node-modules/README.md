@@ -4,7 +4,7 @@ This action caches Node.js modules to speed up workflows by avoiding unnecessary
 
 ## Features
 
-- Caches node_modules directory for faster workflow runs
+- Caches `node_modules` directory for faster workflow runs
 - Automatically installs dependencies if cache is not available
 - Optionally builds packages after installation
 - Uses composite action for better performance
