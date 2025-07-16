@@ -1,7 +1,5 @@
 {
-  "workspaces": [
-    "packages/*"
-  ],
+  "name": "actions",
   "license": "MIT-0",
   "scripts": {},
   "type": "module",

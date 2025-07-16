@@ -1,9 +1,9 @@
 name: 'Cached Node Modules'
 description: 'A simple action to cache node_modules or install them if they are not cached'
 inputs:
-  nodeVersion:
+  node-version:
     description: 'Node.js version to use in the cache key'
-    default: '20'
+    default: '22'
   build:
     description: 'Whether to build the packages or not'
     default: 'true'
