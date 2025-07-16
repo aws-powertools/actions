@@ -4,10 +4,10 @@ set -uo pipefail # prevent accessing unset env vars, prevent masking pipeline er
 #docs
 #title              :create_pr_for_staged_changes.sh
 #description        :This script will create a PR for staged changes, detect and close duplicate PRs. All PRs will be omitted from Release Notes and Changelogs
-#author		    :@heitorlessa
+#author		        :@heitorlessa
 #date               :May 8th 2023
 #version            :0.1
-#usage		    :bash create_pr_for_staged_changes.sh {git_staged_files_or_directories_separated_by_space}
+#usage		        :bash create_pr_for_staged_changes.sh {git_staged_files_or_directories_separated_by_space}
 #notes              :Meant to use in GitHub Actions only. Temporary branch will be named $TEMP_BRANCH_PREFIX-$GITHUB_RUN_ID
 #os_version         :Ubuntu 22.04.2 LTS
 #required_env_vars  :PR_TITLE, TEMP_BRANCH_PREFIX, GH_TOKEN
@@ -55,7 +55,7 @@ function has_required_config() {
 
 function set_environment_variables() {
     start_span "Setting environment variables"
-    export readonly WORKFLOW_URL="${GITHUB_SERVER_URL}"/"${GITHUB_REPOSITORY}"/actions/runs/"${GITHUB_RUN_ID}" # e.g., heitorlessa/aws-lambda-powertools-test/actions/runs/4913570678
+    export readonly WORKFLOW_URL="${GITHUB_SERVER_URL}"/"${GITHUB_REPOSITORY}"/actions/runs/"${GITHUB_RUN_ID}" # e.g., aws-powertools/aws-lambda-powertools-test/actions/runs/4913570678
     export readonly TEMP_BRANCH="${TEMP_BRANCH_PREFIX}"-"${GITHUB_RUN_ID}"                                     # e.g., ci-changelog-4894658712
     export readonly BASE_BRANCH="${BASE_BRANCH:-main}"                                                      # e.g., main, defaults to develop if missing
     export readonly PR_BODY="This is an automated PR created from the following workflow"
@@ -86,12 +86,26 @@ function create_temporary_branch_with_changes() {
     end_span
 }
 
+function create_label_if_not_exists() {
+    start_span "Creating label if it does not exist"
+    LABEL_EXISTS=$(gh label list --json name --jq ".[] | select(.name == \"${SKIP_LABEL}\") | .name")
+
+    if [ -z "${LABEL_EXISTS}" ]; then
+        debug "Creating label: ${SKIP_LABEL}"
+        gh label create "${SKIP_LABEL}" --color "fef2c0" --description "Skip Changelog and Release Notes" || error "Failed to create label: ${SKIP_LABEL}"
+    else
+        debug "Label already exists: ${SKIP_LABEL}"
+    fi
+
+    end_span
+}
+
 function create_pr() {
     start_span "Creating PR against ${TEMP_BRANCH} branch"
     # TODO: create label
     NEW_PR_URL=$(gh pr create --title "${PR_TITLE}" --body "${PR_BODY}: ${WORKFLOW_URL}" --base "${BASE_BRANCH}" --label "${SKIP_LABEL}" || error "Failed to create PR") # e.g, https://github.com/aws-powertools/powertools-lambda-python/pull/13
 
-    # greedy remove any string until the last URL path, including the last '/'. https://opensource.com/article/17/6/bash-parameter-expansion
+    # greedily remove any string until the last URL path, including the last '/'. https://opensource.com/article/17/6/bash-parameter-expansion
     debug "Extracing PR Number from PR URL: "${NEW_PR_URL}""
     NEW_PR_ID="${NEW_PR_URL##*/}" # 13
     export NEW_PR_URL
@@ -138,6 +152,7 @@ function main() {
     has_required_config
 
     create_temporary_branch_with_changes "$@"
+    create_label_if_not_exists
     create_pr
     close_duplicate_prs
 

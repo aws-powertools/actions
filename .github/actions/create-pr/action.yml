@@ -5,14 +5,14 @@ description: "Create a PR and a temporary branch, close duplicates"
 #
 # 1. Setup git client using Powertools for AWS Lambda bot username
 # 2. Pushes staged files to a temporary branch
-# 3. Creates a PR from temporary branch against a target branch (typically trunk: develop, main, etc.)
-# 4. Searches for duplicate PRs with the same title
-# 5. If duplicates are found, links to the most recent one, closes and deletes their branches so we keep a single PR
-# 6. In the event of failure, we delete the now orphaned branch (if any), and propagate the failure
+# 3. Creates a `skip-changelog` label if it does not exist
+# 4. Creates a PR from temporary branch against a target branch (typically trunk: develop, main, etc.)
+# 5. Searches for duplicate PRs with the same title
+# 6. If duplicates are found, links to the most recent one, closes and deletes their branches so we keep a single PR
+# 7. In the event of failure, we delete the now orphaned branch (if any), and propagate the failure
 
 # REQUIREMENTS
 # You need to enable "Allow GitHub Actions to create and approve pull requests" in your repository settings
-# You need to have the "skip-changelog" label in your repository to skip changelog generation.
 
 # USAGE
 #
