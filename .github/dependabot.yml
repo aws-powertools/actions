@@ -3,6 +3,9 @@ updates:
   - package-ecosystem: github-actions
     directories:
       - "/"
+      - "/.github/actions/create-pr"
+      - "/.github/actions/cached-node-modules"
+      - "/.github/actions/version-n-changelog"
     labels: [ ]
     schedule:
       interval: weekly
@@ -21,4 +24,3 @@ updates:
       bundle-tools:
         patterns:
         - "bump-n-go"
-        - "@vercel/ncc"
