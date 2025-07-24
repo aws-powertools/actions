@@ -4,12 +4,10 @@ set -uo pipefail # prevent accessing unset env vars, prevent masking pipeline er
 #docs
 #title              :create_pr_for_staged_changes.sh
 #description        :This script will create a PR for staged changes, detect and close duplicate PRs. All PRs will be omitted from Release Notes and Changelogs
-#author		        :@heitorlessa
-#date               :May 8th 2023
-#version            :0.1
-#usage		        :bash create_pr_for_staged_changes.sh {git_staged_files_or_directories_separated_by_space}
+#author		        :Amazon Web Services
+#version            :1.0
+#usage		        :bash create_pr_for_staged_changes.sh
 #notes              :Meant to use in GitHub Actions only. Temporary branch will be named $TEMP_BRANCH_PREFIX-$GITHUB_RUN_ID
-#os_version         :Ubuntu 22.04.2 LTS
 #required_env_vars  :PR_TITLE, TEMP_BRANCH_PREFIX, GH_TOKEN
 #==============================================================================
 
@@ -88,7 +86,7 @@ function create_temporary_branch_with_changes() {
 
 function create_label_if_not_exists() {
     start_span "Creating label if it does not exist"
-    LABEL_EXISTS=$(gh label list --json name --jq ".[] | select(.name == \"${SKIP_LABEL}\") | .name")
+    LABEL_EXISTS=$(gh label list --search $SKIP_LABEL --json name --jq ".[] | select(.name == \"${SKIP_LABEL}\") | .name")
 
     if [ -z "${LABEL_EXISTS}" ]; then
         debug "Creating label: ${SKIP_LABEL}"
