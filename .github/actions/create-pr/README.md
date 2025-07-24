@@ -61,7 +61,6 @@ jobs:
 
 | Input                | Description                                   | Required | Default |
 | -------------------- | --------------------------------------------- | -------- | ------- |
-| `files`              | Files to add separated by space               | Yes      |         |
 | `temp_branch_prefix` | Prefix for temporary git branch to be created | Yes      |         |
 | `pull_request_title` | Pull Request title to use                     | Yes      |         |
 | `github_token`       | GitHub token for GitHub CLI                   | Yes      |         |

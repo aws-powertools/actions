@@ -20,7 +20,6 @@ description: "Create a PR and a temporary branch, close duplicates"
 #   id: create-pr
 #   uses: ./.github/actions/create-pr
 #   with:
-#     files: "CHANGELOG.md"
 #     temp_branch_prefix: "ci-changelog"
 #     pull_request_title: "chore(ci): changelog rebuild"
 #     github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -33,9 +32,6 @@ description: "Create a PR and a temporary branch, close duplicates"
 #     BRANCH: ${{ steps.create-pr.outputs.temp_branch}}
 
 inputs:
-  files:
-    description: "Files to add separated by space"
-    required: true
   temp_branch_prefix:
     description: "Prefix for temporary git branch to be created, e.g, ci-docs"
     required: true
@@ -76,7 +72,6 @@ runs:
       working-directory: ${{ env.GITHUB_WORKSPACE }}
       run: create_pr_for_staged_changes.sh "${FILES}"
       env:
-        FILES: ${{ inputs.files }}
         TEMP_BRANCH_PREFIX: ${{ inputs.temp_branch_prefix }}
         PR_TITLE: ${{ inputs.pull_request_title }}
         BASE_BRANCH: ${{ inputs.target_branch }}
