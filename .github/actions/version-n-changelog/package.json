@@ -1,5 +1,5 @@
 {
-  "version": "0.2.1",
+  "version": "0.3.0",
   "name": "version-n-changelog",
   "description": "GitHub Action to update version in package.json and changelog",
   "dependencies": {
