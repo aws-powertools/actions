@@ -8,6 +8,7 @@ This action generates a new version and updates the changelog using the `bump-n-
 - Generates changelog entries based on commit history
 - Bundled with dependencies - no installation required
 - Simple, minimal configuration
+- Outputs the new version for use in subsequent steps
 
 ## Usage
 
@@ -32,13 +33,25 @@ jobs:
           
       # Without specifying release-type (automatic determination)
       - name: Generate version and changelog
+        id: version
         uses: your-org/actions/.github/actions/version-n-changelog@main
+      
+      # Use the new version in subsequent steps
+      - name: Use new version
+        run: echo "New version is ${{ steps.version.outputs.new-version }}"
       
       # OR with explicit release-type
       - name: Generate version and changelog with explicit type
+        id: version-explicit
         uses: your-org/actions/.github/actions/version-n-changelog@main
         with:
           release-type: ${{ github.event.inputs.release-type }}
+      
+      # OR run in dry-run mode to preview changes
+      - name: Preview version changes
+        uses: your-org/actions/.github/actions/version-n-changelog@main
+        with:
+          dry-run: 'true'
 ```
 
 ## Inputs

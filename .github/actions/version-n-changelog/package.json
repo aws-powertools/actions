@@ -3,6 +3,6 @@
   "name": "version-n-changelog",
   "description": "GitHub Action to update version in package.json and changelog",
   "dependencies": {
-    "bump-n-go": "^0.2.1"
+    "bump-n-go": "^0.3.0"
   }
 }
