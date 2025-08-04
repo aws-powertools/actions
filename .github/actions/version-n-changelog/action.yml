@@ -34,7 +34,7 @@ runs:
         
         # Add release-type only if specified
         if [[ -n "${{ inputs.release-type }}" ]]; then
-          CMD_ARGS="${{ inputs.release-type }}"
+          CMD_ARGS="--type ${{ inputs.release-type }}"
         fi
         
         # Add dry-run flag if enabled
@@ -44,6 +44,11 @@ runs:
           else
             CMD_ARGS="--dry-run"
           fi
+        fi
+
+        # Add verbose flag if GitHub Actions is running with debug logging enabled
+        if [[ -n "${{ secrets.ACTIONS_RUNNER_DEBUG }}" ]]; then
+          CMD_ARGS="$CMD_ARGS --verbose"
         fi
         
         # Run bump-n-go with the constructed arguments
