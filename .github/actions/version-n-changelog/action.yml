@@ -33,7 +33,7 @@ runs:
         CMD_ARGS=""
         
         # Add release-type only if specified
-          if [[ -n "${{ inputs.release-type }}" && "${{ inputs.release-type }}" != "auto" ]]; then
+        if [[ -n "${{ inputs.release-type }}" && "${{ inputs.release-type }}" != "auto" ]]; then
             CMD_ARGS="--type ${{ inputs.release-type }}"
         fi
         
