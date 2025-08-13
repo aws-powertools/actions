@@ -47,7 +47,7 @@ runs:
         fi
 
         # Add verbose flag if GitHub Actions is running with debug logging enabled
-          if [[ -n "$RUNNER_DEBUG" ]]; then
+        if [[ -n "$RUNNER_DEBUG" ]]; then
             CMD_ARGS="$CMD_ARGS --verbose"
         fi
         
