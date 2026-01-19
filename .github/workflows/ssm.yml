@@ -60,14 +60,44 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - id: transform
-        run: |
-          echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
       - id: creds
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with: 
           aws-region: ${{ matrix.region }}
-          role-to-assume: ${{ secrets[format('{0}', steps.transform.outputs.CONVERTED_REGION)] }}
+          role-to-assume: >-
+            ${{
+              matrix.region == 'af-south-1' && secrets.AF_SOUTH_1 ||
+              matrix.region == 'ap-east-1' && secrets.AP_EAST_1 ||
+              matrix.region == 'ap-northeast-1' && secrets.AP_NORTHEAST_1 ||
+              matrix.region == 'ap-northeast-2' && secrets.AP_NORTHEAST_2 ||
+              matrix.region == 'ap-northeast-3' && secrets.AP_NORTHEAST_3 ||
+              matrix.region == 'ap-south-1' && secrets.AP_SOUTH_1 ||
+              matrix.region == 'ap-south-2' && secrets.AP_SOUTH_2 ||
+              matrix.region == 'ap-southeast-1' && secrets.AP_SOUTHEAST_1 ||
+              matrix.region == 'ap-southeast-2' && secrets.AP_SOUTHEAST_2 ||
+              matrix.region == 'ap-southeast-3' && secrets.AP_SOUTHEAST_3 ||
+              matrix.region == 'ap-southeast-4' && secrets.AP_SOUTHEAST_4 ||
+              matrix.region == 'ap-southeast-5' && secrets.AP_SOUTHEAST_5 ||
+              matrix.region == 'ca-central-1' && secrets.CA_CENTRAL_1 ||
+              matrix.region == 'ca-west-1' && secrets.CA_WEST_1 ||
+              matrix.region == 'eu-central-1' && secrets.EU_CENTRAL_1 ||
+              matrix.region == 'eu-central-2' && secrets.EU_CENTRAL_2 ||
+              matrix.region == 'eu-north-1' && secrets.EU_NORTH_1 ||
+              matrix.region == 'eu-south-1' && secrets.EU_SOUTH_1 ||
+              matrix.region == 'eu-south-2' && secrets.EU_SOUTH_2 ||
+              matrix.region == 'eu-west-1' && secrets.EU_WEST_1 ||
+              matrix.region == 'eu-west-2' && secrets.EU_WEST_2 ||
+              matrix.region == 'eu-west-3' && secrets.EU_WEST_3 ||
+              matrix.region == 'il-central-1' && secrets.IL_CENTRAL_1 ||
+              matrix.region == 'me-central-1' && secrets.ME_CENTRAL_1 ||
+              matrix.region == 'me-south-1' && secrets.ME_SOUTH_1 ||
+              matrix.region == 'sa-east-1' && secrets.SA_EAST_1 ||
+              matrix.region == 'us-east-1' && secrets.US_EAST_1 ||
+              matrix.region == 'us-east-2' && secrets.US_EAST_2 ||
+              matrix.region == 'us-west-1' && secrets.US_WEST_1 ||
+              matrix.region == 'us-west-2' && secrets.US_WEST_2 ||
+              ''
+            }}
           mask-aws-account-id: true
       - id: write-version
         env:
@@ -128,17 +158,46 @@ jobs:
       contents: write
       id-token: write
     steps:
-      - id: transform
-        run: |
-          echo 'CONVERTED_REGION=${{ matrix.region }}' | tr [a-z\-] [A-Z_] >> "$GITHUB_OUTPUT"
       - id: creds
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with: 
           aws-region: ${{ matrix.region }}
-          role-to-assume: ${{ secrets[format('{0}', steps.transform.outputs.CONVERTED_REGION)] }}
+          role-to-assume: >-
+            ${{
+              matrix.region == 'af-south-1' && secrets.AF_SOUTH_1 ||
+              matrix.region == 'ap-east-1' && secrets.AP_EAST_1 ||
+              matrix.region == 'ap-northeast-1' && secrets.AP_NORTHEAST_1 ||
+              matrix.region == 'ap-northeast-2' && secrets.AP_NORTHEAST_2 ||
+              matrix.region == 'ap-northeast-3' && secrets.AP_NORTHEAST_3 ||
+              matrix.region == 'ap-south-1' && secrets.AP_SOUTH_1 ||
+              matrix.region == 'ap-south-2' && secrets.AP_SOUTH_2 ||
+              matrix.region == 'ap-southeast-1' && secrets.AP_SOUTHEAST_1 ||
+              matrix.region == 'ap-southeast-2' && secrets.AP_SOUTHEAST_2 ||
+              matrix.region == 'ap-southeast-3' && secrets.AP_SOUTHEAST_3 ||
+              matrix.region == 'ap-southeast-4' && secrets.AP_SOUTHEAST_4 ||
+              matrix.region == 'ap-southeast-5' && secrets.AP_SOUTHEAST_5 ||
+              matrix.region == 'ca-central-1' && secrets.CA_CENTRAL_1 ||
+              matrix.region == 'ca-west-1' && secrets.CA_WEST_1 ||
+              matrix.region == 'eu-central-1' && secrets.EU_CENTRAL_1 ||
+              matrix.region == 'eu-central-2' && secrets.EU_CENTRAL_2 ||
+              matrix.region == 'eu-north-1' && secrets.EU_NORTH_1 ||
+              matrix.region == 'eu-south-1' && secrets.EU_SOUTH_1 ||
+              matrix.region == 'eu-south-2' && secrets.EU_SOUTH_2 ||
+              matrix.region == 'eu-west-1' && secrets.EU_WEST_1 ||
+              matrix.region == 'eu-west-2' && secrets.EU_WEST_2 ||
+              matrix.region == 'eu-west-3' && secrets.EU_WEST_3 ||
+              matrix.region == 'il-central-1' && secrets.IL_CENTRAL_1 ||
+              matrix.region == 'me-central-1' && secrets.ME_CENTRAL_1 ||
+              matrix.region == 'me-south-1' && secrets.ME_SOUTH_1 ||
+              matrix.region == 'sa-east-1' && secrets.SA_EAST_1 ||
+              matrix.region == 'us-east-1' && secrets.US_EAST_1 ||
+              matrix.region == 'us-east-2' && secrets.US_EAST_2 ||
+              matrix.region == 'us-west-1' && secrets.US_WEST_1 ||
+              matrix.region == 'us-west-2' && secrets.US_WEST_2 ||
+              ''
+            }}
           mask-aws-account-id: true
       - id: write-version
-        if: inputs.write_latest == true 
         env:
           prefix: ${{ inputs.environment == 'beta' && '/aws/service/powertools/sthulb/beta' || '/aws-service/powertools/sthulb/' }} 
         run: |
