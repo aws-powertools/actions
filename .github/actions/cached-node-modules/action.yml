@@ -24,7 +24,7 @@ runs:
         path: '**/node_modules'
         # Use the combo between node version, name, and SHA-256 hash of the lock file as cache key so that
         # if one of them changes the cache is invalidated/discarded
-        key: ${{ inputs.nodeVersion }}-${{ inputs.cacheKey }}-${{ hashFiles('./package-lock.json') }}
+        key: ${{ inputs.node-version }}-${{ inputs.cacheKey }}-${{ hashFiles('./package-lock.json') }}
     - name: Install dependencies
       # We can skip the installation if there was a cache hit
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
